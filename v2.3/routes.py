@@ -99,6 +99,7 @@ def user_filelist(user_id):
     # print("here user_filelist")
     user = User.query.get_or_404(user_id)
     files = user.files.order_by(File.uploaded_on.desc()).all()
+    # print(files)
     return render_template('user_filelist.html', user=user, files=files)
 
 @app.route('/upload', methods=['GET', 'POST'])
