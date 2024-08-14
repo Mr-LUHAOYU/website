@@ -82,7 +82,7 @@ def profile(user_id):
     if password:
         user.set_password(password)
     if username:
-        user.username = username
+        user.username = usern        # 这里的user.username
     if real_name:
         user.real_name = real_name
     if email:
@@ -101,6 +101,7 @@ def user_filelist(user_id):
     files = user.files.order_by(File.uploaded_on.desc()).all()
     # print(files)
     return render_template('user_filelist.html', user=user, files=files)
+
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
