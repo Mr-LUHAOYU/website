@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, flash, request, session, j
 from werkzeug.utils import secure_filename, send_from_directory
 import os
 from app import app, db
-from models import User, File
+from models import User, File, UserDynamicInfo, UserStaticInfo
 from datetime import datetime
 from config import Config
 
@@ -19,7 +19,7 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        user = User.query.filter_by(username=username).first()
+        user = UserDynamicInfo.query.filter_by(username=username).first()
         if user and user.check_password(password):
             user.is_logged_in = True
             user.last_login = datetime.utcnow()
@@ -46,7 +46,7 @@ def register():
             flash('密码长度必须大于等于6位小于等于18位')
         elif password != confirm_password:
             flash('两次输入的密码不一致')
-        elif User.query.filter_by(username=username).first():
+        elif User.check_username_exist(username):
             flash('该用户名已被注册')
         else:
             User.register(username, password)

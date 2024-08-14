@@ -11,7 +11,7 @@ db = SQLAlchemy()
 class UserStaticInfo(db.Model):
     __tablename__ = 'user_static'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.uid'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     registered_on = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime, default=datetime.utcnow)
     is_logged_in = db.Column(db.Boolean, default=False)
@@ -23,11 +23,14 @@ class UserStaticInfo(db.Model):
         db.session.delete(self)
         db.session.commit()
 
+    def uid(self):
+        return self.user.uid
+
 
 class UserDynamicInfo(db.Model):
     __tablename__ = 'user_dynamic'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.uid'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(50))
@@ -53,6 +56,9 @@ class UserDynamicInfo(db.Model):
         os.remove(path)
         img.save(path)
 
+    def uid(self):
+        return self.user.uid
+
 
 class User(db.Model):
     __tablename__ = 'user'
@@ -61,20 +67,32 @@ class User(db.Model):
     static_info = db.relationship('UserStaticInfo', uselist=False, backref='user')
     dynamic_info = db.relationship('UserDynamicInfo', uselist=False, backref='user')
 
+    @staticmethod
+    def check_username_exist(username):
+        return UserDynamicInfo.query.filter_by(username=username).first() is not None
+
     @classmethod
     def register(cls, username, password, ):
-        user = User()
-        user.dynamic_info = UserDynamicInfo(username=username)
-        user.dynamic_info.set_password(password)
-        user.static_info = UserStaticInfo()
+        user = cls()
+        db.session.add(user)
+        db.session.commit()
+        udi = UserDynamicInfo(username=username)
+        usi = UserStaticInfo()
+        udi.user_id = user.id
+        usi.user_id = user.id
+        udi.set_password(password)
+        db.session.add(udi)
+        db.session.add(usi)
+        db.session.commit()
         path = Config.IMG_PATH(user.uid)
         os.makedirs(os.path.dirname(path), exist_ok=True)
         path = Config.BIO_PATH(user.uid)
         os.makedirs(os.path.dirname(path), exist_ok=True)
         path = Config.ROOT_PATH(user.uid)
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        user.dynamic_info.root_folder_id = Folder.create('root', None, user).id
-        db.session.add(user)
+        db.session.commit()
+        user.dynamic_info.root_folder_id = Folder.create('root', None, user.id).id
+        # db.session.add(user)
         db.session.commit()
         return user
 
@@ -129,11 +147,11 @@ class User(db.Model):
         self.dynamic_info.change_img(img)
 
 
-
 class File(db.Model):
     __tablename__ = 'files'
     id = db.Column(db.Integer, primary_key=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    folder_id = db.Column(db.Integer, db.ForeignKey('folders.id'))
     filename = db.Column(db.String(150), nullable=False)
     uploaded_on = db.Column(db.DateTime, default=datetime.utcnow)
     download_count = db.Column(db.Integer, default=0)
@@ -188,7 +206,7 @@ class Folder(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     folder_name = db.Column(db.String(150), nullable=False)
     created_on = db.Column(db.DateTime, default=datetime.utcnow)
-    # parent_id = db.Column(db.Integer, db.ForeignKey('folders.id'))
+    parent_id = db.Column(db.Integer, db.ForeignKey('folders.id'))
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
     children = db.relationship(
         'Folder', backref=db.backref('parent', remote_side=[id]),
@@ -247,9 +265,8 @@ class Folder(db.Model):
         db.session.commit()
 
     @classmethod
-    def create(cls, folder_name, parent, author):
-        folder = cls(folder_name=folder_name, parent=parent, author=author)
-        author.dynamic_info.folders.append(folder)
+    def create(cls, folder_name, parent_id, author_id):
+        folder = cls(folder_name=folder_name, parent=parent_id, author_id=author_id)
         db.session.add(folder)
         db.session.commit()
         return folder

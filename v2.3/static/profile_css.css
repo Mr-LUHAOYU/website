@@ -181,7 +181,8 @@
 
 .download-count {
     color: #666;
-    font-size: 0
+    font-size: 0;
+}
 
 .btn {
     display: inline-block;

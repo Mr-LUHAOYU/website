@@ -7,11 +7,7 @@
 
     <!-- 显示用户头像 -->
     <div class="avatar-container">
-        {% if user.img_path %}
-            <img src="{{ url_for('static', filename=user.img_path.replace('\\', '/')) }}" alt="头像" class="avatar">
-        {% else %}
-            <img src="{{ url_for('static', filename='img/default_avatar.jpg') }}" alt="头像" class="avatar">
-        {% endif %}
+        <img src="{{ url_for('static', filename='extras/{user.uid}/IMG.png') }}" alt="头像" class="avatar">
     </div>
 
     <!-- 修改头像表单 -->
