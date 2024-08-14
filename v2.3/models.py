@@ -58,7 +58,7 @@ class User(db.Model):
     dynamic_info = db.relationship('UserDynamicInfo', uselist=False, backref='user')
 
     @classmethod
-    def createUser(cls, username, password, ):
+    def register(cls, username, password, ):
         user = User()
         user.dynamic_info = UserDynamicInfo(username=username)
         user.dynamic_info.set_password(password)
@@ -162,11 +162,13 @@ class Folder(db.Model):
 
     @property
     def author_name(self):
-        return self.author.dynamic_info.username
+        author = User.query.filter_by(id=self.author_id).first()
+        return author.dynamic_info.username
 
     @property
     def author_uid(self):
-        return self.author.uid
+        author = User.query.filter_by(id=self.author_id).first()
+        return author.uid
 
     @property
     def PATH(self) -> str:

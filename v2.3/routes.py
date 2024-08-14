@@ -10,7 +10,6 @@ from datetime import datetime
 def index():
     # print("here index")
     return render_template('index.html')
-    # return redirect(url_for('login'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -49,10 +48,11 @@ def register():
         elif User.query.filter_by(username=username).first():
             flash('该用户名已被注册')
         else:
-            user = User(username=username)
-            user.set_password(password)
-            db.session.add(user)
-            db.session.commit()
+            User.register(username, password)
+            # user = User(username=username)
+            # user.set_password(password)
+            # db.session.add(user)
+            # db.session.commit()
             flash('注册成功，请登录')
             return redirect(url_for('login'))
     return render_template('register.html')
@@ -82,7 +82,7 @@ def profile(user_id):
     if password:
         user.set_password(password)
     if username:
-        user.username = usern        # 这里的user.username
+        user.username = username        # 这里的user.username
     if real_name:
         user.real_name = real_name
     if email:
