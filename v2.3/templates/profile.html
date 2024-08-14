@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='profile_css.css') }}">
+    <div class="profile-page">
+    <h2>{{ user.username }}的个人主页</h2>
+
+    <!-- 显示用户头像 -->
+    <div class="avatar-container">
+        {% if user.img_path %}
+            <img src="{{ url_for('static', filename=user.img_path.replace('\\', '/')) }}" alt="头像" class="avatar">
+        {% else %}
+            <img src="{{ url_for('static', filename='img/default_avatar.jpg') }}" alt="头像" class="avatar">
+        {% endif %}
+    </div>
+
+    <!-- 修改头像表单 -->
+    {% if can_edit %}
+    <section class="change-avatar-section">
+        <h3>修改头像</h3>
+        <form method="POST" action="{{ url_for('change_img', user_id=user.id) }}" enctype="multipart/form-data" class="avatar-form">
+            <div class="form-group">
+                <input type="file" name="file" id="file" accept="image/*" class="file-input">
+            </div>
+            <div class="form-group">
+                <input type="submit" value="上传头像" class="submit-button">
+            </div>
+        </form>
+    </section>
+    {% endif %}
+
+
+    <!-- 用户信息 -->
+    <div class="user-info">
+        <p><span class="info-label">真实姓名:</span> {{ user.real_name }}</p>
+        <p><span class="info-label">邮箱:</span> {{ user.email }}</p>
+        <p><span class="info-label">手机号:</span> {{ user.phone }}</p>
+        <p><span class="info-label">注册时间:</span> {{ user.registered_on }}</p>
+        <p><span class="info-label">上次登录时间:</span> {{ user.last_login }}</p>
+        <p><span class="info-label">权限等级:</span> {{ user.permission_level }}</p>
+    </div>
+
+    <!-- 修改个人信息表单 -->
+    {% if can_edit %}
+    <div class="edit-profile">
+        <h3>修改个人信息</h3>
+        <form method="POST" action="{{ url_for('profile', user_id=user.id) }}">
+            <div class="form-group">
+                <label for="username">用户名:</label>
+                <input type="text" name="username" id="username" value="{{ user.username }}" required>
+            </div>
+            <div class="form-group">
+                <label for="password">密码:</label>
+                <input type="password" name="password" id="password">
+            </div>
+            <div class="form-group">
+                <label for="real_name">真实姓名:</label>
+                <input type="text" name="real_name" id="real_name" value="{{ user.real_name }}">
+            </div>
+            <div class="form-group">
+                <label for="email">邮箱:</label>
+                <input type="email" name="email" id="email" value="{{ user.email }}">
+            </div>
+            <div class="form-group">
+                <label for="phone">手机号:</label>
+                <input type="text" name="phone" id="phone" value="{{ user.phone }}">
+            </div>
+            <input type="submit" value="保存更改">
+        </form>
+
+    </div>
+    {% endif %}
+
+    <!--跳转user_filelist.html页面，显示用户上传的文件列表-->
+
+   
+
+
+<!--     上传文件按钮-->
+<!--    {% if can_edit %}-->
+<!--    <button onclick="location.href='{{ url_for('upload') }}'" class="upload-button">上传文件</button>-->
+<!--    {% endif %}-->
+    </div>
+
+{% endblock %}

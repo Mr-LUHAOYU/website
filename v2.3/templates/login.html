@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>登录</h2>
+<form method="POST" action="{{ url_for('login') }}">
+    <label for="username">用户名:</label>
+    <input type="text" name="username" id="username" required>
+    <br>
+    <label for="password">密码:</label>
+    <input type="password" name="password" id="password" required>
+    <br>
+    <input type="submit" value="登录">
+</form>
+<a href="{{ url_for('register') }}">还没有账号？注册</a>
+{% endblock %}
