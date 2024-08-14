@@ -11,11 +11,13 @@ db = SQLAlchemy()
 class UserStaticInfo(db.Model):
     __tablename__ = 'user_static'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.uid'), nullable=False)
     registered_on = db.Column(db.DateTime, default=datetime.utcnow)
     last_login = db.Column(db.DateTime, default=datetime.utcnow)
     is_logged_in = db.Column(db.Boolean, default=False)
     permission_level = db.Column(db.Integer, default=1)
+    upload_count = db.Column(db.Integer, default=0)
+    download_count = db.Column(db.Integer, default=0)
 
     def delete(self):
         db.session.delete(self)
@@ -25,7 +27,7 @@ class UserStaticInfo(db.Model):
 class UserDynamicInfo(db.Model):
     __tablename__ = 'user_dynamic'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.uid'), nullable=False)
     username = db.Column(db.String(150), unique=True, nullable=False)
     password_hash = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(50))
@@ -33,9 +35,6 @@ class UserDynamicInfo(db.Model):
     real_name = db.Column(db.String(100))
     student_id = db.Column(db.String(10))
     root_folder_id = db.Column(db.Integer, db.ForeignKey('folders.id'))
-
-    # files = db.relationship('File', backref='author', lazy=True)
-    # folders = db.relationship('Folder', backref='author', lazy=True)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
@@ -48,6 +47,11 @@ class UserDynamicInfo(db.Model):
         root.delete()
         db.session.delete(self)
         db.session.commit()
+
+    def change_img(self, img):
+        path = Config.IMG_PATH(self.user_id)
+        os.remove(path)
+        img.save(path)
 
 
 class User(db.Model):
@@ -89,6 +93,41 @@ class User(db.Model):
         shutil.rmtree(path)
         db.session.delete(self)
         db.session.commit()
+
+    def update_info(self, username=None, password=None, email=None,
+                    phone=None, real_name=None, student_id=None):
+        if password is not None:
+            self.dynamic_info.set_password(password)
+        for it in [username, email, phone, real_name, student_id]:
+            if it is not None:
+                eval(f"self.dynamic_info.{it} = it")
+        db.session.commit()
+
+    def login(self):
+        self.static_info.is_logged_in = True
+        self.static_info.last_login = datetime.utcnow()
+        db.session.commit()
+
+    def logout(self):
+        self.static_info.is_logged_in = False
+        db.session.commit()
+
+    def upload(self, file, folder="root", tags=None):
+        if folder == "root":
+            folder = Folder.query.filter_by(id=self.dynamic_info.root_folder_id).first()
+        if File.create(file, folder, self, tags):
+            self.static_info.upload_count += 1
+            db.session.commit()
+            return True
+        else:
+            return False
+
+    def download(self, file):
+        ...
+
+    def change_img(self, img):
+        self.dynamic_info.change_img(img)
+
 
 
 class File(db.Model):

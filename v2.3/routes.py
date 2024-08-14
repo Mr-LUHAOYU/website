@@ -4,6 +4,7 @@ import os
 from app import app, db
 from models import User, File
 from datetime import datetime
+from config import Config
 
 
 @app.route('/')
@@ -76,26 +77,14 @@ def profile(user_id):
     real_name = request.form.get('real_name')
     email = request.form.get('email')
     phone = request.form.get('phone')
-    img_path = request.form.get('img_path')
-    if img_path:
-        user.img_path = img_path
-    if password:
-        user.set_password(password)
-    if username:
-        user.username = username        # 这里的user.username
-    if real_name:
-        user.real_name = real_name
-    if email:
-        user.email = email
-    if phone:
-        user.phone = phone
-    db.session.commit()
+    user.update_info(username, password, real_name, email, phone)
     ##################################################################
     return render_template('profile.html', user=user, can_edit=True)
 
 
 @app.route('/user_filelist/<int:user_id>')
 def user_filelist(user_id):
+    # TODO
     # print("here user_filelist")
     user = User.query.get_or_404(user_id)
     files = user.files.order_by(File.uploaded_on.desc()).all()
@@ -111,19 +100,23 @@ def upload():
             flash('未选择文件')
             return redirect(request.url)
         file = request.files['file']
+        if not file:
+            flash('未选择文件')
+            return redirect(request.url)
         if file.filename == '':
             flash('未选择文件')
             return redirect(request.url)
         if file:
-            filename = secure_filename(file.filename)
+            # filename = secure_filename(file.filename)
             user_id = session.get('user_id')
             user = User.query.get_or_404(user_id)
+            user.upload(file)
             # seri = len(user.files) + 1
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            file.save(filepath)
-            new_file = File(user_id=user.id, filename=filename, filepath=filepath)
-            db.session.add(new_file)
-            db.session.commit()
+            # filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+            # file.save(filepath)
+            # new_file = File(user_id=user.id, filename=filename, filepath=filepath)
+            # db.session.add(new_file)
+            # db.session.commit()
             flash('文件上传成功')
             return redirect(url_for('profile', user_id=user.id))
     return render_template('upload.html')
@@ -177,18 +170,16 @@ def change_img():
         file = request.files['file']
         if file:
             # 验证文件类型
-            if not file.filename.endswith(('.jpg', '.png', '.jpeg', '.gif')):
+            if not file.filename.endswith(Config.IMG_ALLOWED_EXTENSIONS):
                 flash('图片格式不正确')
                 return redirect(request.url)
             # 保存文件到指定目录
-            if not os.path.exists(app.config['IMG_FOLDER']):
-                os.makedirs(app.config['IMG_FOLDER'])
-            filename = secure_filename(file.filename)
-            filepath = os.path.join(app.config['IMG_FOLDER'], filename)
-            file.save(filepath)
-            user.img_path = os.path.join('img', filename)
-            #user.img_path = user.img_path.replace('\\', '/')
-            db.session.commit()
+            user.change_img(file)
+            # filename = secure_filename(file.filename)
+            # filepath = os.path.join(app.config['IMG_FOLDER'], filename)
+            # file.save(filepath)
+            # user.img_path = os.path.join('img', filename)
+            # db.session.commit()
             flash('头像更改成功')
         else:
             flash('未选择文件')
