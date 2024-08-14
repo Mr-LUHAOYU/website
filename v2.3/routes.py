@@ -77,13 +77,34 @@ def profile(user_id):
     real_name = request.form.get('real_name')
     email = request.form.get('email')
     phone = request.form.get('phone')
+    student_id = request.form.get('student_id')
     user.update_info(
         username=username, password=password, real_name=real_name, email=email,
-        phone=phone
+        phone=phone, student_id=student_id
     )
     ##################################################################
     return render_template('profile.html', user=user,
                            can_edit=True, img_path=f'extras/{user.uid}/IMG.png')
+
+
+@app.route('/revise_info/<int:user_id>', methods=['GET', 'POST'])
+def revise_info(user_id):
+    # print("here revise_user_info")
+    user = User.query.get_or_404(user_id)
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        real_name = request.form.get('real_name')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        student_id = request.form.get('student_id')
+        user.update_info(
+            username=username, password=password, real_name=real_name, email=email,
+            phone=phone, student_id=student_id
+        )
+        flash('信息修改成功')
+        return redirect(url_for('profile', user_id=user.id))
+    return render_template('revise_info.html', user=user)
 
 
 @app.route('/user_filelist/<int:user_id>')
@@ -189,3 +210,27 @@ def change_img(user_id):
             flash('未选择文件')
     return redirect(url_for('profile', user_id=user.id))
 
+
+# 写一个修改用户密码的接口
+@app.route('/change_password/<int:user_id>', methods=['GET', 'POST'])
+def change_password(user_id):
+    # print("here change_password")
+    user = User.query.get_or_404(user_id)
+    if request.method == 'POST':
+        old_password = request.form.get('old_password')
+        new_password = request.form.get('new_password')
+        if not user.check_password(old_password):
+            flash('旧密码错误')
+            return redirect(request.url)
+        if not (any(char.isdigit() for char in new_password) and any(char.isalpha() for char in new_password)):
+            flash('密码必须同时包含字母和数字')
+
+        elif not 6 <= len(new_password) <= 18:
+            flash('密码长度必须大于等于6位小于等于18位')
+        else:
+            user.set_password(new_password)
+            db.session.commit()
+            flash('密码修改成功')
+            return redirect(url_for('profile', user_id=user.id))
+
+    return render_template('change_password.html', user=user)

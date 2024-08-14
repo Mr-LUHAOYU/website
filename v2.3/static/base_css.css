@@ -89,3 +89,87 @@ form input[type="submit"] {
 form input[type="submit"]:hover {
     background-color: #555;
 }
+
+/* 模态窗口的样式 */
+.modal {
+    display: none; /* 隐藏 */
+    position: fixed; /* 固定位置 */
+    z-index: 1; /* 层叠顺序 */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* 如果内容超出窗口，则添加滚动条 */
+    background-color: rgb(0,0,0); /* 黑色背景 */
+    background-color: rgba(0,0,0,0.4); /* 带透明度的背景 */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% 的顶部边距和居中 */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* 宽度 */
+    max-width: 400px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+/* 上传头像按钮的样式 */
+#uploadAvatarBtn {
+    background: linear-gradient(135deg, #ff7e5f, #feb47b); /* 渐变背景色 */
+    border: none; /* 无边框 */
+    color: white; /* 白色文字 */
+    padding: 10px 20px; /* 内边距 */
+    text-align: center; /* 文字居中 */
+    text-decoration: none; /* 去除下划线 */
+    display: inline-block; /* 内联块元素 */
+    font-size: 16px; /* 字体大小 */
+    font-weight: bold; /* 加粗字体 */
+    border-radius: 25px; /* 圆角 */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    cursor: pointer; /* 鼠标悬停时显示手型 */
+    transition: all 0.3s ease; /* 添加过渡效果 */
+}
+
+#uploadAvatarBtn:hover {
+    background: linear-gradient(135deg, #feb47b, #ff7e5f); /* 反转渐变色 */
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15); /* 鼠标悬停时增加阴影 */
+    transform: translateY(-2px); /* 悬停时轻微上移 */
+}
+
+/* 统一按钮样式 */
+.btn-primary {
+    background: linear-gradient(135deg, #ff7e5f, #feb47b); /* 渐变背景色 */
+    border: none; /* 无边框 */
+    color: white; /* 白色文字 */
+    padding: 10px 20px; /* 内边距 */
+    text-align: center; /* 文字居中 */
+    text-decoration: none; /* 去除下划线 */
+    display: inline-block; /* 内联块元素 */
+    font-size: 16px; /* 字体大小 */
+    font-weight: bold; /* 加粗字体 */
+    border-radius: 25px; /* 圆角 */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    cursor: pointer; /* 鼠标悬停时显示手型 */
+    transition: all 0.3s ease; /* 添加过渡效果 */
+    margin: 10px 0; /* 按钮之间的间距 */
+}
+
+/* 鼠标悬停效果 */
+.btn-primary:hover {
+    background: linear-gradient(135deg, #feb47b, #ff7e5f); /* 反转渐变色 */
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15); /* 鼠标悬停时增加阴影 */
+    transform: translateY(-2px); /* 悬停时轻微上移 */
+}
