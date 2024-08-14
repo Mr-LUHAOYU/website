@@ -77,9 +77,13 @@ def profile(user_id):
     real_name = request.form.get('real_name')
     email = request.form.get('email')
     phone = request.form.get('phone')
-    user.update_info(username, password, real_name, email, phone)
+    user.update_info(
+        username=username, password=password, real_name=real_name, email=email,
+        phone=phone
+    )
     ##################################################################
-    return render_template('profile.html', user=user, can_edit=True)
+    return render_template('profile.html', user=user,
+                           can_edit=True, img_path=f'extras/{user.uid}/IMG.png')
 
 
 @app.route('/user_filelist/<int:user_id>')
@@ -87,9 +91,9 @@ def user_filelist(user_id):
     # TODO
     # print("here user_filelist")
     user = User.query.get_or_404(user_id)
-    files = user.files.order_by(File.uploaded_on.desc()).all()
+    # files = user.files.order_by(File.uploaded_on.desc()).all()
     # print(files)
-    return render_template('user_filelist.html', user=user, files=files)
+    return render_template('user_filelist.html', user=user, files=None)
 
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -161,16 +165,16 @@ def delete_account(user_id):
     return render_template('delete_account.html', user=user)
 
 
-@app.route('/img', methods=['GET', 'POST'])
-def change_img():
+@app.route('/extras/<int:user_id>', methods=['GET', 'POST'])
+def change_img(user_id):
     # print("here change_img")
-    user_id = session.get('user_id')
+    # user_id = session.get('user_id')
     user = User.query.get_or_404(user_id)
     if request.method == 'POST':
         file = request.files['file']
         if file:
             # 验证文件类型
-            if not file.filename.endswith(Config.IMG_ALLOWED_EXTENSIONS):
+            if not file.filename.endswith(tuple(Config.IMG_ALLOWED_EXTENSIONS)):
                 flash('图片格式不正确')
                 return redirect(request.url)
             # 保存文件到指定目录

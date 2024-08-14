@@ -52,8 +52,11 @@ class UserDynamicInfo(db.Model):
         db.session.commit()
 
     def change_img(self, img):
-        path = Config.IMG_PATH(self.user_id)
-        os.remove(path)
+        path = Config.IMG_PATH(self.user.uid)
+        try:
+            os.remove(path)
+        except FileNotFoundError:
+            pass
         img.save(path)
 
     def uid(self):
@@ -86,11 +89,14 @@ class User(db.Model):
         db.session.commit()
         path = Config.IMG_PATH(user.uid)
         os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'w') as f:
+            f.write('')
         path = Config.BIO_PATH(user.uid)
         os.makedirs(os.path.dirname(path), exist_ok=True)
-        path = Config.ROOT_PATH(user.uid)
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        db.session.commit()
+        with open(path, 'w') as f:
+            f.write('')
+        # path = Config.ROOT_PATH(user.uid)
+        # os.makedirs(os.path.dirname(path+'/no'), exist_ok=True)
         user.dynamic_info.root_folder_id = Folder.create('root', None, user.id).id
         # db.session.add(user)
         db.session.commit()
@@ -103,12 +109,8 @@ class User(db.Model):
     def delete(self):
         self.dynamic_info.delete()
         self.static_info.delete()
-        path = Config.IMG_PATH(self.uid)
-        os.remove(path)
-        path = Config.BIO_PATH(self.uid)
-        os.remove(path)
-        path = Config.ROOT_PATH(self.uid)
-        shutil.rmtree(path)
+        os.rmdir(os.path.dirname(Config.IMG_PATH(self.uid)))
+        os.rmdir(os.path.dirname(Config.UPLOAD_FOLDER(self.uid)))
         db.session.delete(self)
         db.session.commit()
 
@@ -116,9 +118,9 @@ class User(db.Model):
                     phone=None, real_name=None, student_id=None):
         if password is not None:
             self.dynamic_info.set_password(password)
-        for it in [username, email, phone, real_name, student_id]:
-            if it is not None:
-                eval(f"self.dynamic_info.{it} = it")
+        for it in ['username', 'email', 'phone', 'real_name', 'student_id']:
+            if eval(it) is not None:
+                exec(f"self.dynamic_info.{it} = {it}")
         db.session.commit()
 
     def login(self):
@@ -169,11 +171,11 @@ class File(db.Model):
 
     @property
     def PATH(self) -> str:
-        # the absolute path of the file is root/PATH
         return self.folder.PATH + '/' + self.filename
 
-    def delete(self, path):
-        os.remove(os.path.join(Config.UPLOAD_FOLDER(self.author_uid), path))
+    def delete(self, first=True):
+        if first:
+            os.remove(self.PATH)
         db.session.delete(self)
         db.session.commit()
 
@@ -218,46 +220,36 @@ class Folder(db.Model):
     )
 
     @property
-    def author_name(self):
-        author = User.query.filter_by(id=self.author_id).first()
-        return author.dynamic_info.username
-
-    @property
-    def author_uid(self):
-        author = User.query.filter_by(id=self.author_id).first()
-        return author.uid
-
-    @property
     def PATH(self) -> str:
-        # the absolute path of the folder is root/PATH
         path = []
         current_folder = self
         while current_folder is not None:
             path.append(current_folder.folder_name)
             current_folder = current_folder.parent
-        return '/'.join(reversed(path))
+        path = '/'.join(reversed(path))
+        author = User.query.filter_by(id=self.author_id).first()
+        path = os.path.join(Config.UPLOAD_FOLDER(author.uid), path)
+        return path
 
-    def remove(self, path):
-        os.remove(os.path.join(Config.UPLOAD_FOLDER(self.author_uid), path))
-
-    def delete(self):
+    def delete(self, first=True):
         for child in self.children:
-            child.delete()
+            child.delete(False)
         for file in self.files:
-            file.delete()
+            file.delete(False)
+        if first:
+            shutil.rmtree(self.PATH)
         db.session.delete(self)
         db.session.commit()
 
     def rename(self, new_folder_name):
-        os.rename(os.path.join(Config.UPLOAD_FOLDER(self.author_uid), self.PATH),
-                  os.path.join(Config.UPLOAD_FOLDER(self.author_uid), new_folder_name))
+        os.rename(self.PATH, new_folder_name)
         self.folder_name = new_folder_name
         db.session.commit()
 
     def move(self, new_folder):
         shutil.move(
-            Config.UPLOAD_FOLDER(self.author_uid) + self.PATH,
-            Config.UPLOAD_FOLDER(self.author_uid) + new_folder.PATH + '/' + self.folder_name
+            self.PATH,
+            new_folder.PATH + '/' + self.folder_name
         )
         self.parent.children.remove(self)
         new_folder.children.append(self)
@@ -269,4 +261,5 @@ class Folder(db.Model):
         folder = cls(folder_name=folder_name, parent=parent_id, author_id=author_id)
         db.session.add(folder)
         db.session.commit()
+        os.makedirs(folder.PATH, exist_ok=True)
         return folder

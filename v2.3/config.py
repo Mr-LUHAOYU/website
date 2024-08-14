@@ -11,11 +11,11 @@ class Config:
 
     @staticmethod
     def ROOT_PATH(uid):
-        return f"static/uploads/{uid}/root"
+        return f"static/uploads/{uid}"
 
     @staticmethod
     def UPLOAD_FOLDER(uid):
-        return f"static/uploads/{uid}/root"
+        return f"static/uploads/{uid}"
 
     @staticmethod
     def IMG_PATH(uid):
