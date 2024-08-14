@@ -3,11 +3,11 @@
 {% block content %}
     <link rel="stylesheet" href="{{ url_for('static', filename='profile_css.css') }}">
     <div class="profile-page">
-    <h2>{{ user.username }}的个人主页</h2>
+    <h2>{{ user.dynamic_info.username }}的个人主页</h2>
 
     <!-- 显示用户头像 -->
     <div class="avatar-container">
-        <img src="{{ url_for('static', filename='extras/{user.uid}/IMG.png') }}" alt="头像" class="avatar">
+        <img src="{{ url_for('static', filename='extras/{ user.dynamic_info.uid}/IMG.png') }}" alt="头像" class="avatar">
     </div>
 
     <!-- 修改头像表单 -->

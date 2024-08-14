@@ -170,7 +170,7 @@ def change_img():
         file = request.files['file']
         if file:
             # 验证文件类型
-            if not file.filename.endswith(Config.IMG_ALLOWED_EXTENSIONS):
+            if not file.filename.endswith(tuple(Config.IMG_ALLOWED_EXTENSIONS)):
                 flash('图片格式不正确')
                 return redirect(request.url)
             # 保存文件到指定目录
