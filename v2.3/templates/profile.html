@@ -72,7 +72,7 @@
     {% endif %}
 
     <!--跳转user_filelist.html页面，显示用户上传的文件列表-->
-
+    <button onclick="location.href='{{ url_for('user_filelist', user_id=user.id) }}'" class=".btn">文件列表</button>
    
 
 
