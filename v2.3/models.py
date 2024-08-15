@@ -1,3 +1,5 @@
+import re
+import smtplib
 from datetime import datetime
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -12,12 +14,29 @@ class UserStaticInfo(db.Model):
     __tablename__ = 'user_static'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
-    registered_on = db.Column(db.DateTime, default=datetime.utcnow)
-    last_login = db.Column(db.DateTime, default=datetime.utcnow)
+    registered_on = db.Column(db.DateTime, default=lambda: datetime.utcnow() + Config.TIME_DELTA)
+    last_login = db.Column(db.DateTime, default=lambda: datetime.utcnow() + Config.TIME_DELTA)
     is_logged_in = db.Column(db.Boolean, default=False)
     permission_level = db.Column(db.Integer, default=1)
     upload_count = db.Column(db.Integer, default=0)
     download_count = db.Column(db.Integer, default=0)
+
+    def login(self):
+        self.is_logged_in = True
+        self.last_login = datetime.utcnow() + Config.TIME_DELTA
+        db.session.commit()
+
+    def logout(self):
+        self.is_logged_in = False
+        db.session.commit()
+
+    def levelUp(self):
+        self.permission_level += 1
+        db.session.commit()
+
+    def levelDown(self):
+        self.permission_level -= 1
+        db.session.commit()
 
     def delete(self):
         db.session.delete(self)
@@ -40,10 +59,61 @@ class UserDynamicInfo(db.Model):
     root_folder_id = db.Column(db.Integer, db.ForeignKey('folders.id'))
 
     def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
+        valid, msg = self.password_valid(password)
+        if valid:
+            self.password_hash = generate_password_hash(password)
+            db.session.commit()
+        return msg
 
     def check_password(self, password):
         return check_password_hash(self.password_hash, password)
+
+    @staticmethod
+    def password_valid(password) -> [bool, str]:
+        if not 6 <= len(password) <= 18:
+            return False, "密码长度必须大于等于6位小于等于18位"
+        if not any(char.isdigit() for char in password):
+            return False, "密码必须同时包含字母和数字"
+        if not any(char.isalpha() for char in password):
+            return False, "密码必须同时包含字母和数字"
+        return True, "密码修改成功"
+
+    @staticmethod
+    def email_valid(email):
+        email_regex = r'^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$'
+        if re.match(email_regex, email) is None:
+            return False
+        return True
+        # 检查域名是否存在
+        # domain = email.split('@')[1]
+        # try:
+        #     server = smtplib.SMTP()
+        #     server.set_debuglevel(0)
+        #     server.connect(domain, 10)
+        #     server.helo(domain)
+        #     server.quit()
+        #     return True
+        # except:
+        #     return False
+
+    @staticmethod
+    def phone_valid(phone):
+        phone_regex = r'^1[3-9]\d{9}$'
+        if re.match(phone_regex, phone) is None:
+            return False
+        return True
+
+    @staticmethod
+    def student_id_valid(student_id):
+        return True
+
+    @staticmethod
+    def real_name_valid(real_name):
+        return True
+
+    @staticmethod
+    def username_valid(username):
+        return True
 
     def delete(self):
         root = Folder.query.filter_by(id=self.root_folder_id).first()
@@ -116,10 +186,11 @@ class User(db.Model):
 
     def update_info(self, username=None, password=None, email=None,
                     phone=None, real_name=None, student_id=None):
-        if password is not None:
-            self.dynamic_info.set_password(password)
+        if password:
+            return self.dynamic_info.set_password(password)
         for it in ['username', 'email', 'phone', 'real_name', 'student_id']:
-            if eval(it) is not None:
+            # print(f"self.dynamic_info.{it}_valid({it})")
+            if eval(it) and eval(f"self.dynamic_info.{it}_valid({it})"):
                 exec(f"self.dynamic_info.{it} = {it}")
         db.session.commit()
 

@@ -21,10 +21,9 @@ def login():
         password = request.form['password']
         user = UserDynamicInfo.query.filter_by(username=username).first()
         if user and user.check_password(password):
-            user.is_logged_in = True
-            user.last_login = datetime.utcnow()
-            db.session.commit()
             session['user_id'] = user.id
+            user = User.query.get_or_404(user.user_id)
+            user.static_info.login()
             return redirect(url_for('profile', user_id=user.id))
         else:
             flash('账号或密码错误')
@@ -99,8 +98,8 @@ def revise_info(user_id):
         phone = request.form.get('phone')
         student_id = request.form.get('student_id')
         user.update_info(
-            username=username, password=password, real_name=real_name, email=email,
-            phone=phone, student_id=student_id
+            username=username, password=password, real_name=real_name,
+            email=email, phone=phone, student_id=student_id
         )
         flash('信息修改成功')
         return redirect(url_for('profile', user_id=user.id))
@@ -219,18 +218,20 @@ def change_password(user_id):
     if request.method == 'POST':
         old_password = request.form.get('old_password')
         new_password = request.form.get('new_password')
-        if not user.check_password(old_password):
+        if not user.dynamic_info.check_password(old_password):
             flash('旧密码错误')
             return redirect(request.url)
-        if not (any(char.isdigit() for char in new_password) and any(char.isalpha() for char in new_password)):
-            flash('密码必须同时包含字母和数字')
-
-        elif not 6 <= len(new_password) <= 18:
-            flash('密码长度必须大于等于6位小于等于18位')
-        else:
-            user.set_password(new_password)
-            db.session.commit()
-            flash('密码修改成功')
-            return redirect(url_for('profile', user_id=user.id))
+        msg = user.update_info(password=new_password)
+        flash(msg)
+        return redirect(url_for('profile', user_id=user.id))
+        # if not (any(char.isdigit() for char in new_password) and any(char.isalpha() for char in new_password)):
+        #     flash('密码必须同时包含字母和数字')
+        # elif not 6 <= len(new_password) <= 18:
+        #     flash('密码长度必须大于等于6位小于等于18位')
+        # else:
+        #     user.set_password(new_password)
+        #     db.session.commit()
+        #     flash('密码修改成功')
+        #     return redirect(url_for('profile', user_id=user.id))
 
     return render_template('change_password.html', user=user)
