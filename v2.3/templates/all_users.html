@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="user-management">
+    <h2>用户管理</h2>
+    
+    <div class="current-user">
+        <h3>当前用户</h3>
+        <p>姓名: {{ user.dynamic_info.username }}</p>
+        <p>权限等级: {{ user.static_info.permission_level }}</p>
+    </div>
+
+    <div class="other-users">
+        <h3>所有用户</h3>
+        <ul>
+            {% for each_user in users %}
+            <li>
+                <span>姓名: {{ each_user.dynamic_info.username }}</span>
+                <span>权限等级: {{each_user.static_info.permission_level }}</span>
+                {% if user.static_info.permission_level >   each_user.static_info.permission_level %}
+                <form method="POST" action="{{ url_for('delete_user', user_id=user.id) }}" style="display:inline;">
+                    <button type="submit" class="btn btn-danger">注销</button>
+                </form>
+                {% else %}
+                <span class="no-delete">无权删除</span>
+                {% endif %}
+            </li>
+            {% endfor %}
+        </ul>
+    </div>
+</div>
+
+{% endblock %}

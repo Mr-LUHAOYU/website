@@ -6,6 +6,12 @@ body, h1, h2, p, ul, li, nav, header, footer {
 }
 
 body {
+    position: relative;
+    min-height: 100vh;
+    background-image: url("{{url_for('static', filename='background.jpg')}}");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat
     font-family: Arial, sans-serif;
     background-color: #f4f4f4;
     color: #333;
@@ -13,7 +19,10 @@ body {
     padding: 20px;
 }
 
+
 .container {
+    position: relative;
+    z-index: 1;
     max-width: 1000px;
     margin: auto;
     padding: 20px;
