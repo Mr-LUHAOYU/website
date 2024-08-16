@@ -6,6 +6,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import os
 import shutil
 from config import Config
+from sqlalchemy import event
 
 db = SQLAlchemy()
 
@@ -137,7 +138,7 @@ class UserDynamicInfo(db.Model):
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    uid = db.Column(db.Integer, default=100000, AUTO_INCREMENT=True)
+    uid = db.Column(db.Integer, default=100000)
     static_info = db.relationship('UserStaticInfo', uselist=False, backref='user')
     dynamic_info = db.relationship('UserDynamicInfo', uselist=False, backref='user')
 
@@ -148,6 +149,7 @@ class User(db.Model):
     @classmethod
     def register(cls, username, password, ):
         user = cls()
+        # user.uid = user.id
         # User.uid += 1
         db.session.add(user)
         db.session.commit()
@@ -160,7 +162,7 @@ class User(db.Model):
         db.session.add(usi)
         db.session.commit()
         path = Config.IMG_PATH(user.uid)
-        print(path)
+        # print(path)
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, 'w') as f:
             f.write('')
@@ -337,3 +339,12 @@ class Folder(db.Model):
         db.session.commit()
         os.makedirs(folder.PATH, exist_ok=True)
         return folder
+
+
+# 自动维护自增的 uid
+@event.listens_for(User, 'before_insert')
+def receive_before_insert(mapper, connection, target):
+    max_uid = db.session.query(db.func.max(User.uid)).scalar()
+    if max_uid is None:
+        max_uid = 100000  # 如果表为空，设置初始值为 99999
+    target.uid = max_uid + 1
