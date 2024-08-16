@@ -9,7 +9,7 @@ from config import Config
 
 @app.route('/')
 def index():
-    # print("here index")
+    session.clear()
     return render_template('index.html')
 
 
@@ -234,3 +234,60 @@ def change_password(user_id):
             return redirect(url_for('profile', user_id=user.id))
 
     return render_template('change_password.html', user=user)
+
+
+@app.route('/manage_users/<int:user_id>', methods=['GET', 'POST'])
+def manage_users(user_id):
+    # 获取所有用户
+    user = User.query.get_or_404(user_id)
+    users = User.query.all()
+    return render_template('all_users.html', user=user, users=users)
+
+
+@app.route('/heartbeat', methods=['POST'])
+def heartbeat():
+    data = request.get_json()
+    user_id = data.get('user_id')
+    user = User.query.get(user_id)
+    if user:
+        user.last_active = datetime.utcnow()
+        db.session.commit()
+    return '', 204
+
+
+def check_user_timeout():
+    # 检查用户是否超时（如10分钟）
+    timeout = datetime.utcnow() - datetime.timedelta(minutes=10)
+    offline_users = User.query.filter(User.last_active < timeout).all()
+    for user in offline_users:
+        user.online = False
+        db.session.commit()
+
+    return offline_users
+
+
+@app.route('/guest_login')
+def guest_login():
+    # 设置游客标记
+    session['guest'] = True
+    session['user_id'] = None  # 游客没有用户ID
+    return redirect(url_for('index')) # 重定向到主页或其他页面
+
+
+@app.route('/logout')
+def logout():
+    # 退出登录
+    user_id = session.get('user_id')
+    if user_id:
+        user = User.query.get(user_id)
+        user.logout()
+        db.session.commit()
+
+    session.clear()
+
+    return redirect(url_for('index')) # 重定向到主页或其他页面
+
+
+@app.route('/base')
+def base():
+    return render_template('base.html')

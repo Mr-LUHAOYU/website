@@ -38,6 +38,7 @@ class UserDynamicInfo(db.Model):
     real_name = db.Column(db.String(100))
     student_id = db.Column(db.String(10))
     root_folder_id = db.Column(db.Integer, db.ForeignKey('folders.id'))
+    last_active = db.Column(db.DateTime, default=datetime.utcnow)
 
     def set_password(self, password):
         self.password_hash = generate_password_hash(password)
