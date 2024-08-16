@@ -136,7 +136,7 @@ class UserDynamicInfo(db.Model):
 class User(db.Model):
     __tablename__ = 'user'
     id = db.Column(db.Integer, primary_key=True)
-    uid = db.Column(db.Integer, default=100000)
+    uid = db.Column(db.Integer, default=100000, AUTO_INCREMENT=True)
     static_info = db.relationship('UserStaticInfo', uselist=False, backref='user')
     dynamic_info = db.relationship('UserDynamicInfo', uselist=False, backref='user')
 
@@ -147,6 +147,7 @@ class User(db.Model):
     @classmethod
     def register(cls, username, password, ):
         user = cls()
+        # User.uid += 1
         db.session.add(user)
         db.session.commit()
         udi = UserDynamicInfo(username=username)
@@ -158,6 +159,7 @@ class User(db.Model):
         db.session.add(usi)
         db.session.commit()
         path = Config.IMG_PATH(user.uid)
+        print(path)
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, 'w') as f:
             f.write('')
