@@ -1,0 +1,127 @@
+.user-management {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f4f4f4;
+    border-radius: 8px; //圆角
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);  //阴影效果
+}
+
+h2, h3 {
+    text-align: center; //居中
+    color: #333; //字体颜色
+    margin-bottom: 20px; //下边距
+}
+
+.current-user, .other-users {
+    margin-bottom: 30px; //下边距
+}
+
+.avatar-container {
+    display: flex; //使子元素居中
+    justify-content: center; //子元素水平居中
+    margin-bottom: 15px;
+}
+
+.avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid #ddd;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.user-list {
+    list-style-type: none;
+    padding: 0;
+}
+
+.user-item {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    background-color: #fff;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    gap : 20px;
+}
+
+.user-info {
+    display: flex;
+    flex-grow: 1;//子元素宽度自动分配
+
+    margin-left: 5px;//左边距
+    gap: 0px;
+}
+
+.user-name{
+    display: block;
+    margin-right: 20px;
+    font-size: 1.2em; //字体大小
+    color: #555;
+    font-weight: bold; //加粗
+
+
+}
+.user-level {
+    display: block;
+    margin-left: 20px;
+    margin-right: 20px;
+    margin-top: 2px;
+    font-size: 1.2em;
+    color: #555;
+}
+
+
+.btn.btn-danger {
+    background-color: #e74c3c;
+    color: #fff;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 30px;
+}
+
+.btn.btn-danger:hover {
+    background-color: #c0392b;
+}
+
+.no-delete {
+    color: #999;
+    font-size: 0.9em;
+}
+
+.no-underline {
+    text-decoration: none;
+    color: inherit;
+}
+
+.no-underline:hover {
+    text-decoration: underline;
+}
+
+
+
+.btn-circle {
+    background-color: #f39c12;
+    border: none;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 31px;
+    margin: 0px 0px 0px 0px;
+    cursor: pointer;
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    line-height: 0px;
+    align-items: center;
+}
+
+
+

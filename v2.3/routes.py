@@ -177,9 +177,9 @@ def delete_account(user_id):
 
     if request.method == 'POST':
         # 删除用户的相关数据
+        flash(f'已成功删除{user.dynamic_info.username}')
         db.session.delete(user)
         db.session.commit()
-        flash('您的账户已被删除')
         return redirect(url_for('login'))
 
     return render_template('delete_account.html', user=user)
@@ -242,7 +242,7 @@ def manage_users(user_id):
     # 获取所有用户
     user = User.query.get_or_404(user_id)
     users = User.query.all()
-    return render_template('all_users.html', user=user, users=users)
+    return render_template('all_users.html', user=user, users=users, img_path=f'extras/{user.uid}/IMG.png')
 
 
 @app.route('/heartbeat', methods=['POST'])
@@ -292,3 +292,27 @@ def logout():
 @app.route('/base')
 def base():
     return render_template('base.html')
+
+
+@app.route('/all_users/<int:user_id>', methods=['POST'])
+def change_user_permission(user_id):
+    user = User.query.get(user_id)
+    each_user_id = request.form.get('each_user_id', type=int)
+    in_or_de = request.form.get('inORde', type=str)
+
+    if each_user_id is None:
+        flash('用户不存在')
+        return redirect(url_for('manage_users', user_id=user_id))
+    each_user = User.query.get(each_user_id)
+    if each_user.static_info.permission_level < user.static_info.permission_level:
+        if in_or_de == 'de':
+            each_user.static_info.permission_level -= 1
+            flash(f'用户{each_user.dynamic_info.username}权限降低成功')
+        elif in_or_de == 'in':
+            each_user.static_info.permission_level += 1
+            flash(f'用户{each_user.dynamic_info.username}权限提升成功')
+        db.session.commit()
+    else:
+        flash('权限修改失败，权限等级不足')
+
+    return redirect(url_for('manage_users', user_id=user_id))
