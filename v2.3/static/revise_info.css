@@ -1,0 +1,78 @@
+.profile-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.profile-header h1 {
+    font-size: 36px;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+
+.profile_wrapper {
+    background-color: #fff;
+    width: 100%;
+    max-width: 500px;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    border: 5px solid #c2e9fb; /* 增加的边框 */
+}
+
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 14px;
+    box-sizing: border-box;
+}
+
+
+.form-group input:focus {
+    outline: none;
+    border-color: #85b7d9;
+    box-shadow: 0 0 5px rgba(133, 183, 217, 0.5);
+}
+
+
+input[type="submit"] {
+    background: linear-gradient(135deg, #ff7e5f, #feb47b); /* 渐变背景色 */
+    border: none; /* 无边框 */
+    color: white; /* 白色文字 */
+    padding: 10px 20px; /* 内边距 */
+    text-align: center; /* 文字居中 */
+    text-decoration: none; /* 去除下划线 */
+    display: inline-block; /* 内联块元素 */
+    font-size: 16px; /* 字体大小 */
+    font-weight: bold; /* 加粗字体 */
+    border-radius: 25px; /* 圆角 */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    cursor: pointer; /* 鼠标悬停时显示手型 */
+    transition: all 0.3s ease; /* 添加过渡效果 */
+}
+
+input[type="submit"]:hover {
+    background: linear-gradient(135deg, #feb47b, #ff7e5f); /* 反转渐变色 */
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15); /* 鼠标悬停时增加阴影 */
+    transform: translateY(-2px); /* 悬停时轻微上移 */
+}
+
+

@@ -1,50 +1,47 @@
-{% extends "base.html" %}
+{% extends "background.html" %}
 
 {% block content %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='profile_css.css') }}">
-    <div class="container">
-    <h1>修改个人信息</h1>
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            <ul class="flashes">
-                {% for message in messages %}
-                    <li>{{ message }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    {% endwith %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='revise_info.css') }}">
+<body>
+    <div class="profile-container">
 
-    <div class="edit-profile">
+        <div class="profile_wrapper">
 
-        <form method="POST" action="{{ url_for('profile', user_id=user.id) }}">
-            <div class="form-group">
-                <label for="username">用户名:</label>
-                <input type="text" name="username" id="username" value="{{ user.dynamic_info.username }}" required>
+            <div class="profile-header">
+                <h1>修改个人信息</h1>
             </div>
 
-            <div class="form-group">
-                <label for="real_name">真实姓名:</label>
-                <input type="text" name="real_name" id="real_name" value="{{ user.dynamic_info.real_name or '' }}">
-            </div>
 
-            <div class="form-group">
-                <label for="real_name">学号:</label>
-                <input type="text" name="student_id" id="student_id" value="{{ user.dynamic_info.student_id or '' }}">
-            </div>
+            <form method="POST" action="{{ url_for('profile', user_id=user.id) }}">
+                <div class="form-group">
+                    <label for="username">用户名:</label>
+                    <input type="text" name="username" id="username" value="{{ user.dynamic_info.username }}" required>
+                </div>
 
-            <div class="form-group">
-                <label for="email">邮箱:</label>
-                    <input type="email" name="email" id="email" value="{{ user.dynamic_info.email or '' }}">
-            </div>
+                <div class="form-group">
+                    <label for="real_name">真实姓名:</label>
+                    <input type="text" name="real_name" id="real_name" value="{{ user.dynamic_info.real_name or '' }}">
+                </div>
 
-            <div class="form-group">
-                <label for="phone">手机号:</label>
-                <input type="text" name="phone" id="phone" value="{{ user.dynamic_info.phone or '' }}">
-            </div>
-            <input type="submit" value="保存更改">
-        </form>
+                <div class="form-group">
+                    <label for="real_name">学号:</label>
+                    <input type="text" name="student_id" id="student_id" value="{{ user.dynamic_info.student_id or '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">邮箱:</label>
+                        <input type="email" name="email" id="email" value="{{ user.dynamic_info.email or '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">手机号:</label>
+                    <input type="text" name="phone" id="phone" value="{{ user.dynamic_info.phone or '' }}">
+                </div>
+                <input type="submit" value="保存更改">
+            </form>
+
+        </div>
 
     </div>
-
-</div>
+</body>
 {% endblock %}

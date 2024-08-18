@@ -1,60 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>主页</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-</head>
+{% extends "background.html" %}
+
+{% block content %}
+
 <body>
+
     <div class="container">
-        <header>
-            <h1>Welcome Everyone!</h1>
-        </header>
+        <div class="content-wrapper">
+            <div class="header">
+                <h1 class="welcome-message">Welcome Everyone!</h1>
+            </div>
 
-<!--        <img src="{{url_for('static',filename='background.jpg')}}" width="100%" alt="background",class="background">-->
+           <div class="button-wrapper">
+                <div class="arrow right-arrow"></div>
+                <button class="start-button">
+                    <a href="login">Start</a>
+                </button>
+                <div class="arrow left-arrow"></div>
 
-        <div class="panel-container">
-            <section class="panel">
-                <h2>登录</h2>
-                <p>已有账户？立即登录。</p>
-                <a class="btn" href="{{ url_for('login') }}">登录</a>
-            </section>
-
-            <section class="panel">
-                <h2>注册</h2>
-                <p>还没有账户？立即注册。</p>
-                <a class="btn" href="{{ url_for('register') }}">注册</a>
-            </section>
-
-<!--            <section class="panel">-->
-<!--                <h2>我的信息</h2>-->
-<!--                {% if session.get('user_id') %}-->
-<!--&lt;!&ndash;                <p>{{ session['user_id'] }}</p>&ndash;&gt;-->
-
-<!--                <p>查看或编辑您的个人信息。</p>-->
-<!--                <a class="btn" href="{{ url_for('profile', user_id=session['user_id']) }}">我的信息</a>-->
-<!--                {% else %}-->
-<!--                <p>请先登录以查看您的信息。</p>-->
-<!--                {% endif %}-->
-<!--            </section>-->
-
-            <section class="panel">
-                <h2>搜索</h2>
-                <p>查找其他用户或文件。</p>
-                <a class="btn" href="{{ url_for('search') }}">搜索</a>
-            </section>
-
-<!--            <section class="panel">-->
-<!--                <h2>登出</h2>-->
-<!--                <a class="btn" href="{{ url_for('logout') }}">搜索</a>-->
-<!--            </section>-->
+            </div>
 
         </div>
     </div>
 
-<!--    <footer>-->
-<!--        <p>&copy; 2024 summer</p>-->
-<!--    </footer>-->
+
 </body>
-</html>
+
+
+{% endblock %}

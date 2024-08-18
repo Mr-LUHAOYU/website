@@ -1,18 +1,27 @@
-{% extends "base.html" %}
+{% extends "background.html" %}
 
 {% block content %}
-<h2>注册</h2>
-<form method="POST">
-    <label for="username">用户名:</label>
-    <input type="text" name="username" id="username" required>
-    <br>
-    <label for="password">密码:</label>
-    <input type="password" name="password" id="password" required>
-    <br>
-    <label for="confirm_password">确认密码:</label>
-    <input type="password" name="confirm_password" id="confirm_password" required>
-    <br>
-    <input type="submit" value="注册">
-</form>
-<a href="{{ url_for('login') }}">已有账号? 登录</a>
+    <title>Sign up</title>
+
+
+    <div class="login-wrapper">
+        <form method="POST" action="{{ url_for('register') }}">
+        <div class="header">Sign up</div>
+        <div class="form-wrapper">
+            <input type="text" name="username" placeholder="username" class="input-item" required>
+            <input type="password" name="password" placeholder="password" class="input-item" required>
+            <input type="password" name="confirm_password" placeholder="confirm password" class="input-item" required>
+
+            <button type="submit" class="btn">register</button>
+
+        </div>
+        </form>
+        <div class="msg">
+            Already have an account?
+            <a href="{{ url_for('login') }}">Sign in</a>
+        </div>
+
+    </div>
+
+
 {% endblock %}

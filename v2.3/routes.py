@@ -7,6 +7,7 @@ from datetime import datetime
 from config import Config
 import markdown2
 
+
 @app.route('/')
 def index():
     session.clear()

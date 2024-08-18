@@ -1,78 +1,91 @@
-{% extends "base.html" %}
+{% extends "background.html" %}
 
 {% block content %}
-    <link rel="stylesheet" href="{{ url_for('static', filename='profile_css.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='base_css.css') }}">
-    <div class="profile-page">
-    <h2>{{ user.dynamic_info.username }}的个人主页</h2>
 
-    <!-- 显示用户头像 -->
-    <div class="avatar-container">
-        <img src="{{url_for('static',filename=img_path)}}" alt="头像" class="avatar">
-    </div>
+<link rel="stylesheet" href="{{ url_for('static', filename='profile.css') }}">
+<title>Profile</title>
+<body>
+    <br>
+    <div class = "profile-container">
+        <div class = "profile-wrapper">
+            <div class="profile-header">
+                <h1>{{ user.dynamic_info.username }}的个人主页</h1>
+            </div>
 
-    <button id="uploadAvatarBtn">上传头像</button>
+            <div class="avatar-container">
+                <img src="{{url_for('static',filename=img_path)}}" alt="头像" class="avatar">
+            </div>
 
-    <!-- 模态窗口 -->
-    <div id="uploadAvatarModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h3>上传新头像</h3>
-            <form method="POST" action="{{ url_for('change_img', user_id=user.id) }}" enctype="multipart/form-data">
-                <label for="file">选择文件:</label>
-                <input type="file" name="file" id="file" accept="image/*" required>
+            <button id="uploadAvatarBtn">上传头像</button>
+
+            <!-- 模态窗口 -->
+            <div id="uploadAvatarModal" class="modal">
+                <div class="modal-content">
+                    <span class="close">&times;</span>
+                    <h2>上传新头像</h2>
+                    <br>
+                    <form method="POST" action="{{ url_for('change_img', user_id=user.id) }}" enctype="multipart/form-data">
+                        <label for="file">选择文件:</label>
+                        <input type="file" name="file" id="file" accept="image/*" required>
+                        <br>
+                        <input type="submit" value="上传" class="btn">
+                    </form>
+                </div>
+            </div>
+
+
+            <div class="user-bio">
                 <br>
-                <input type="submit" value="上传">
-            </form>
+                <h2>个人简介</h2>
+                <br>
+                <div class="bio-content">
+                    {{ bio_markdown|safe }}
+                </div>
+                <br>
+            </div>
+
+
+            <button id="uploadBioBtn">修改个人简介</button>
+
+            <!-- 模态窗口 -->
+            <div id="uploadBioModal" class="modal">
+                <div class="modal-content">
+                    <span class="closeBio">&times;</span>
+                    <h2>上传你的简介</h2><br>
+                    <form method="POST" action="{{ url_for('update_bio', user_id=user.id) }}">
+                    <textarea name="user_bio_markdown" id="user_bio_markdown" rows="5"></textarea>
+                    <br>
+                    <input type="submit" value="保存" class="btn btn-primary">
+                </form>
+                </div>
+            </div>
+
+            <!-- 用户信息 -->
+            <div class="user-info">
+                <p><span class="info-label">真实姓名:</span> {{ user.dynamic_info.real_name or '未填写' }}</p>
+                <p><span class="info-label">邮箱:</span> {{ user.dynamic_info.email or '未填写' }}</p>
+                <p><span class="info-label">手机号:</span> {{ user.dynamic_info.phone or '未填写' }}</p>
+                <p><span class="info-label">学号:</span> {{ user.dynamic_info.student_id or '未填写' }}</p>
+                <p><span class="info-label">注册时间:</span> {{ user.static_info.registered_on }}</p>
+                <p><span class="info-label">上次登录时间:</span> {{ user.static_info.last_login }}</p>
+                <p><span class="info-label">权限等级:</span> {{ user.static_info.permission_level }}</p>
+                <br>
+            </div>
+
+            <a href="{{ url_for('revise_info', user_id=user.id) }}" class="btn btn-primary">修改个人信息</a>
+
+            <a href="{{ url_for('change_password', user_id=user.id) }}" class="btn btn-primary">修改密码</a>
+
+            <a href="{{ url_for('user_filelist', user_id=user.id) }}" class="btn btn-primary">文件列表</a>
+
+            <a href="{{ url_for('manage_users', user_id=user.id) }}" class="btn btn-primary">所有人</a>
+
+            </div>
+
+
+
         </div>
-    </div>
-
-
-    <div class="user-bio">
-        <h3>个人简介</h3>
-        <div class="bio-content">
-            {{ bio_markdown|safe }}
-        </div>
-    </div>
-
-
-    <button id="uploadBioBtn">修改个人简介</button>
-
-    <!-- 模态窗口 -->
-    <div id="uploadBioModal" class="modal">
-        <div class="modal-content">
-            <span class="closeBio">&times;</span>
-            <h3>上传你的简介</h3>
-            <form method="POST" action="{{ url_for('update_bio', user_id=user.id) }}">
-            <textarea name="user_bio_markdown" id="user_bio_markdown" rows="5"></textarea>
-            <br>
-            <input type="submit" value="保存" class="btn btn-primary">
-        </form>
-        </div>
-    </div>
-
-    <!-- 用户信息 -->
-    <div class="user-info">
-        <p><span class="info-label">真实姓名:</span> {{ user.dynamic_info.real_name or '未填写' }}</p>
-        <p><span class="info-label">邮箱:</span> {{ user.dynamic_info.email or '未填写' }}</p>
-        <p><span class="info-label">手机号:</span> {{ user.dynamic_info.phone or '未填写' }}</p>
-        <p><span class="info-label">学号:</span> {{ user.dynamic_info.student_id or '未填写' }}</p>
-        <p><span class="info-label">注册时间:</span> {{ user.static_info.registered_on }}</p>
-        <p><span class="info-label">上次登录时间:</span> {{ user.static_info.last_login }}</p>
-        <p><span class="info-label">权限等级:</span> {{ user.static_info.permission_level }}</p>
-    </div>
-
-    <a href="{{ url_for('revise_info', user_id=user.id) }}" class="btn btn-primary">修改个人信息</a>
-
-    <a href="{{ url_for('change_password', user_id=user.id) }}" class="btn btn-primary">修改密码</a>
-
-    <a href="{{ url_for('user_filelist', user_id=user.id) }}" class="btn btn-primary">文件列表</a>
-
-    <a href="{{ url_for('manage_users', user_id=user.id) }}" class="btn btn-primary">所有人</a>
-
-    </div>
-
-
-    <script src="{{ url_for('static', filename='js/modal.js') }}"></script>
+</body>
+<script src="{{ url_for('static', filename='js/modal.js') }}"></script>
 
 {% endblock %}

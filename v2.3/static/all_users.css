@@ -1,20 +1,31 @@
 .user-management {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    background-color: #f4f4f4;
-    border-radius: 8px; //圆角
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);  //阴影效果
+
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
 }
 
-h2, h3 {
+h1,h2, h3 {
     text-align: center; //居中
     color: #333; //字体颜色
     margin-bottom: 20px; //下边距
 }
 
+.user-info-wrapper {
+    background-color: #fff;
+    width: 100%;
+    max-width: 650px;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    border: 5px solid #c2e9fb; /* 增加的边框 */
+}
+
 .current-user, .other-users {
-    margin-bottom: 30px; //下边距
+    margin-bottom: 30px; //下边距x
 }
 
 .avatar-container {
@@ -37,16 +48,17 @@ h2, h3 {
 }
 
 .user-item {
-    display: flex;
+    display: flex; //
     align-items: center;
-    flex-wrap: wrap;
-    justify-content: space-between;
+    flex-wrap: wrap; //子元素换行
+    justify-content: space-between; //子元素水平居中
     background-color: #fff;
     margin-bottom: 15px;
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     gap : 20px;
+
 }
 
 .user-info {
@@ -70,7 +82,7 @@ h2, h3 {
     display: block;
     margin-left: 20px;
     margin-right: 20px;
-    margin-top: 2px;
+    margin-top: 0px;
     font-size: 1.2em;
     color: #555;
 }
@@ -84,6 +96,7 @@ h2, h3 {
     border-radius: 5px;
     cursor: pointer;
     margin-left: 30px;
+    margin-top: 0px;
 }
 
 .btn.btn-danger:hover {

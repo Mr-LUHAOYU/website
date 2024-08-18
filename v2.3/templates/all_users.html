@@ -1,64 +1,69 @@
-{% extends "base.html" %}
+{% extends "background.html" %}
 
 {% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='all_users_css.css') }}">
-<div class="user-management">
-    <h2>用户管理</h2>
+<link rel="stylesheet" href="{{ url_for('static', filename='all_users.css') }}">
 
-    <!-- 当前用户信息 -->
-    <div class="current-user">
-        <h3>当前用户</h3>
-        <div class="avatar-container">
-            <img src="{{ url_for('static', filename=img_path) }}" alt="头像" class="avatar">
-        </div>
-        <p><strong>姓名:</strong> {{ user.dynamic_info.username }}</p>
-        <p><strong>权限等级:</strong> {{ user.static_info.permission_level }}</p>
-    </div>
+<body>
+    <div class="user-management">
 
-    <!-- 所有用户列表 -->
-    <div class="other-users">
-        <h3>所有用户</h3>
-        <ul class="user-list">
-            {% for each_user in users %}
-<!--            如果用户是当前用户，则不显示信息-->
-            {% if  not (each_user.id == user.id)  %}
-            <li class="user-item">
+
+        <div class="user-info-wrapper">
+            <h1>用户管理</h1>
+        <!-- 当前用户信息 -->
+            <div class="current-user">
+                <h3>当前用户</h3>
                 <div class="avatar-container">
-                    <img src="{{ url_for('static', filename='extras/{}/IMG.png'.format(each_user.uid)) }}" alt="头像" class="avatar">
+                    <img src="{{ url_for('static', filename=img_path) }}" alt="头像" class="avatar">
                 </div>
-                <div class="user-info">
-                    <span class="user-name">
-                        <strong>姓名:</strong>
-                        <a href="{{ url_for('profile', user_id=each_user.id) }}" class="no-underline">{{ each_user.dynamic_info.username }}</a>
-                    </span>
-                    <form method="POST" action="{{ url_for('change_user_permission', user_id=user.id) }}" class="change-level-form">
-                        <input type="number" id="each_user_id" name="each_user_id" value="{{ each_user.id }}" hidden>
-                        <input type="string" id="inORde" name="inORde" value="in" hidden>
-                        <button type="submit" class="btn-circle">+</button>
-                    </form>
-                    <span class="user-level">
-                        <strong>level:</strong> {{ each_user.static_info.permission_level }}
-                    </span>
-                    <form method="POST" action="{{ url_for('change_user_permission', user_id=user.id) }}" class="change-level-form">
-                        <input type="number" id="each_user_id1" name="each_user_id" value="{{ each_user.id }}" hidden>
-                        <input type="string" id="inORde1" name="inORde" value="de" hidden>
-                        <button type="submit" class="btn-circle">-</button>
-                    </form>
+                <p><strong>姓名:</strong> {{ user.dynamic_info.username }}</p>
+                <p><strong>权限等级:</strong> {{ user.static_info.permission_level }}</p>
+            </div>
 
-                    {% if user.static_info.permission_level >= each_user.static_info.permission_level %}
-                    <form method="POST" action="{{ url_for('delete_account', user_id=each_user.id) }}" class="delete-form">
-                        <button type="submit" class="btn btn-danger">注销</button>
-                    </form>
-                    {% else %}
-                    <span class="no-delete">无权删除</span>
+            <!-- 所有用户列表 -->
+            <div class="other-users">
+                <h3>所有用户</h3>
+                <ul class="user-list">
+                    {% for each_user in users %}
+        <!--            如果用户是当前用户，则不显示信息-->
+                    {% if  not (each_user.id == user.id)  %}
+                    <li class="user-item">
+                        <div class="avatar-container">
+                            <img src="{{ url_for('static', filename='extras/{}/IMG.png'.format(each_user.uid)) }}" alt="头像" class="avatar">
+                        </div>
+                        <div class="user-info">
+                            <span class="user-name">
+                                <strong>姓名:</strong>
+                                <a href="{{ url_for('profile', user_id=each_user.id) }}" class="no-underline">{{ each_user.dynamic_info.username }}</a>
+                            </span>
+                            <form method="POST" action="{{ url_for('change_user_permission', user_id=user.id) }}" class="change-level-form">
+                                <input type="number" id="each_user_id" name="each_user_id" value="{{ each_user.id }}" hidden>
+                                <input type="string" id="inORde" name="inORde" value="in" hidden>
+                                <button type="submit" class="btn-circle">+</button>
+                            </form>
+                            <span class="user-level">
+                                <strong>level:</strong> {{ each_user.static_info.permission_level }}
+                            </span>
+                            <form method="POST" action="{{ url_for('change_user_permission', user_id=user.id) }}" class="change-level-form">
+                                <input type="number" id="each_user_id1" name="each_user_id" value="{{ each_user.id }}" hidden>
+                                <input type="string" id="inORde1" name="inORde" value="de" hidden>
+                                <button type="submit" class="btn-circle">-</button>
+                            </form>
+
+                            {% if user.static_info.permission_level >= each_user.static_info.permission_level %}
+                            <form method="POST" action="{{ url_for('delete_account', user_id=each_user.id) }}" class="delete-form">
+                                <button type="submit" class="btn btn-danger">注销</button>
+                            </form>
+                            {% else %}
+                            <span class="no-delete">无权删除</span>
+                            {% endif %}
+                        </div>
+                    </li>
                     {% endif %}
-                </div>
-            </li>
-            {% endif %}
-            {% endfor %}
-        </ul>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
     </div>
-</div>
-
+</body>
 
 {% endblock %}

@@ -1,0 +1,103 @@
+.container {
+    height: 100%;
+    display: flex;// 弹性布局
+    flex-direction: column; // 垂直排列
+    align-items: center; // 居中
+    justify-content: center;//
+    align-items: center;
+    height: 100vh; /* 使容器高度为整个视口高度 */
+
+}
+.search-wrapper {
+    background-color: #fff;
+    width: 500px;
+    height: auto;
+    border-radius: 15px;
+    padding: 0 50px;
+    position: relative;
+    left: 50%;
+    top: 50%;
+    transform: translate(-135%, -100%);
+    border: 5px solid #c2e9fb; /* 增加的边框 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: -400px;
+    margin-bottom: 50px;
+
+}
+
+.search-wrapper h1 {
+    font-size: 36px;
+    color: #333;
+    margin-top: 50px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: bold;
+
+}
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+}
+
+select, input[type="text"] {
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    font-size: 16px;
+}
+
+input[type="submit"] {
+    background: linear-gradient(135deg, #ff7e5f, #feb47b); /* 渐变背景色 */
+    border: none; /* 无边框 */
+    color: white; /* 白色文字 */
+    padding: 10px 20px; /* 内边距 */
+    text-align: center; /* 文字居中 */
+    text-decoration: none; /* 去除下划线 */
+    display: inline-block; /* 内联块元素 */
+    font-size: 16px; /* 字体大小 */
+    font-weight: bold; /* 加粗字体 */
+    border-radius: 25px; /* 圆角 */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    cursor: pointer; /* 鼠标悬停时显示手型 */
+    transition: all 0.3s ease; /* 添加过渡效果 */
+}
+
+input[type="submit"]:hover {
+     background: linear-gradient(135deg, #feb47b, #ff7e5f); /* 反转渐变色 */
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15); /* 鼠标悬停时增加阴影 */
+    transform: translateY(-2px); /* 悬停时轻微上移 */
+}
+
+h3 {
+    margin-top: 20px;
+    font-size: 20px;
+    color: #333;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+li {
+    margin-bottom: 10px;
+}
+
+a {
+    text-decoration: none;
+    color: #007bff;
+    font-size: 16px;
+}
+
+a:hover {
+    text-decoration: underline;
+    color: #0056b3;
+}

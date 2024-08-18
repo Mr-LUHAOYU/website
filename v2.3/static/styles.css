@@ -6,9 +6,19 @@ body, h1, h2, p, ul, li, nav, header, footer {
 }
 
 body {
+    background-image: url("../static/background1.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: rgba(255, 255, 255, 1.0);
+
     position: relative;
     min-height: 100vh;
-    background-image: url("{{url_for('static', filename='background.jpg')}}");
+
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat
@@ -19,21 +29,31 @@ body {
     padding: 20px;
 }
 
+/*.content {
+    background-color: rgba(255, 255, 255, 0.1);
+    padding: 20px;
+    border-radius: 8px;
+    max-width: 800px;
+    margin: auto;
+    margin-top: 50px;
+}*/
 
 .container {
     position: relative;
     z-index: 1;
-    max-width: 1000px;
+    max-width: 500px;
     margin: auto;
     padding: 20px;
-    background: #fff;
+    /*background: #fff;*/background: linear-gradient(135deg, #add8e6, #87ceeb);
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    border-radius: 8px; //圆角
+
 }
 
 /* 页眉样式 */
 header {
     text-align: center;
-    padding: 20px 0;
+    padding: 0px 0;
     background-color: #333;
     color: #fff;
     margin-bottom: 30px;
@@ -48,10 +68,13 @@ header h1 {
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
+    flex-direction: column;
+    border-radius: 8px; //圆角
 }
 
 /* 每个功能板块的样式 */
 .panel {
+
     background-color: #fff;
     border: 1px solid #ddd;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -61,6 +84,7 @@ header h1 {
     min-width: 220px;
     max-width: 300px;
     text-align: center;
+    border-radius: 8px; //圆角
 }
 
 .panel h2 {
