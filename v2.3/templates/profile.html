@@ -27,6 +27,30 @@
         </div>
     </div>
 
+
+    <div class="user-bio">
+        <h3>个人简介</h3>
+        <div class="bio-content">
+            {{ bio_markdown|safe }}
+        </div>
+    </div>
+
+
+    <button id="uploadBioBtn">修改个人简介</button>
+
+    <!-- 模态窗口 -->
+    <div id="uploadBioModal" class="modal">
+        <div class="modal-content">
+            <span class="closeBio">&times;</span>
+            <h3>上传你的简介</h3>
+            <form method="POST" action="{{ url_for('update_bio', user_id=user.id) }}">
+            <textarea name="user_bio_markdown" id="user_bio_markdown" rows="5"></textarea>
+            <br>
+            <input type="submit" value="保存" class="btn btn-primary">
+        </form>
+        </div>
+    </div>
+
     <!-- 用户信息 -->
     <div class="user-info">
         <p><span class="info-label">真实姓名:</span> {{ user.dynamic_info.real_name or '未填写' }}</p>

@@ -5,7 +5,7 @@ from app import app, db
 from models import User, File, UserDynamicInfo, UserStaticInfo
 from datetime import datetime
 from config import Config
-
+import markdown2
 
 @app.route('/')
 def index():
@@ -62,6 +62,13 @@ def register():
 def profile(user_id):
     # print("here profile")
     user = User.query.get_or_404(user_id)
+    # 读取/static/extras/user.uid/BIO.txt文件，并渲染为markdown
+    user_bio_markdown = ""
+    with open(os.path.join(app.static_folder, 'extras', str(user.uid), 'BIO.txt'), 'r', encoding='utf-8') as f:
+        user_bio_markdown = f.read()
+
+    user_bio_markdown = markdown2.markdown(user_bio_markdown)
+    # user_bio_markdown = markdown2.markdown(user.bio or "这个用户还没有填写个人简介")
     ##########################################
     logged_in_user_id = session.get('user_id')
     if logged_in_user_id != user_id:
@@ -69,7 +76,7 @@ def profile(user_id):
         if request.method == 'POST':
             flash('您无权修改此用户的信息')
             return redirect(url_for('profile', user_id=user_id))
-        return render_template('profile.html', user=user, can_edit=False)
+        return render_template('profile.html', user=user, can_edit=False, bio_markdown=user_bio_markdown)
     ##################################################################
     username = request.form.get('username')
     password = request.form.get('password')
@@ -83,7 +90,7 @@ def profile(user_id):
     )
     ##################################################################
     return render_template('profile.html', user=user,
-                           can_edit=True, img_path=f'extras/{user.uid}/IMG.png')
+                           can_edit=True, img_path=f'extras/{user.uid}/IMG.png', bio_markdown=user_bio_markdown)
 
 
 @app.route('/revise_info/<int:user_id>', methods=['GET', 'POST'])
@@ -177,9 +184,9 @@ def delete_account(user_id):
 
     if request.method == 'POST':
         # 删除用户的相关数据
-        flash(f'已成功删除{user.dynamic_info.username}')
-        db.session.delete(user)
-        db.session.commit()
+        # username = user.dynamic_info.username
+        # flash(f'已成功删除{username}')
+        user.delete()
         return redirect(url_for('login'))
 
     return render_template('delete_account.html', user=user)
@@ -316,3 +323,18 @@ def change_user_permission(user_id):
         flash('权限修改失败，权限等级不足')
 
     return redirect(url_for('manage_users', user_id=user_id))
+
+
+@app.route('/update_bio/<int:user_id>', methods=['POST'])
+def update_bio(user_id):
+    user = User.query.get(user_id)
+    user_bio_markdown = ""
+    with open(os.path.join(app.static_folder, 'extras', str(user.uid), 'BIO.txt'), 'r', encoding='utf-8') as f:
+        user_bio_markdown = f.read()
+
+    user_bio_markdown = request.form.get('user_bio_markdown', user_bio_markdown)
+
+    with open(os.path.join(app.static_folder, 'extras', str(user.uid), 'BIO.txt'), 'w', encoding='utf-8') as f:
+        f.write(user_bio_markdown)
+    flash('个人简介更新成功')
+    return redirect(url_for('profile', user_id=user.id))

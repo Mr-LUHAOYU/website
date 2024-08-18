@@ -45,7 +45,7 @@
                         <button type="submit" class="btn-circle">-</button>
                     </form>
 
-                    {% if user.static_info.permission_level > each_user.static_info.permission_level %}
+                    {% if user.static_info.permission_level >= each_user.static_info.permission_level %}
                     <form method="POST" action="{{ url_for('delete_account', user_id=each_user.id) }}" class="delete-form">
                         <button type="submit" class="btn btn-danger">注销</button>
                     </form>
