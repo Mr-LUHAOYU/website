@@ -84,11 +84,17 @@
         }
         a {
             text-decoration-line: none;
+            color: #fff;
             /*color: #abc1ee;*/
         }
+        a:hover,
+        a:focus { // 鼠标悬停或聚焦时
+            background-color: #555; /* 鼠标悬停时的背景色 */
+            color: #ffeb3b; /* 鼠标悬停时的文字颜色 */
+        }
+
         .content-wrapper {
             text-align: center;
-
         }
 
         h1 {
@@ -195,21 +201,8 @@
             margin: 0 15px; /* 左右外边距 */
         }
 
-        a {
-            text-decoration: none; /* 去掉下划线 */
-            color: #fff; /* 白色文字 */
-            font-size: 16px; /* 字体大小 */
-            font-weight: bold; /* 加粗字体 */
-            transition: color 0.3s ease, background-color 0.3s ease; /* 平滑过渡效果 */
-            padding: 8px 12px; /* 内边距 */
-            border-radius: 5px; /* 圆角边框 */
-        }
 
-        a:hover,
-        a:focus {
-            background-color: #555; /* 鼠标悬停时的背景色 */
-            color: #ffeb3b; /* 鼠标悬停时的文字颜色 */
-        }
+
 
     </style>
 <body>

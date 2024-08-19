@@ -171,7 +171,7 @@ def search():
         query = request.form.get('query')
         results = []
         if search_type == 'user':
-            results = User.query.filter(User.username.contains(query)).all()
+            results = User.query.filter(User.contains(query)).all()
         elif search_type == 'file':
             results = File.query.filter(File.filename.contains(query)).order_by(File.download_count.desc()).all()
         print(results)
