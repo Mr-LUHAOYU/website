@@ -9,25 +9,16 @@
     <h1>User Files</h1>
 </div>
 
-
-<ul>
-    <!-- 用户文件列表 -->
-<!--    <div class="user-files">-->
-<!--        <h3>用户文件</h3>-->
-<!--        <ul class="file-list">-->
-<!--            {% for file in user.files %}-->
-<!--                <li class="file-item">-->
-<!--                    <a href="{{ url_for('download', file_id=file.id) }}" class="file-link">-->
-<!--                        <span class="file-name">{{ file.filename }}</span>-->
-<!--                    </a>-->
-<!--                    <span class="download-count">下载次数: {{ file.download_count }}</span>-->
-<!--                </li>-->
-<!--            {% else %}-->
-<!--                <li class="no-files">该用户还没有上传文件</li>-->
-<!--            {% endfor %}-->
-<!--        </ul>-->
-<!--    </div>-->
-</ul>
+<div class="container">
+    <div class="login-wrapper">
+        <button class="btn">
+            <a href="{{ url_for('upload') }}">
+                Upload File
+            </a>
+        </button>
+    </div>
+{{ files | safe }}
+</div>
 
 </body>
 {% endblock %}
