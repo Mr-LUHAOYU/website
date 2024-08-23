@@ -188,7 +188,7 @@ def delete_account(user_id):
         # username = user.dynamic_info.username
         # flash(f'已成功删除{username}')
         user.delete()
-        return redirect(url_for('login'))
+        # return redirect(url_for('login'))
 
     return render_template('delete_account.html', user=user)
 

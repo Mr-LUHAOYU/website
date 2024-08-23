@@ -162,7 +162,6 @@ class User(db.Model):
         db.session.add(usi)
         db.session.commit()
         path = Config.IMG_PATH(user.uid)
-        # print(path)
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, 'w') as f:
             f.write('')
@@ -184,8 +183,8 @@ class User(db.Model):
     def delete(self):
         self.dynamic_info.delete()
         self.static_info.delete()
-        os.rmdir(os.path.dirname(Config.IMG_PATH(self.uid)))
-        os.rmdir(os.path.dirname(Config.UPLOAD_FOLDER(self.uid)))
+        shutil.rmtree(os.path.dirname(Config.IMG_PATH(self.uid)))
+        shutil.rmtree(os.path.dirname(Config.UPLOAD_FOLDER(self.uid)))
         db.session.delete(self)
         db.session.commit()
 
