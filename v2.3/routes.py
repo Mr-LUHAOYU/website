@@ -121,7 +121,8 @@ def user_filelist(user_id):
     user = User.query.get_or_404(user_id)
     # files = user.files.order_by(File.uploaded_on.desc()).all()
     # print(files)
-    return render_template('user_filelist.html', user=user, files=None)
+    file_html = user.to_html
+    return render_template('user_filelist.html', user=user, files=file_html)
 
 
 @app.route('/upload', methods=['GET', 'POST'])
@@ -280,7 +281,7 @@ def guest_login():
     # 设置游客标记
     session['guest'] = True
     session['user_id'] = None  # 游客没有用户ID
-    return redirect(url_for('index')) # 重定向到主页或其他页面
+    return redirect(url_for('index'))  # 重定向到主页或其他页面
 
 
 @app.route('/logout')
@@ -294,7 +295,7 @@ def logout():
 
     session.clear()
 
-    return redirect(url_for('index')) # 重定向到主页或其他页面
+    return redirect(url_for('index'))  # 重定向到主页或其他页面
 
 
 @app.route('/base')

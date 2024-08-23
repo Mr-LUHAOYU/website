@@ -210,7 +210,7 @@ class User(db.Model):
     def upload(self, file, folder="root", tags=None):
         if folder == "root":
             folder = Folder.query.filter_by(id=self.dynamic_info.root_folder_id).first()
-        if File.create(file, folder, self, tags):
+        if File.create(file, folder.id, self.id, tags):
             self.static_info.upload_count += 1
             db.session.commit()
             return True
@@ -222,6 +222,11 @@ class User(db.Model):
 
     def change_img(self, img):
         self.dynamic_info.change_img(img)
+
+    @property
+    def to_html(self):
+        root_folder = Folder.query.filter_by(id=self.dynamic_info.root_folder_id).first()
+        return root_folder.to_html
 
 
 class File(db.Model):
@@ -246,7 +251,8 @@ class File(db.Model):
 
     @property
     def PATH(self) -> str:
-        return self.folder.PATH + '/' + self.filename
+        parent_folder = Folder.query.filter_by(id=self.folder_id).first()
+        return parent_folder.PATH + '/' + self.filename
 
     def delete(self, first=True):
         if first:
@@ -267,15 +273,20 @@ class File(db.Model):
         db.session.commit()
 
     @classmethod
-    def create(cls, input_file, folder, author, tags=None):
-        file = cls(filename=input_file.filename, folder=folder, author=author)
-        author.dynamic_info.files.append(file)
+    def create(cls, input_file, folder_id, author_id, tags=None):
+        file = cls(filename=input_file.filename, folder_id=folder_id, author_id=author_id)
+        author = User.query.filter_by(id=author_id).first()
+        # author.dynamic_info.files.append(file)
         if tags is not None:
             file.tags = tags
-        input_file.save(os.path.join(Config.UPLOAD_FOLDER(author.uid), file.PATH))
+        input_file.save(file.PATH)
         db.session.add(file)
         db.session.commit()
         return file
+
+    @property
+    def to_html(self):
+        return f"<li><span class='file'>{self.filename}</span></li>"
 
 
 class Folder(db.Model):
@@ -338,6 +349,16 @@ class Folder(db.Model):
         db.session.commit()
         os.makedirs(folder.PATH, exist_ok=True)
         return folder
+
+    @property
+    def to_html(self):
+        html = f"<li><span class='folder'>{self.folder_name}</span><ul>"
+        for child_folder in self.children:
+            html += child_folder.to_html
+        for file in self.files:
+            html += file.to_html
+        html += "</ul></li>"
+        return html
 
 
 # 自动维护自增的 uid
