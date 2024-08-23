@@ -20,3 +20,4 @@ if __name__ == '__main__':
         db.session.execute(text("UPDATE user SET uid = 100000"))
         # db.session.commit()
     app.run(debug=True)
+
