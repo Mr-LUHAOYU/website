@@ -226,7 +226,7 @@
         {% with messages = get_flashed_messages() %}
             {% if messages %}
             <div class="messages">
-                <ul>
+                <ul id="flash-messages">
                     {% for message in messages %}
                         <li>{{ message }}</li>
                     {% endfor %}
@@ -239,5 +239,21 @@
 
         {% endblock %}
     </main>
+<script>
+    window.onload = function() {
+        // 设置flash消息的显示时间为5秒（5000毫秒）
+        setTimeout(function() {
+            var flashMessages = document.getElementById('flash-messages');
+            if (flashMessages) {
+                flashMessages.style.transition = 'opacity 0.5s ease';
+                flashMessages.style.opacity = '0';
+                setTimeout(function() {
+                    flashMessages.remove();
+                }, 500);  // 让动画持续0.5秒，然后删除元素
+            }
+        }, 1000);  // 5秒后开始淡出
+    };
+</script>
+
 </body>
 </html>
