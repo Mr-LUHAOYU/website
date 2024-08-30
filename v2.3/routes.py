@@ -129,10 +129,9 @@ def user_filelist(user_id):
         if action == 'upload':  # 上传文件
             # 跳转upload页面
             return redirect(url_for('upload'))
-        elif action == 'new_folder':  # 删除文件
+        elif action == 'new_folder':   # 创建文件夹
             folder_name = request.form.get('folder_name')
             user_id = session.get('user_id')
-            user = User.query.get_or_404(user_id)
             parent_folder_id = request.form.get('parent_folder_id')
 
             Folder.create(folder_name, parent_folder_id, user.id)

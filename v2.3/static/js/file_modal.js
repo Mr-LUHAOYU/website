@@ -1,4 +1,4 @@
-    // 获取模态窗口
+// 获取模态窗口
 var modal = document.getElementById("uploadFileModal");
 
 // 获取按钮
