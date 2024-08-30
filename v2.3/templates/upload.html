@@ -7,6 +7,8 @@
     <input type="file" name="file" id="file" required>
     <br>
     <input type="submit" value="上传">
+    <input type="hidden" name="parent_id" value={{ parent_id }}>
+    <input type="hidden" name="return_url" value={{ return_url }}>
 </form>
 <a href="{{ url_for('profile', user_id=session.get('user_id')) }}">返回个人主页</a>
 {% endblock %}

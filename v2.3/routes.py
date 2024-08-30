@@ -1,3 +1,5 @@
+from typing import Any
+
 from flask import render_template, redirect, url_for, flash, request, session, jsonify
 from werkzeug.utils import secure_filename, send_from_directory
 import os
@@ -123,8 +125,9 @@ def user_filelist(user_id):
         action = request.form.get('action')
         if action == 'upload':  # 上传文件
             parent_id = request.form.get('parent_id')
+            print(parent_id)
             return redirect(url_for('upload', parent_id=parent_id, return_url='user_filelist'))
-        elif action == 'new_folder':   # 创建文件夹
+        elif action == 'new_folder':  # 创建文件夹
             folder_name = request.form.get('folder_name')
             if folder_name == '':
                 flash('文件夹名不能为空')
@@ -138,7 +141,7 @@ def user_filelist(user_id):
 
 
 @app.route('/upload', methods=['GET', 'POST'])
-def upload(parent_id='root', return_url='profile'):
+def upload():
     # print("here upload")
     if request.method == 'POST':
         if 'file' not in request.files:
@@ -155,10 +158,12 @@ def upload(parent_id='root', return_url='profile'):
             # filename = secure_filename(file.filename)
             user_id = session.get('user_id')
             user = User.query.get_or_404(user_id)
+            parent_id = request.form.get('parent_id')
+            print('upload', parent_id)
             user.upload(file, parent_id)
             flash('文件上传成功')
-            return redirect(url_for(return_url, user_id=user.id))
-    return render_template('upload.html')
+            return redirect(url_for('user_filelist', user_id=user.id))
+    return render_template('upload.html', parent_id=request.args.get('parent_id'), return_url=request.args.get('return_url'))
 
 
 @app.route('/download/<int:file_id>')
@@ -346,4 +351,3 @@ def update_bio(user_id):
         f.write(user_bio_markdown)
     flash('个人简介更新成功')
     return redirect(url_for('profile', user_id=user.id))
-
