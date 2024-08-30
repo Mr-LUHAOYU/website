@@ -309,7 +309,18 @@ class File(db.Model):
 
     @property
     def to_html(self):
-        return f"<li class='file-item'><span class='file-icon'>📄<span class='file'>{self.filename}</span></li>"
+        return f"""
+        <li class='file-item'>
+            <span class='file-icon'>📄
+                <span class='file'>{self.filename}
+                    <form method='POST' action='/file/delete/' style='display: inline-block;'>
+                        <input type='hidden' name='file_id' value='{self.id}'>
+                        <button type='submit' class='delete-btn'>🗑️</button>
+                    </form>
+                </span>
+            </span>
+        </li>
+        """
 
 
 class Folder(db.Model):
@@ -389,10 +400,12 @@ class Folder(db.Model):
                         <option value="new_folder">新建文件夹</option>
                     </select>
                     <input type="submit" value="确定">
-                    <br>
+                    
                 </form>
                 </span>
-                <ul>""")
+                <ul class='filelist'>
+                
+                """)
         for child_folder in self.children:
             cnt += 1
             html_, cnt_ = child_folder.to_html(cnt)

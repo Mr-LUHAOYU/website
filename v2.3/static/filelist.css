@@ -11,7 +11,8 @@
 
 .filelist-wrapper {
     background-color: #fff;
-    width: 1000px;
+    opacity: 0.9;
+    width: 1500px;
     border-radius: 15px;
     padding: 0 50px;
     position: relative;
@@ -45,9 +46,9 @@
     list-style-type: none; //列表样式
     padding: 0;
     width: 100%;
-
-
     flex-wrap: wrap;
+
+    margin-left:40px;
 }
 
 .file-item {
@@ -55,7 +56,7 @@
     flex-direction: row;
     align-items: center;
 
-    width: 100%;
+    width: auto;
     background-color: #fff;
     margin-bottom: 15px;
     padding: 15px;
@@ -146,3 +147,6 @@ form input[type="submit"]:hover {
     transform: translateY(-2px); /* 悬停时轻微上移 */
 }
 
+.delete-btn{
+    cursor: pointer;
+}
