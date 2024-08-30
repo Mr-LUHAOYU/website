@@ -121,7 +121,7 @@ def user_filelist(user_id):
     user = User.query.get_or_404(user_id)
     # files = user.files.order_by(File.uploaded_on.desc()).all()
     # print(files)
-    file_html = user.to_html
+    file_html, script = user.to_html
     # 获取表单数据
     if request.method == 'POST':
         # 处理表单数据
@@ -136,7 +136,7 @@ def user_filelist(user_id):
             flash('文件夹创建成功')
             return redirect(url_for('user_filelist', user_id=user.id))
 
-    return render_template('user_filelist.html', user=user, files=file_html)
+    return render_template('user_filelist.html', user=user, files=file_html, script=script)
 
 
 @app.route('/upload', methods=['GET', 'POST'])

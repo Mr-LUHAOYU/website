@@ -228,7 +228,30 @@ class User(db.Model):
     @property
     def to_html(self):
         root_folder = Folder.query.filter_by(id=self.dynamic_info.root_folder_id).first()
-        return root_folder.to_html
+        html, cnt = root_folder.to_html()
+        script = ""
+        for i in range(cnt + 1):
+            script += f"""
+<script>
+document.getElementById('folderForm{i}').addEventListener('submit', function(event) {{
+    const form = event.target;
+    const action = form.action.value;
+
+    if (action === 'upload') {{
+
+        form.submit(); // 提交表单
+        }}else if (action === 'new_folder') {{
+        print('new_folder');
+        const newName = prompt('请输入新的文件夹名称:');
+        if (newName) {{
+        form.folder_name.value = newName;
+        form.submit(); // 提交表单
+        }} }}
+}});
+</script>
+"""
+        return html, script
+
 
 
 class File(db.Model):
@@ -265,7 +288,7 @@ class File(db.Model):
     def rename(self, new_filename):
         os.rename(os.path.join(Config.UPLOAD_FOLDER(self.author_uid), self.filename),
                   os.path.join(Config.UPLOAD_FOLDER(self.author_uid), new_filename))
-        self.filename = new_fil                                                                                                                                                                                                                 ename
+        self.filename = new_filename
         db.session.commit()
 
     def move(self, new_folder):
@@ -353,18 +376,14 @@ class Folder(db.Model):
         os.makedirs(folder.PATH, exist_ok=True)
         return folder
 
-    @property
-    def to_html(self):
+    # @property
+    def to_html(self, cnt=0):
         # html = f"<li><span class='filelist'><button id='folderBtn'>{self.folder_name}</button></span><ul>"
         html = (f"""
                 <li>
                 <span class='filelist'><label for='folderBtn'>{self.folder_name}</label>
-                <form method="POST" id="folderForm"> 
-<<<<<<< HEAD
-                    <input type="hidden" name="folder_name" value="{self.folder_name}">
-=======
+                <form method="POST" id="folderForm{cnt}"> 
                     <input type="hidden" name="folder_name" value="">
->>>>>>> 8826d2e4e69d8967f637c6c48981e695d8114854
                     <input type="hidden" name="parent_id" value="{self.id}">
                     <input type="hidden" name="author_id" value="{self.author_id}">
                     <select name="action">
@@ -376,7 +395,10 @@ class Folder(db.Model):
                 </span>
                 <ul>""")
         for child_folder in self.children:
-            html += child_folder.to_html
+            cnt += 1
+            html_, cnt_ = child_folder.to_html(cnt)
+            html += html_
+            cnt = cnt_
 
         html += "<ul class='filelist'>"
         for file in self.files:
@@ -384,7 +406,7 @@ class Folder(db.Model):
         html += "</ul>"
 
         html += "</ul></li>"
-        return html
+        return html, cnt
 
 
 # 自动维护自增的 uid

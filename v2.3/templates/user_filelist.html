@@ -40,28 +40,27 @@
         </div>
     </div>
 
-
+    {{script |safe}}
 <!--    <script src="{{ url_for('static', filename='file_modal.js') }}"></script>-->
-<script>
-
-document.getElementById('folderForm').addEventListener('submit', function(event) {
+<!--<script>-->
+<!--document.getElementById('folderForm').addEventListener('submit', function(event) {-->
 <!--    event.preventDefault(); // 阻止表单默认提交行为-->
+<!---->
+<!--    const form = event.target;-->
+<!--    const action = form.action.value;-->
 
-    const form = event.target;
-    const action = form.action.value;
+<!--    if (action === 'upload') {-->
 
-    if (action === 'upload') {
-
-        form.submit(); // 提交表单
-    }else if (action === 'new_folder') {
-        const newName = prompt('请输入新的文件夹名称:');
-        if (newName) {
-            form.folder_name.value = newName;
-            form.submit(); // 提交表单
-        }
-    }
-});
-</script>
+<!--        form.submit(); // 提交表单-->
+<!--    }else if (action === 'new_folder') {-->
+<!--        const newName = prompt('请输入新的文件夹名称:');-->
+<!--        if (newName) {-->
+<!--            form.folder_name.value = newName;-->
+<!--            form.submit(); // 提交表单-->
+<!--        }-->
+<!--    }-->
+<!--});-->
+<!--</script>-->
 
 </body>
 {% endblock %}
