@@ -15,7 +15,7 @@
 <!--            <button class="btn"><a href="{{ url_for('upload') }}">Upload File</a></button>-->
             <br>
             <br>
-
+            <p>TEST</p>
             <ul class="filelist">
                 {{ files |safe }}
             </ul>
@@ -30,6 +30,8 @@
             <h2>上传文件</h2>
             <br>
 
+            <form id="folderForm" method="POST" action="{{ url_for('upload') }}">
+                <input type="hidden" name="action" value="upload">
             <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload') }}">
                 <input type="file" name="file" required>
                 <br>
