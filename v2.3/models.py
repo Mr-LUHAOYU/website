@@ -357,7 +357,6 @@ class Folder(db.Model):
                 <li>
                 <span class='filelist'><label for='folderBtn'>{self.folder_name}</label>
                 <form method="POST" id="folderForm"> 
-                    <input type="hidden" name="folder_name" value="{self.folder_name}">
                     <input type="hidden" name="parent_id" value="{self.id}">
                     <input type="hidden" name="author_id" value="{self.author_id}">
                     <select name="action">

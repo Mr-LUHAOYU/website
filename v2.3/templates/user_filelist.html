@@ -43,13 +43,13 @@
 
 <!--    <script src="{{ url_for('static', filename='file_modal.js') }}"></script>-->
 <script>
+
 document.getElementById('folderForm').addEventListener('submit', function(event) {
-    // event.preventDefault(); // 阻止表单默认提交行为
+<!--    event.preventDefault(); // 阻止表单默认提交行为-->
 
     const form = event.target;
     const action = form.action.value;
-    flash(action);
-    print(action);
+
     if (action === 'upload') {
 
         form.submit(); // 提交表单

@@ -122,23 +122,20 @@ def user_filelist(user_id):
     # files = user.files.order_by(File.uploaded_on.desc()).all()
     # print(files)
     file_html = user.to_html
-    # print(file_html)
-    # print(request.method)
+    # 获取表单数据
     if request.method == 'POST':
-        print('here post')
+        # 处理表单数据
         action = request.form.get('action')
-        if action == 'upload':
+        if action == 'upload':  # 上传文件
+            # 跳转upload页面
             return redirect(url_for('upload'))
-        elif action == 'new_folder':
-            # print('here new_folder')
+        elif action == 'new_folder':   # 创建文件夹
             folder_name = request.form.get('folder_name')
             user_id = session.get('user_id')
-            user = User.query.get_or_404(user_id)
             parent_folder_id = request.form.get('parent_folder_id')
-            print(f"folder_name: {folder_name}, parent_folder_id: {parent_folder_id}")
+
             Folder.create(folder_name, parent_folder_id, user.id)
             flash('文件夹创建成功')
-            print(f'文件夹创建成功, folder_name: {folder_name}, parent_folder_id: {parent_folder_id}')
             return redirect(url_for('user_filelist', user_id=user.id))
 
     return render_template('user_filelist.html', user=user, files=file_html)
