@@ -2,7 +2,7 @@
     height: 100%;
     display: flex;// 弹性布局
     flex-direction: column; // 垂直排列
-    align-items: center; // 居中
+    /*align-items: center; // 居中
     justify-content: center;//
     align-items: center;
     height: 100vh; /* 使容器高度为整个视口高度 */
@@ -11,13 +11,13 @@
 
 .filelist-wrapper {
     background-color: #fff;
-    width: 600px;
+    width: 1000px;
     border-radius: 15px;
     padding: 0 50px;
     position: relative;
-    left: 50%;
-    top: 50%;
-    transform: translate(-120%, -30%); /* 使元素居中 */
+    left: 0%;
+    top: 100px;
+    /*transform: translate(-72%, -150%); /* 使元素居中 */
     border: 5px solid #c2e9fb; /* 增加的边框 */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     display: flex;
@@ -38,7 +38,7 @@
 
 .filelist{
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     align-items: center; // 居中
 
     justify-content: center; // 居中

@@ -129,6 +129,7 @@ def user_filelist(user_id):
             return redirect(url_for('upload', parent_id=parent_id, return_url='user_filelist'))
         elif action == 'new_folder':  # 创建文件夹
             folder_name = request.form.get('folder_name')
+
             if folder_name == '':
                 flash('文件夹名不能为空')
                 return redirect(request.url)
@@ -159,11 +160,11 @@ def upload():
             user_id = session.get('user_id')
             user = User.query.get_or_404(user_id)
             parent_id = request.form.get('parent_id')
-            print('upload', parent_id)
+            # print('upload', parent_id)
             user.upload(file, parent_id)
             flash('文件上传成功')
             return redirect(url_for('user_filelist', user_id=user.id))
-    return render_template('upload.html', parent_id=request.args.get('parent_id'), return_url=request.args.get('return_url'))
+    return render_template('upload.html', parent_id=request.args.get('parent_id'))
 
 
 @app.route('/download/<int:file_id>')

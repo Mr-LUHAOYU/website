@@ -388,7 +388,8 @@ class Folder(db.Model):
                         <option value="upload">上传文件</option>
                         <option value="new_folder">新建文件夹</option>
                     </select>
-                    <input type="submit" value="执行">
+                    <input type="submit" value="确定">
+                    <br>
                 </form>
                 </span>
                 <ul>""")
