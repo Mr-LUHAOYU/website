@@ -17,7 +17,7 @@
     position: relative;
     left: 50%;
     top: 50%;
-    transform: translate(-135%, -100%);
+    transform: translate(-135%, -50%);
     border: 5px solid #c2e9fb; /* 增加的边框 */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     margin-top: -400px;

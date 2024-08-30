@@ -286,7 +286,7 @@ class File(db.Model):
 
     @property
     def to_html(self):
-        return f"<li><span class='file'>{self.filename}</span></li>"
+        return f"<li class='file-item'><span class='file-icon'>📄<span class='file'>{self.filename}</span></li>"
 
 
 class Folder(db.Model):
@@ -352,11 +352,30 @@ class Folder(db.Model):
 
     @property
     def to_html(self):
-        html = f"<li><span class='folder'>{self.folder_name}</span><ul>"
+        # html = f"<li><span class='filelist'><button id='folderBtn'>{self.folder_name}</button></span><ul>"
+        html = (f"""
+                <li>
+                <span class='filelist'><label for='folderBtn'>{self.folder_name}</label>
+                <form method="POST" id="folderForm"> 
+                    <input type="hidden" name="folder_name" value="{self.folder_name}">
+                    <input type="hidden" name="parent_id" value="{self.parent_id}">
+                    <input type="hidden" name="author_id" value="{self.author_id}">
+                    <select name="action">
+                        <option value="upload">上传文件</option>
+                        <option value="new_folder">新建文件夹</option>
+                    </select>
+                    <input type="submit" value="执行">
+                </form>
+                </span>
+                <ul>""")
         for child_folder in self.children:
             html += child_folder.to_html
+
+        html += "<ul class='filelist'>"
         for file in self.files:
             html += file.to_html
+        html += "</ul>"
+
         html += "</ul></li>"
         return html
 

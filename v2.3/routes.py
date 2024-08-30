@@ -2,7 +2,7 @@ from flask import render_template, redirect, url_for, flash, request, session, j
 from werkzeug.utils import secure_filename, send_from_directory
 import os
 from app import app, db
-from models import User, File, UserDynamicInfo, UserStaticInfo
+from models import User, File, UserDynamicInfo, UserStaticInfo, Folder
 from datetime import datetime
 from config import Config
 import markdown2
@@ -114,7 +114,7 @@ def revise_info(user_id):
     return render_template('revise_info.html', user=user)
 
 
-@app.route('/user_filelist/<int:user_id>')
+@app.route('/user_filelist/<int:user_id>', methods=['GET', 'POST'])
 def user_filelist(user_id):
     # TODO
     # print("here user_filelist")
@@ -122,6 +122,23 @@ def user_filelist(user_id):
     # files = user.files.order_by(File.uploaded_on.desc()).all()
     # print(files)
     file_html = user.to_html
+    # 获取表单数据
+    if request.method == 'POST':
+        # 处理表单数据
+        action = request.form.get('action')
+        if action == 'upload':  # 上传文件
+            # 跳转upload页面
+            return redirect(url_for('upload'))
+        elif action == 'new_folder':  # 删除文件
+            folder_name = request.form.get('folder_name')
+            user_id = session.get('user_id')
+            user = User.query.get_or_404(user_id)
+            parent_folder_id = request.form.get('parent_folder_id')
+
+            Folder.create(folder_name, parent_folder_id, user.id)
+            flash('文件夹创建成功')
+            return redirect(url_for('user_filelist', user_id=user.id))
+
     return render_template('user_filelist.html', user=user, files=file_html)
 
 
@@ -340,3 +357,4 @@ def update_bio(user_id):
         f.write(user_bio_markdown)
     flash('个人简介更新成功')
     return redirect(url_for('profile', user_id=user.id))
+
