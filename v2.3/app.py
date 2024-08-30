@@ -1,5 +1,3 @@
-# from cgitb import text
-
 from flask import Flask, session
 from flask_session import Session
 from config import Config
