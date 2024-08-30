@@ -241,7 +241,6 @@ document.getElementById('folderForm{i}').addEventListener('submit', function(eve
 
         form.submit(); // 提交表单
         }}else if (action === 'new_folder') {{
-        print('new_folder');
         const newName = prompt('请输入新的文件夹名称:');
         if (newName) {{
         form.folder_name.value = newName;

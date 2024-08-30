@@ -126,6 +126,9 @@ def user_filelist(user_id):
             return redirect(url_for('upload', parent_id=parent_id, return_url='user_filelist'))
         elif action == 'new_folder':   # 创建文件夹
             folder_name = request.form.get('folder_name')
+            if folder_name == '':
+                flash('文件夹名不能为空')
+                return redirect(request.url)
             parent_folder_id = request.form.get('parent_id')
             Folder.create(folder_name, parent_folder_id, user_id)
             flash('文件夹创建成功')
