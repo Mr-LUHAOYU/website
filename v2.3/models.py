@@ -210,7 +210,9 @@ class User(db.Model):
     def upload(self, file, folder="root", tags=None):
         if folder == "root":
             folder = Folder.query.filter_by(id=self.dynamic_info.root_folder_id).first()
-        if File.create(file, folder.id, self.id, tags):
+        if type(folder) is Folder:
+            folder = folder.id
+        if File.create(file, folder, self.id, tags):
             self.static_info.upload_count += 1
             db.session.commit()
             return True
@@ -263,7 +265,7 @@ class File(db.Model):
     def rename(self, new_filename):
         os.rename(os.path.join(Config.UPLOAD_FOLDER(self.author_uid), self.filename),
                   os.path.join(Config.UPLOAD_FOLDER(self.author_uid), new_filename))
-        self.filename = new_filename
+        self.filename = new_fil                                                                                                                                                                                                                 ename
         db.session.commit()
 
     def move(self, new_folder):
@@ -275,7 +277,7 @@ class File(db.Model):
     @classmethod
     def create(cls, input_file, folder_id, author_id, tags=None):
         file = cls(filename=input_file.filename, folder_id=folder_id, author_id=author_id)
-        author = User.query.filter_by(id=author_id).first()
+        # author = User.query.filter_by(id=author_id).first()
         # author.dynamic_info.files.append(file)
         if tags is not None:
             file.tags = tags
