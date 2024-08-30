@@ -253,7 +253,6 @@ document.getElementById('folderForm{i}').addEventListener('submit', function(eve
         return html, script
 
 
-
 class File(db.Model):
     __tablename__ = 'files'
     id = db.Column(db.Integer, primary_key=True)
@@ -404,7 +403,6 @@ class Folder(db.Model):
         for file in self.files:
             html += file.to_html
         html += "</ul>"
-
         html += "</ul></li>"
         return html, cnt
 

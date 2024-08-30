@@ -116,19 +116,14 @@ def revise_info(user_id):
 
 @app.route('/user_filelist/<int:user_id>', methods=['GET', 'POST'])
 def user_filelist(user_id):
-    # TODO
     # print("here user_filelist")
     user = User.query.get_or_404(user_id)
-    # files = user.files.order_by(File.uploaded_on.desc()).all()
-    # print(files)
     file_html, script = user.to_html
-    # 获取表单数据
     if request.method == 'POST':
-        # 处理表单数据
         action = request.form.get('action')
         if action == 'upload':  # 上传文件
-            # 跳转upload页面
-            return redirect(url_for('upload'))
+            parent_id = request.form.get('parent_id')
+            return redirect(url_for('upload', parent_id=parent_id, return_url='user_filelist'))
         elif action == 'new_folder':   # 创建文件夹
             folder_name = request.form.get('folder_name')
             parent_folder_id = request.form.get('parent_id')
@@ -140,7 +135,7 @@ def user_filelist(user_id):
 
 
 @app.route('/upload', methods=['GET', 'POST'])
-def upload():
+def upload(parent_id='root', return_url='profile'):
     # print("here upload")
     if request.method == 'POST':
         if 'file' not in request.files:
@@ -157,15 +152,9 @@ def upload():
             # filename = secure_filename(file.filename)
             user_id = session.get('user_id')
             user = User.query.get_or_404(user_id)
-            user.upload(file)
-            # seri = len(user.files) + 1
-            # filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-            # file.save(filepath)
-            # new_file = File(user_id=user.id, filename=filename, filepath=filepath)
-            # db.session.add(new_file)
-            # db.session.commit()
+            user.upload(file, parent_id)
             flash('文件上传成功')
-            return redirect(url_for('profile', user_id=user.id))
+            return redirect(url_for(return_url, user_id=user.id))
     return render_template('upload.html')
 
 
