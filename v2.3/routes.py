@@ -132,7 +132,7 @@ def user_filelist(user_id):
         elif action == 'new_folder':   # 创建文件夹
             folder_name = request.form.get('folder_name')
             user_id = session.get('user_id')
-            parent_folder_id = request.form.get('parent_folder_id')
+            parent_folder_id = request.form.get('parent_id')
 
             Folder.create(folder_name, parent_folder_id, user.id)
             flash('文件夹创建成功')
