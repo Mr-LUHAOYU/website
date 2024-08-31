@@ -7,6 +7,7 @@ import os
 import shutil
 from config import Config
 from sqlalchemy import event
+# from flask.request import FileStorage
 
 db = SQLAlchemy()
 
@@ -297,6 +298,19 @@ class File(db.Model):
 
     @classmethod
     def create(cls, input_file, folder_id, author_id, tags=None):
+        folder = Folder.query.filter_by(id=folder_id).first()
+        filename = input_file.filename
+        name, ext = os.path.splitext(filename)  # 分离文件名和扩展名
+        if folder.check_has_file(filename):
+            filename = f"{name}(1){ext}"
+        restr = r"(.*)\((\d+)\)(\.\w+)$"
+        while folder.check_has_file(filename):
+            match = re.search(restr, filename)
+            if match:
+                base_name = match.group(1)
+                num = int(match.group(2)) + 1
+                filename = f"{base_name}({num}){ext}"
+        input_file.filename = filename
         file = cls(filename=input_file.filename, folder_id=folder_id, author_id=author_id)
         # author = User.query.filter_by(id=author_id).first()
         # author.dynamic_info.files.append(file)
@@ -378,44 +392,62 @@ class Folder(db.Model):
 
     @classmethod
     def create(cls, folder_name, parent_id, author_id):
-        print(f"folder_name: {folder_name}, parent_id: {parent_id}, author_id: {author_id}")
+        # print(f"folder_name: {folder_name}, parent_id: {parent_id}, author_id: {author_id}")
+        if parent_id is not None:
+            parent_folder = Folder.query.filter_by(id=parent_id).first()
+            if parent_folder.check_has_folder(folder_name):
+                i = 1
+                while parent_folder.check_has_folder(f"{folder_name}({i})"):
+                    i += 1
+                folder_name = f"{folder_name}({i})"
         folder = cls(folder_name=folder_name, parent_id=parent_id, author_id=author_id)
         db.session.add(folder)
         db.session.commit()
         os.makedirs(folder.PATH, exist_ok=True)
         return folder
 
+    def check_has_file(self, filename):
+        for file in self.files:
+            if file.filename == filename:
+                return True
+        return False
+
+    def check_has_folder(self, folder_name):
+        for folder in self.children:
+            if folder.folder_name == folder_name:
+                return True
+        return False
+
     # @property
     def to_html(self, cnt=0):
         # html = f"<li><span class='filelist'><button id='folderBtn'>{self.folder_name}</button></span><ul>"
         html = (f"""
-                <li>
-                <span class='filelist'><label for='folderBtn'>{self.folder_name}</label>
-                <form method="POST" id="folderForm{cnt}"> 
-                    <input type="hidden" name="folder_name" value="">
-                    <input type="hidden" name="parent_id" value="{self.id}">
-                    <input type="hidden" name="author_id" value="{self.author_id}">
-                    <select name="action">
-                        <option value="upload">上传文件</option>
-                        <option value="new_folder">新建文件夹</option>
-                    </select>
-                    <input type="submit" value="确定">
-                    
-                </form>
-                </span>
-                <ul class='filelist'>
-                
-                """)
+<li>
+    <span class='folderButtonList'><label for='folderBtn'>{self.folder_name}</label>
+        <form method="POST" id="folderForm{cnt}"> 
+            <input type="hidden" name="folder_name" value="">
+            <input type="hidden" name="parent_id" value="{self.id}">
+            <input type="hidden" name="author_id" value="{self.author_id}">
+            <select name="action">
+                <option value="upload">上传文件</option>
+                <option value="new_folder">新建文件夹</option>
+            </select>
+            <input type="submit" value="确定">
+        </form>
+    </span>
+    <ul class='filelist'>
+        """)
         for child_folder in self.children:
             cnt += 1
             html_, cnt_ = child_folder.to_html(cnt)
             html += html_
             cnt = cnt_
-
+        html += "</ul>"
+        # html += '<br>'
         html += "<ul class='filelist'>"
         for file in self.files:
             html += file.to_html
-        html += "</ul>"
+        # html += "</ul>"
         html += "</ul></li>"
         return html, cnt
 
