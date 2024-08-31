@@ -125,10 +125,11 @@ def user_filelist(user_id):
         action = request.form.get('action')
         if action == 'upload':  # 上传文件
             parent_id = request.form.get('parent_id')
-            print(parent_id)
+            # print(parent_id)
             return redirect(url_for('upload', parent_id=parent_id, return_url='user_filelist'))
         elif action == 'new_folder':  # 创建文件夹
             folder_name = request.form.get('folder_name')
+
             if folder_name == '':
                 flash('文件夹名不能为空')
                 return redirect(request.url)
@@ -159,11 +160,11 @@ def upload():
             user_id = session.get('user_id')
             user = User.query.get_or_404(user_id)
             parent_id = request.form.get('parent_id')
-            print('upload', parent_id)
+            # print('upload', parent_id)
             user.upload(file, parent_id)
             flash('文件上传成功')
             return redirect(url_for('user_filelist', user_id=user.id))
-    return render_template('upload.html', parent_id=request.args.get('parent_id'), return_url=request.args.get('return_url'))
+    return render_template('upload.html', parent_id=request.args.get('parent_id'))
 
 
 @app.route('/download/<int:file_id>')
@@ -351,3 +352,22 @@ def update_bio(user_id):
         f.write(user_bio_markdown)
     flash('个人简介更新成功')
     return redirect(url_for('profile', user_id=user.id))
+
+
+# 删除文件
+@app.route('/file/delete/', methods=['POST'])
+def delete_file():
+    if request.method == 'POST':
+        file_id = request.form.get('file_id')
+        if file_id is None:
+            flash('文件不存在')
+            return redirect(request.url)
+        file = File.query.get(file_id)
+        user_id = file.author_id
+        if file is None:
+            flash('文件不存在')
+            return redirect(request.url)
+        file.delete()
+        flash('文件删除成功')
+    return redirect(url_for('user_filelist', user_id=user_id))
+

@@ -11,11 +11,6 @@
             <div class="filelist-header">
                 <h1>User Files</h1>
             </div>
-            <button class="btn"><a href="{{ url_for('upload') }}">Upload File</a></button>
-<!--            <button class="btn"><a href="{{ url_for('upload') }}">Upload File</a></button>-->
-            <br>
-            <br>
-<!--            <p>TEST</p>-->
             <ul class="filelist">
                 {{ files |safe }}
             </ul>
