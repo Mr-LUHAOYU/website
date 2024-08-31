@@ -7,9 +7,27 @@ import os
 import shutil
 from config import Config
 from sqlalchemy import event
+from flask import send_file
+
 # from flask.request import FileStorage
 
 db = SQLAlchemy()
+
+# 中间表用于 File 和 Folder 的多对多关系
+file_folder_association = db.Table(
+    'file_folder_association',
+    db.Column('file_id', db.Integer, db.ForeignKey('file.id'), primary_key=True),
+    db.Column('folder_id', db.Integer, db.ForeignKey('folder.id'), primary_key=True)
+)
+
+# 中间表用于 Folder 的自引用多对多关系
+folder_folder_association = db.Table(
+    'folder_folder_association',
+    db.Column('parent_folder_id', db.Integer, db.ForeignKey('folder.id'),
+              primary_key=True),
+    db.Column('child_folder_id', db.Integer, db.ForeignKey('folder.id'),
+              primary_key=True)
+)
 
 
 class UserStaticInfo(db.Model):
@@ -58,7 +76,7 @@ class UserDynamicInfo(db.Model):
     phone = db.Column(db.String(20))
     real_name = db.Column(db.String(100))
     student_id = db.Column(db.String(10))
-    root_folder_id = db.Column(db.Integer, db.ForeignKey('folders.id'))
+    root_folder_id = db.Column(db.Integer, db.ForeignKey('folder.id'))
     last_active = db.Column(db.DateTime, default=datetime.utcnow)
 
     def set_password(self, password):
@@ -252,49 +270,88 @@ document.getElementById('folderForm{i}').addEventListener('submit', function(eve
 """
         return html, script
 
+    def html_code(self):
+        root_folder = Folder.query.filter_by(id=self.dynamic_info.root_folder_id).first()
+        return root_folder.html_code()
+
 
 class File(db.Model):
-    __tablename__ = 'files'
+    __tablename__ = 'file'
     id = db.Column(db.Integer, primary_key=True)
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    folder_id = db.Column(db.Integer, db.ForeignKey('folders.id'))
+    # folder_id = db.Column(db.Integer, db.ForeignKey('folders.id'))
     filename = db.Column(db.String(150), nullable=False)
     uploaded_on = db.Column(db.DateTime, default=datetime.utcnow)
     download_count = db.Column(db.Integer, default=0)
     tags = db.Column(db.String(200))
+    cite_times = db.Column(db.Integer, default=1)
+    folders = db.relationship('Folder', secondary=file_folder_association, backref='files')
+
+    # @property
+    # def author_name(self):
+    #     author = User.query.filter_by(id=self.author_id).first()
+    #     return author.dynamic_info.username
+
+    # @property
+    # def author_uid(self):
+    #     author = User.query.filter_by(id=self.author_id).first()
+    #     return author.uid
+
+    # @property
+    # def PATH(self):
+    #     parent_folder = Folder.query.filter_by(id=self.folder_id).first()
+    #     return parent_folder.PATH + '/' + self.filename
+    #     return f"{Config.UPLOAD_FOLDER(self.author_uid)}/{self.id}"
 
     @property
-    def author_name(self):
-        author = User.query.filter_by(id=self.author_id).first()
-        return author.dynamic_info.username
+    def PATH(self):
+        return rf"F:\website\workspace\v2.3\files\{self.id}"
 
-    @property
-    def author_uid(self):
-        author = User.query.filter_by(id=self.author_id).first()
-        return author.uid
+    # def delete(self, first=True):
+    #     if first:
+    #         os.remove(self.PATH)
+    #     db.session.delete(self)
+    #     db.session.commit()
+    def delete(self):
+        self.decrease_cite_times()
 
-    @property
-    def PATH(self) -> str:
-        parent_folder = Folder.query.filter_by(id=self.folder_id).first()
-        return parent_folder.PATH + '/' + self.filename
-
-    def delete(self, first=True):
-        if first:
+    def decrease_cite_times(self):
+        self.cite_times -= 1
+        if self.cite_times == 0:
             os.remove(self.PATH)
-        db.session.delete(self)
+            db.session.delete(self)
+        db.session.commit()
+
+    def increase_cite_times(self):
+        self.cite_times += 1
         db.session.commit()
 
     def rename(self, new_filename):
-        os.rename(os.path.join(Config.UPLOAD_FOLDER(self.author_uid), self.filename),
-                  os.path.join(Config.UPLOAD_FOLDER(self.author_uid), new_filename))
+        # os.rename(os.path.join(Config.UPLOAD_FOLDER(self.author_uid), self.filename),
+        #           os.path.join(Config.UPLOAD_FOLDER(self.author_uid), new_filename))
         self.filename = new_filename
         db.session.commit()
 
-    def move(self, new_folder):
-        os.rename(os.path.join(Config.UPLOAD_FOLDER(self.author_uid), self.PATH),
-                  os.path.join(Config.UPLOAD_FOLDER(self.author_uid), new_folder.PATH + '/' + self.filename))
-        self.folder = new_folder
+    # def move(self, new_folder):
+    #     os.rename(os.path.join(Config.UPLOAD_FOLDER(self.author_uid), self.PATH),
+    #               os.path.join(Config.UPLOAD_FOLDER(self.author_uid), new_folder.PATH + '/' + self.filename))
+    #     self.folder_id = new_folder.id
+    #     db.session.commit()
+
+    def copy(self, folder=None, folder_id=None):
+        if folder is None and folder_id is None:
+            return
+        if folder_id is not None:
+            folder = Folder.query.filter_by(id=folder_id).first()
+        folder.files.append(self)
+        self.folders.append(folder)
+        self.cite_times += 1
         db.session.commit()
+
+    def download(self):
+        self.download_count += 1
+        db.session.commit()
+        return send_file(self.PATH, as_attachment=True)
 
     @classmethod
     def create(cls, input_file, folder_id, author_id, tags=None):
@@ -311,18 +368,18 @@ class File(db.Model):
                 num = int(match.group(2)) + 1
                 filename = f"{base_name}({num}){ext}"
         input_file.filename = filename
-        file = cls(filename=input_file.filename, folder_id=folder_id, author_id=author_id)
+        file = cls(filename=input_file.filename, author_id=author_id)
+        folder.files.append(file)
         # author = User.query.filter_by(id=author_id).first()
         # author.dynamic_info.files.append(file)
         if tags is not None:
             file.tags = tags
-        input_file.save(file.PATH)
         db.session.add(file)
         db.session.commit()
+        input_file.save(file.PATH)
         return file
 
-    @property
-    def to_html(self):
+    def html_form(self):
         return f"""
         <li class='file-item'>
             <span class='file-icon'>📄
@@ -338,72 +395,103 @@ class File(db.Model):
 
 
 class Folder(db.Model):
-    __tablename__ = 'folders'
+    __tablename__ = 'folder'
     id = db.Column(db.Integer, primary_key=True)
     folder_name = db.Column(db.String(150), nullable=False)
     created_on = db.Column(db.DateTime, default=datetime.utcnow)
-    parent_id = db.Column(db.Integer, db.ForeignKey('folders.id'))
+    # parent_id = db.Column(db.Integer, db.ForeignKey('folders.id'))
     author_id = db.Column(db.Integer, db.ForeignKey('user.id'))
-    children = db.relationship(
-        'Folder', backref=db.backref('parent', remote_side=[id]),
-        cascade='all, delete-orphan'
+    parent_folders = db.relationship(
+        'Folder', secondary=folder_folder_association,
+        primaryjoin=(folder_folder_association.c.child_folder_id == id),
+        secondaryjoin=(folder_folder_association.c.parent_folder_id == id),
+        backref='child_folders'
     )
-    files = db.relationship(
-        'File', backref='folder', lazy=True,
-        cascade='all, delete-orphan'
-    )
+    # children = db.relationship(
+    #     'Folder', backref=db.backref('parent', remote_side=[id]),
+    #     cascade='all, delete-orphan'
+    # )
+    # parent = db.relationship(
+    #     'Folder', backref=db.backref('children', remote_side=[id]),
+    #     remote_side=[id], cascade='all, delete-orphan'
+    # )
+    # files = db.relationship(
+    #     'File', backref='folder', lazy=True,
+    #     cascade='all, delete-orphan'
+    # )
+    cite_times = db.Column(db.Integer, default=1)
 
-    @property
-    def PATH(self) -> str:
-        path = []
-        current_folder = self
-        while current_folder is not None:
-            path.append(current_folder.folder_name)
-            current_folder = current_folder.parent
-        path = '/'.join(reversed(path))
-        author = User.query.filter_by(id=self.author_id).first()
-        path = os.path.join(Config.UPLOAD_FOLDER(author.uid), path)
-        return path
+    # @property
+    # def PATH(self) -> str:
+    #     path = []
+    #     current_folder = self
+    #     while current_folder is not None:
+    #         path.append(current_folder.folder_name)
+    #         current_folder = current_folder.parent
+    #     path = '/'.join(reversed(path))
+    #     author = User.query.filter_by(id=self.author_id).first()
+    #     path = os.path.join(Config.UPLOAD_FOLDER(author.uid), path)
+    #     return path
 
-    def delete(self, first=True):
+    def delete(self):
         for child in self.children:
-            child.delete(False)
+            child.delete()
         for file in self.files:
-            file.delete(False)
-        if first:
-            shutil.rmtree(self.PATH)
-        db.session.delete(self)
+            file.delete()
+        self.decrease_cite_times()
+
+    def decrease_cite_times(self):
+        self.cite_times -= 1
+        if self.cite_times == 0:
+            db.session.delete(self)
         db.session.commit()
 
+    def increase_cite_times(self):
+        self.cite_times += 1
+        db.session.commit()
+        for child in self.children:
+            child.increase_cite_times()
+        for file in self.files:
+            file.increase_cite_times()
+
     def rename(self, new_folder_name):
-        os.rename(self.PATH, new_folder_name)
+        # os.rename(self.PATH, new_folder_name)
         self.folder_name = new_folder_name
         db.session.commit()
 
-    def move(self, new_folder):
-        shutil.move(
-            self.PATH,
-            new_folder.PATH + '/' + self.folder_name
-        )
-        self.parent.children.remove(self)
-        new_folder.children.append(self)
-        self.parent = new_folder
+    # def move(self, new_folder):
+    #     shutil.move(
+    #         self.PATH,
+    #         new_folder.PATH + '/' + self.folder_name
+    #     )
+    #     self.parent.children.remove(self)
+    #     new_folder.children.append(self)
+    #     self.parent = new_folder
+    #     db.session.commit()
+
+    @classmethod
+    def copy(cls, obj, target_folder):
+        obj.increase_cite_times()
+        target_folder.children.append(obj)
+        obj.parent_folders.append(target_folder)
         db.session.commit()
 
     @classmethod
-    def create(cls, folder_name, parent_id, author_id):
+    def create(cls, folder_name, parent_folder, author_id):
         # print(f"folder_name: {folder_name}, parent_id: {parent_id}, author_id: {author_id}")
-        if parent_id is not None:
-            parent_folder = Folder.query.filter_by(id=parent_id).first()
+        if parent_folder is not None:
             if parent_folder.check_has_folder(folder_name):
                 i = 1
                 while parent_folder.check_has_folder(f"{folder_name}({i})"):
                     i += 1
                 folder_name = f"{folder_name}({i})"
-        folder = cls(folder_name=folder_name, parent_id=parent_id, author_id=author_id)
+        folder = cls(folder_name=folder_name, author_id=author_id)
+        if parent_folder is not None:
+            parent_folder.child_folders.append(folder)
+            # folder.parent_folders.append(parent_folder)
         db.session.add(folder)
         db.session.commit()
-        os.makedirs(folder.PATH, exist_ok=True)
+        # os.makedirs(folder.PATH, exist_ok=True)
         return folder
 
     def check_has_file(self, filename):
@@ -413,7 +501,7 @@ class Folder(db.Model):
         return False
 
     def check_has_folder(self, folder_name):
-        for folder in self.children:
+        for folder in self.child_folders:
             if folder.folder_name == folder_name:
                 return True
         return False
@@ -450,6 +538,49 @@ class Folder(db.Model):
         # html += "</ul>"
         html += "</ul></li>"
         return html, cnt
+
+    def download(self):
+        ...
+
+    def html_code(self):
+        html = (f"""
+<li>
+    <span class='folderButtonList'><label for='folderBtn'>{self.folder_name}</label>
+        <form method="POST" id="folderForm"> 
+            <input type="hidden" name="folder_name" value="">
+            <input type="hidden" name="parent_id" value="{self.id}">
+            <input type="hidden" name="author_id" value="{self.author_id}">
+            <select name="action">
+                <option value="upload">上传文件</option>
+                <option value="new_folder">新建文件夹</option>
+            </select>
+            <input type="submit" value="确定">
+        </form>
+    </span>
+    <ul class='filelist'>
+        """)
+        for child_folder in self.child_folders:
+            html += child_folder.html_form()
+        html += "</ul>"
+        html += "<ul class='filelist'>"
+        for file in self.files:
+            html += file.html_form()
+        html += "</ul></li>"
+        return html
+
+    def html_form(self):
+        return f"""
+        <li class='file-item'>
+            <span class='file-icon'>📄
+                <span class='file'>{self.folder_name}
+                    <form method='POST' action='/file/delete/' style='display: inline-block;'>
+                        <input type='hidden' name='file_id' value='{self.id}'>
+                        <button type='submit' class='delete-btn'>🗑️</button>
+                    </form>
+                </span>
+            </span>
+        </li>
+        """
 
 
 # 自动维护自增的 uid

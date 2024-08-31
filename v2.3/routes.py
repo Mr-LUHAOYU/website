@@ -120,7 +120,7 @@ def revise_info(user_id):
 def user_filelist(user_id):
     # print("here user_filelist")
     user = User.query.get_or_404(user_id)
-    file_html, script = user.to_html
+    # file_html, script = user.to_html
     if request.method == 'POST':
         action = request.form.get('action')
         if action == 'upload':  # 上传文件
@@ -134,11 +134,12 @@ def user_filelist(user_id):
                 flash('文件夹名不能为空')
                 return redirect(request.url)
             parent_folder_id = request.form.get('parent_id')
-            Folder.create(folder_name, parent_folder_id, user_id)
+            parent_folder = Folder.query.get(parent_folder_id)
+            Folder.create(folder_name, parent_folder, user_id)
             flash('文件夹创建成功')
             return redirect(url_for('user_filelist', user_id=user.id))
 
-    return render_template('user_filelist.html', user=user, files=file_html, script=script)
+    return render_template('user_filelist.html', user=user, files=user.html_code())
 
 
 @app.route('/upload', methods=['GET', 'POST'])
