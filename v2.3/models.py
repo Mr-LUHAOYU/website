@@ -391,7 +391,7 @@ class Folder(db.Model):
                     <input type="submit" value="执行">
                 </form>
                 </span>
-                <ul>""")
+                <ul class='filelist'>""")
         for child_folder in self.children:
             cnt += 1
             html_, cnt_ = child_folder.to_html(cnt)
