@@ -11,6 +11,7 @@
 
 .profile-wrapper {
     background-color: #fff;
+    opacity: 0.9;
     width: 600px;
     border-radius: 15px;
     padding: 0 50px;

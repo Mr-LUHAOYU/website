@@ -83,7 +83,14 @@
 
 
 .file-icon {
+    font-size: 30px;
     margin-right: 10px;
+    width: auto;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
 }
 
 
@@ -164,4 +171,19 @@ form input[type="submit"]:hover {
 
 .delete-btn{
     cursor: pointer;
+}
+
+.folder-btn{
+    font-size: 30px;
+
+    background-color: transparent;
+    border: none;
+    color: black;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.folder-btn:hover{
+    color: #ff7e5f;
 }

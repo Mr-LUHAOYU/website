@@ -123,13 +123,13 @@ def user_filelist(user_id):
     # file_html, script = user.to_html
     if request.method == 'POST':
         action = request.form.get('action')
+        flash(f'执行{action}操作成功')
         if action == 'upload':  # 上传文件
             parent_id = request.form.get('parent_id')
             # print(parent_id)
-            return redirect(url_for('upload', parent_id=parent_id, return_url='user_filelist'))
+            return redirect(url_for('upload', parent_id=parent_id))
         elif action == 'new_folder':  # 创建文件夹
             folder_name = request.form.get('folder_name')
-
             if folder_name == '':
                 flash('文件夹名不能为空')
                 return redirect(request.url)
@@ -137,14 +137,18 @@ def user_filelist(user_id):
             parent_folder = Folder.query.get(parent_folder_id)
             Folder.create(folder_name, parent_folder, user_id)
             flash('文件夹创建成功')
-            return redirect(url_for('user_filelist', user_id=user.id))
+            return render_template('user_filelist.html', user=user, files=parent_folder.html_code())
+        elif action == 'subfolder':  # 进入子文件夹
+            folder_id = request.form.get('folder_id')
+            folder = Folder.query.get(folder_id)
+            return render_template('user_filelist.html', user=user, files=folder.html_code())
 
     return render_template('user_filelist.html', user=user, files=user.html_code())
 
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
-    # print("here upload")
+    print("here upload")
     if request.method == 'POST':
         if 'file' not in request.files:
             flash('未选择文件')
