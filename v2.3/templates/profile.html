@@ -76,7 +76,7 @@
 
             <a href="{{ url_for('change_password', user_id=user.id) }}" class="btn btn-primary">修改密码</a>
 
-            <a href="{{ url_for('user_filelist', user_id=user.id) }}" class="btn btn-primary">文件列表</a>
+            <a href="{{ url_for('user_filelist', user_id=user.id, subfolder_id=1) }}" class="btn btn-primary">文件列表</a>
 
             <a href="{{ url_for('manage_users', user_id=user.id) }}" class="btn btn-primary">所有人</a>
 

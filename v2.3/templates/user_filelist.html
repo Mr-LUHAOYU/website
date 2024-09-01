@@ -19,24 +19,6 @@
 
     </div>
 
-    <div id="uploadFileModal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>上传文件</h2>
-            <br>
-
-            <form id="folderForm" method="POST" action="{{ url_for('upload') }}">
-                <input type="hidden" name="action" value="upload">
-                <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload') }}">
-                    <input type="file" name="file" required>
-                    <br>
-                    <br>
-                    <input type="submit" value="上传">
-
-                </form>
-            </form>
-        </div>
-    </div>
 
 <!--    {{script |safe}}-->
 <!--    <script src="{{ url_for('static', filename='file_modal.js') }}"></script>-->

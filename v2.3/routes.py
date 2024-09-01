@@ -116,8 +116,8 @@ def revise_info(user_id):
     return render_template('revise_info.html', user=user)
 
 
-@app.route('/user_filelist/<int:user_id>', methods=['GET', 'POST'])
-def user_filelist(user_id):
+@app.route('/user_filelist/<int:user_id>,<int:subfolder_id>', methods=['GET', 'POST'])
+def user_filelist(user_id, subfolder_id=0):
     # print("here user_filelist")
     user = User.query.get_or_404(user_id)
     # file_html, script = user.to_html
@@ -143,12 +143,17 @@ def user_filelist(user_id):
             folder = Folder.query.get(folder_id)
             return render_template('user_filelist.html', user=user, files=folder.html_code())
 
-    return render_template('user_filelist.html', user=user, files=user.html_code())
+    if subfolder_id == 0:
+        return render_template('user_filelist.html', user=user, files=user.html_code())
+    else:
+        subfolder = Folder.query.get(subfolder_id)
+        return render_template('user_filelist.html', user=user, files=subfolder.html_code())
 
 
-@app.route('/upload', methods=['GET', 'POST'])
-def upload():
-    print("here upload")
+@app.route('/upload/<int:parent_id>', methods=['GET', 'POST'])
+def upload(parent_id):
+    # print("here upload")
+    # flash(parent_id)
     if request.method == 'POST':
         if 'file' not in request.files:
             flash('未选择文件')
@@ -164,11 +169,13 @@ def upload():
             # filename = secure_filename(file.filename)
             user_id = session.get('user_id')
             user = User.query.get_or_404(user_id)
-            parent_id = request.form.get('parent_id')
+            # parent_id = request.form.get('parent_id')
             # print('upload', parent_id)
             user.upload(file, parent_id)
             flash('文件上传成功')
-            return redirect(url_for('user_filelist', user_id=user.id))
+            
+            flash(parent_id)
+            return redirect(url_for('user_filelist', user_id=user.id, subfolder_id=parent_id))
     return render_template('upload.html', parent_id=request.args.get('parent_id'))
 
 
