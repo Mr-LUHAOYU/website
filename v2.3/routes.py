@@ -1,6 +1,6 @@
 from typing import Any
 
-from flask import render_template, redirect, url_for, flash, request, session, jsonify
+from flask import render_template, redirect, url_for, flash, request, session, jsonify, abort
 from werkzeug.utils import secure_filename, send_from_directory
 import os
 from app import app, db
@@ -8,6 +8,7 @@ from models import User, File, UserDynamicInfo, UserStaticInfo, Folder
 from datetime import datetime
 from config import Config
 import markdown2
+# from flask import send_from_directory
 
 
 @app.route('/')
@@ -123,7 +124,7 @@ def user_filelist(user_id, subfolder_id=0):
     # file_html, script = user.to_html
     if request.method == 'POST':
         action = request.form.get('action')
-        flash(f'执行{action}操作成功')
+        # flash(f'执行{action}操作成功')
         if action == 'upload':  # 上传文件
             parent_id = request.form.get('parent_id')
             # print(parent_id)
@@ -138,12 +139,37 @@ def user_filelist(user_id, subfolder_id=0):
             Folder.create(folder_name, parent_folder, user_id)
             flash('文件夹创建成功')
             return render_template('user_filelist.html', user=user, files=parent_folder.html_code())
+        elif action == 'download':  # 下载文件
+            file_id = request.form.get('file_id')
+            file = File.query.get_or_404(file_id)
+            lis = [parent.id for parent in file.folders]
+            if len(lis) == 1:
+                parent_folder_id = lis[0]
+            else:
+                parent_folder_id = 0
+            file.download()
+            filepath = rf'E:\Web Project\WEB\v2.3\files\ '
+            flash(filepath)
+            return send_from_directory(filepath, file.filename, as_attachment=True, environ=request.environ)
+            # return redirect(url_for('user_filelist', user_id=user.id, subfolder_id=parent_folder_id))
         elif action == 'subfolder':  # 进入子文件夹
             folder_id = request.form.get('folder_id')
             folder = Folder.query.get(folder_id)
             return render_template('user_filelist.html', user=user, files=folder.html_code())
+        elif action == 'parent_folder':   # 返回上一级文件夹
+            folder_id = request.form.get('folder_id')
+            folder = Folder.query.get(folder_id)
+            if folder.parent_folders is None:
+                return redirect(url_for('user_filelist', user_id=user.id, files=user.html_code()))
+            else:
+                lis = [parent.id for parent in folder.parent_folders]
+                if len(lis) == 1:
+                    parent_folder_id = lis[0]
+                    return redirect(url_for('user_filelist', user_id=user.id, subfolder_id=parent_folder_id))
+                else:
+                    return redirect(url_for('user_filelist', user_id=user.id, subfolder_id=subfolder_id))
 
-    if subfolder_id == 0:
+    if subfolder_id == 1:
         return render_template('user_filelist.html', user=user, files=user.html_code())
     else:
         subfolder = Folder.query.get(subfolder_id)
@@ -178,14 +204,32 @@ def upload(parent_id):
             return redirect(url_for('user_filelist', user_id=user.id, subfolder_id=parent_id))
     return render_template('upload.html', parent_id=request.args.get('parent_id'))
 
-
-@app.route('/download/<int:file_id>')
-def download(file_id):
-    # print("here download")
-    file = File.query.get_or_404(file_id)
-    file.download_count += 1
-    db.session.commit()
-    return send_from_directory(app.config['UPLOAD_FOLDER'], file.filename, as_attachment=True, environ=request.environ)
+#
+# @app.route('/user_filelist/<int:file_id>')
+# def download(file_id):
+#     # print("here download")
+#     file = File.query.get_or_404(file_id)
+#     file.download()
+#     filepath = rf"E:\Web Project\WEB\v2.3\files\{file_id}"
+#     flash(filepath)
+#     # # 输出文件的绝对路径
+#     # return send_from_directory(app.config['UPLOAD_FOLDER'], file.filename, as_attachment=True,
+#     #                            environ=request.environ)
+#     return send_from_directory(filepath, file.filename, as_attachment=True,
+#                                environ=request.environ)
+#     # filepath = file.PATH
+#     # try:
+#     #     # 检查文件是否存在
+#     #     if not os.path.isfile(os.path.join(filepath, file.filename)):
+#     #         abort(404)  # 文件未找到
+#     #
+#     #     # 发送文件
+#     #     send_from_directory(filepath, file.filename, as_attachment=True, environ=request.environ)
+#     #     flash("error")
+#     #     return redirect(url_for('user_filelist', user_id=file.author_id, subfolder_id=file.id))
+#     # except Exception as e:
+#     #     # 捕获任何其他异常并返回500错误
+#     #     return str(e), 500
 
 
 @app.route('/search', methods=['GET', 'POST'])

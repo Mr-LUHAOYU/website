@@ -307,7 +307,8 @@ class File(db.Model):
     def PATH(self):
         # return rf"F:\website\workspace\v2.3\files\{self.id}"
         # return rf"\v2.3\files\{self.id}"
-        return f"files\\{self.id}"
+        return rf"files\{self.id}"
+        # return rf"E:\Web Project\WEB\v2.3\files\{self.id}"
 
 
     # def delete(self, first=True):
@@ -387,6 +388,13 @@ class File(db.Model):
         <li class='file-item'>
             <span class='file-icon'>📄
                 <span class='file'>{self.filename}
+                
+                    <form method='POST'>
+                        <input type='hidden' name='action' value='download'>
+                        <input type='hidden' name='file_id' value='{self.id}'>
+                        <button type='submit' class='delete-btn'>🔗</button>    
+                    </form>
+                    
                     <form method='POST' action='/file/delete/' style='display: inline-block;'>
                         <input type='hidden' name='file_id' value='{self.id}'>
                         <input type='hidden' name='user_id' value='{self.author_id}'>
@@ -548,9 +556,17 @@ class Folder(db.Model):
 
     def html_code(self, cnt=0):
         html = (f"""
+    <span class='folderButtonList'>
+        <label for='folderBtn'>📁</label>
+        <form method="POST">
+            <input type="hidden" name="action" value="parent_folder">
+            <input type="hidden" name="folder_id" value="{self.id}">
+            <button type="submit" class="folder-btn">...</button>
+        </form>
+    </span>
 <li>
     <span class='folderButtonList'>
-        <label for='folderBtn'>{self.folder_name}</label>
+        <label for='folderBtn'>📁{self.folder_name}</label>
         <form method="POST" id="folderForm"> 
             <input type="hidden" name="folder_name" value="">
             <input type="hidden" name="parent_id" value="{self.id}">
@@ -598,6 +614,7 @@ class Folder(db.Model):
                         <input type='hidden' name='action' value='subfolder'>
                         <input type='hidden' name='folder_id' value='{self.id}'>
                         <input type='hidden' name='user_id' value='{self.author_id}'>
+                        
                         <button type='submit' class='folder-btn'>{self.folder_name}</button>
                     </form>
                     

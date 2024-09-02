@@ -20,7 +20,7 @@ class Config:
 
     @staticmethod
     def UPLOAD_FOLDER(uid):
-        return f"static/uploads/{uid}"
+        return f"files{uid}"
 
     @staticmethod
     def IMG_PATH(uid):

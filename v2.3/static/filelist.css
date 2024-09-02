@@ -187,3 +187,13 @@ form input[type="submit"]:hover {
 .folder-btn:hover{
     color: #ff7e5f;
 }
+
+.file{
+    font-size: 20px;
+    margin-left: 20px;
+    display : flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+}
