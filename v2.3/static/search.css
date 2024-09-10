@@ -2,26 +2,24 @@
     height: 100%;
     display: flex;// 弹性布局
     flex-direction: column; // 垂直排列
-    align-items: center; // 居中
-    justify-content: center;//
-    align-items: center;
-    height: 100vh; /* 使容器高度为整个视口高度 */
-
 }
 .search-wrapper {
     background-color: #fff;
-    width: 500px;
-    height: auto;
+    opacity: 0.9;
+    width: 600px;
     border-radius: 15px;
-    padding: 0 50px;
+    padding: 0 30px;
     position: relative;
-    left: 50%;
-    top: 50%;
-    transform: translate(-135%, -50%);
+    left: 0%;
+    top: 100px;
+    /*transform: translate(-72%, -150%); /* 使元素居中 */
     border: 5px solid #c2e9fb; /* 增加的边框 */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-top: -400px;
-    margin-bottom: 50px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: -50px;
 
 }
 
@@ -89,4 +87,63 @@ ul {
 
 li {
     margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.user-link,.file-link {
+    color: #333;
+    font-size: 20px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    display:flex;
+    flex-direction: column;
+
+}
+
+.user-link:hover,.file-link:hover {
+    color: #ff7e5f;
+    text-decoration: underline;
+}
+
+.file-item {
+    display: flex;
+    flex-direction: row;
+
+
+    width: auto;
+    background-color: #fff;
+    margin-bottom: 15px;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    gap : 20px;
+    font-size: 20px;
+    margin-left: 60px;
+}
+
+
+.file-icon {
+    font-size: 30px;
+    margin-right: 10px;
+    width: auto;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.filelist{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start; // 居中
+
+    justify-content: flex-start; // 居中
+    list-style-type: none; //列表样式
+    padding: 0;
+    width: 100%;
+    flex-wrap: wrap;
+
+    margin-left:40px;
 }

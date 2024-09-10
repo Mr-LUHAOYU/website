@@ -285,8 +285,10 @@ class File(db.Model):
     download_count = db.Column(db.Integer, default=0)
     tags = db.Column(db.String(200))
     cite_times = db.Column(db.Integer, default=1)
-    folders = db.relationship('Folder', secondary=file_folder_association, backref='files')
+    # likes = db.Column(db.Integer, default=0)
 
+    folders = db.relationship('Folder', secondary=file_folder_association, backref='files')
+    comments = db.relationship('Comment', backref='file', lazy=True)
     # @property
     # def author_name(self):
     #     author = User.query.filter_by(id=self.author_id).first()
@@ -307,17 +309,20 @@ class File(db.Model):
     def PATH(self):
         # return rf"F:\website\workspace\v2.3\files\{self.id}"
         # return rf"\v2.3\files\{self.id}"
-        return rf"files\{self.id}"
-        # return rf"E:\Web Project\WEB\v2.3\files\{self.id}"
-
+        # return rf"files\{self.id}"
+        return rf"E:\Web Project\WEB\v2.3\files\{self.id}"
 
     # def delete(self, first=True):
     #     if first:
     #         os.remove(self.PATH)
     #     db.session.delete(self)
     #     db.session.commit()
+
     def delete(self):
         self.decrease_cite_times()
+        # 删除对应评论
+        for comment in self.comments:
+            comment.delete()
 
     def decrease_cite_times(self):
         self.cite_times -= 1
@@ -383,11 +388,20 @@ class File(db.Model):
         input_file.save(file.PATH)
         return file
 
-    def html_form(self):
+    def html_form(self, cnt):
         return f"""
         <li class='file-item'>
             <span class='file-icon'>📄
-                <span class='file'>{self.filename}
+                <span class='file'>
+            
+            
+                <div class="file-name" data-file-id={cnt}>{self.filename}</div>
+                <div class="popup" id="popup-{cnt}">
+                    <p>Filename: {self.filename}</p>
+                    <p>downloads: {self.download_count}</p>
+                    <p>Uploaded: {self.uploaded_on.strftime("%Y-%m-%d %H:%M:%S")}</p>
+                </div>
+    
                 
                     <form method='POST'>
                         <input type='hidden' name='action' value='download'>
@@ -400,10 +414,32 @@ class File(db.Model):
                         <input type='hidden' name='user_id' value='{self.author_id}'>
                         <button type='submit' class='delete-btn'>🗑️</button>
                     </form>
+                    
                 </span>
             </span>
         </li>
         """
+
+
+class Comment(db.Model):
+    __tablename__ = 'comment'
+    id = db.Column(db.Integer, primary_key=True)
+    author_id = db.Column(db.Integer, db.ForeignKey('user.id'))  # 评论者的id
+    file_id = db.Column(db.Integer, db.ForeignKey('file.id'))
+    content = db.Column(db.Text, nullable=False)  # 评论内容, 不能为空
+    # created_on = db.Column(db.DateTime, default=datetime.utcnow)
+    file_id = db.Column(db.Integer, db.ForeignKey('file.id'), nullable=False)
+
+    def delete(self):
+        db.session.delete(self)
+        db.session.commit()
+
+    @classmethod
+    def create(cls, content, file_id, author_id):
+        comment = cls(content=content, file_id=file_id, author_id=author_id)
+        db.session.add(comment)
+        db.session.commit()
+        return comment
 
 
 class Folder(db.Model):
@@ -586,8 +622,10 @@ class Folder(db.Model):
             cnt = cnt_
         html += "</ul>"
         html += "<ul class='filelist'>"
+        cnt1 = 0
         for file in self.files:
-            html += file.html_form()
+            html += file.html_form(cnt1)
+            cnt1 += 1
         html += "</ul></li>"
         return html
 

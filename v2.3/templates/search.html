@@ -5,15 +5,15 @@
 <body>
     <div class="container">
         <div class="search-wrapper">
-            <h1>搜索</h1>
-            <form method="POST">
-                <label for="search_type">搜索类型:</label>
+            <h1 style="left: 50%;">搜索</h1>
+            <form method="POST" style="width: 600px;">
+                <label for="search_type" style="font-size: 25px;">搜索类型:</label>
                 <select name="search_type" id="search_type">
                     <option value="user">用户</option>
                     <option value="file">文件</option>
                 </select>
                 <br>
-                <label for="query">搜索内容:</label>
+                <label for="query" style="font-size: 25px;">搜索内容:</label>
                 <input type="text" name="query" id="query" required>
                 <br>
                 <input type="submit" value="搜索">
@@ -22,19 +22,28 @@
 
             {% if results %}
             <h3>搜索结果</h3>
-            <ul>
+
+                <ul class='filelist'>
                 {% for result in results %}
                     {% if s_type == "file" %}
-                    <li><a href="{{ url_for('download', file_id=result.id) }}">{{ result.filename }}</a></li>
+                    <li class='file-item'>
+                        <span class='file-icon'>📄
+                            <span class='file'>
+                                <a href="{{ url_for('download', file_id=result.id) }}" class="file-link">{{ result.filename }}</a>
+                            </span>
+                        </span>
+                    </li>
+                </ul>
                     {% elif s_type == "user" %}
-                    <li><a href="{{ url_for('profile', user_id=result.id) }}">{{ result.username }}</a></li>
+                    <li><a href="{{ url_for('profile', user_id=result.id) }}" class="user-link">{{ result.username }}</a></li>
                     {% endif %}
                 {% endfor %}
-            </ul>
 
+                </ul>
             </div>
 
     </div>
+<br>
 </body>
 {% endif %}
 {% endblock %}

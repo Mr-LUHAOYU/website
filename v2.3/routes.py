@@ -1,13 +1,14 @@
 from typing import Any
 
-from flask import render_template, redirect, url_for, flash, request, session, jsonify, abort
+from flask import render_template, redirect, url_for, flash, request, session, jsonify, abort, make_response
 from werkzeug.utils import secure_filename, send_from_directory
 import os
 from app import app, db
-from models import User, File, UserDynamicInfo, UserStaticInfo, Folder
+from models import User, File, UserDynamicInfo, UserStaticInfo, Folder, Comment
 from datetime import datetime
 from config import Config
 import markdown2
+from sqlalchemy.orm import joinedload
 # from flask import send_from_directory
 
 
@@ -69,7 +70,8 @@ def profile(user_id):
     # 读取/static/extras/user.uid/BIO.txt文件，并渲染为markdown
     user_bio_markdown = ""
     with open(os.path.join(app.static_folder, 'extras', str(user.uid), 'BIO.txt'), 'r', encoding='utf-8') as f:
-        user_bio_markdown = f.read()
+        with open(os.path.join('static/extras', str(user.uid), 'BIO.txt'), 'r', encoding='utf-8') as f:
+            user_bio_markdown = f.read()
 
     user_bio_markdown = markdown2.markdown(user_bio_markdown)
     # user_bio_markdown = markdown2.markdown(user.bio or "这个用户还没有填写个人简介")
@@ -143,15 +145,23 @@ def user_filelist(user_id, subfolder_id=0):
             file_id = request.form.get('file_id')
             file = File.query.get_or_404(file_id)
             lis = [parent.id for parent in file.folders]
-            if len(lis) == 1:
-                parent_folder_id = lis[0]
-            else:
-                parent_folder_id = 0
+            # if len(lis) == 1:
+            #     parent_folder_id = lis[0]
+            # else:
+            #     parent_folder_id = 0
             file.download()
-            filepath = rf'E:\Web Project\WEB\v2.3\files\ '
+            filepath = rf'E:\Web Project\WEB\v2.3\files\\'
             flash(filepath)
-            return send_from_directory(filepath, file.filename, as_attachment=True, environ=request.environ)
-            # return redirect(url_for('user_filelist', user_id=user.id, subfolder_id=parent_folder_id))
+            # 创建响应对象
+            response = make_response(
+                send_from_directory(filepath, file_id, as_attachment=True, environ=request.environ))
+
+            # 设置新的文件名
+            new_filename = file.filename.encode('utf-8', 'replace').decode('latin-1')
+            response.headers["Content-Disposition"] = f"attachment; filename={new_filename}"
+
+            return response
+
         elif action == 'subfolder':  # 进入子文件夹
             folder_id = request.form.get('folder_id')
             folder = Folder.query.get(folder_id)
@@ -204,32 +214,22 @@ def upload(parent_id):
             return redirect(url_for('user_filelist', user_id=user.id, subfolder_id=parent_id))
     return render_template('upload.html', parent_id=request.args.get('parent_id'))
 
-#
-# @app.route('/user_filelist/<int:file_id>')
-# def download(file_id):
-#     # print("here download")
-#     file = File.query.get_or_404(file_id)
-#     file.download()
-#     filepath = rf"E:\Web Project\WEB\v2.3\files\{file_id}"
-#     flash(filepath)
-#     # # 输出文件的绝对路径
-#     # return send_from_directory(app.config['UPLOAD_FOLDER'], file.filename, as_attachment=True,
-#     #                            environ=request.environ)
-#     return send_from_directory(filepath, file.filename, as_attachment=True,
-#                                environ=request.environ)
-#     # filepath = file.PATH
-#     # try:
-#     #     # 检查文件是否存在
-#     #     if not os.path.isfile(os.path.join(filepath, file.filename)):
-#     #         abort(404)  # 文件未找到
-#     #
-#     #     # 发送文件
-#     #     send_from_directory(filepath, file.filename, as_attachment=True, environ=request.environ)
-#     #     flash("error")
-#     #     return redirect(url_for('user_filelist', user_id=file.author_id, subfolder_id=file.id))
-#     # except Exception as e:
-#     #     # 捕获任何其他异常并返回500错误
-#     #     return str(e), 500
+
+@app.route('/download/<string:file_id>')
+def download(file_id):
+    file = File.query.get_or_404(file_id)
+    file.download()
+    filepath = rf'E:\Web Project\WEB\v2.3\files\\'
+    flash(filepath)
+    # 创建响应对象
+    response = make_response(
+        send_from_directory(filepath, file_id, as_attachment=True, environ=request.environ))
+
+    # 设置新的文件名
+    new_filename = file.filename.encode('utf-8', 'replace').decode('latin-1')
+    response.headers["Content-Disposition"] = f"attachment; filename={new_filename}"
+
+    return response
 
 
 @app.route('/search', methods=['GET', 'POST'])
@@ -240,10 +240,10 @@ def search():
         query = request.form.get('query')
         results = []
         if search_type == 'user':
-            results = User.query.filter(User.contains(query)).all()
+            results = UserDynamicInfo.query.filter(UserDynamicInfo.username.contains(query)).all()
         elif search_type == 'file':
             results = File.query.filter(File.filename.contains(query)).order_by(File.download_count.desc()).all()
-        print(results)
+        # print(results)
         return render_template('search.html', results=results, s_type=search_type)
     return render_template('search.html')
 
@@ -427,3 +427,88 @@ def delete_file():
         flash('文件删除成功')
     return redirect(url_for('user_filelist', user_id=user_id))
 
+
+# 用户广场
+@app.route('/playground', methods=['GET', 'POST'])
+def playground():
+    user_id = session.get('user_id')
+    user = User.query.get_or_404(user_id)
+    # 获取当前时间
+    date = datetime.now().date()
+
+    if request.method == 'POST':
+        action = request.form.get('action')
+
+        if action == 'upload':  # 上传文件
+            # TODO
+            ...
+        elif action == 'grade':  # 成绩查询
+            # TODO
+            ...
+        elif action == 'homework':  # 作业查询
+            # TODO
+            ...
+        elif action == 'profile':  # 个人主页
+            # TODO
+            ...
+        elif action == 'download':  # 下载文件
+            file_id = request.form.get('file_id')
+            file = File.query.get_or_404(file_id)
+            file.download()
+            filepath = rf'E:\Web Project\WEB\v2.3\files\\'
+            flash(filepath)
+            # 创建响应对象
+            response = make_response(
+                send_from_directory(filepath, file_id, as_attachment=True, environ=request.environ))
+
+            # 设置新的文件名
+            new_filename = file.filename.encode('utf-8', 'replace').decode('latin-1')
+            response.headers["Content-Disposition"] = f"attachment; filename={new_filename}"
+
+            return response
+        elif action == 'comment':  # 评论
+            file_id = request.form.get('file_id')
+            author_id = request.form.get('author_id')
+            comment_content = request.form.get('comment')
+
+            comment = Comment(content=comment_content, author_id=author_id, file_id=file_id)
+            db.session.add(comment)
+            db.session.commit()
+
+    # 列出所有文件,然后按上传时间排序
+    files = File.query.order_by(File.uploaded_on.desc()).all()
+    # 列出所有用户，以字典形式返回，key为id，value为用户名
+    users = {user.id: user.dynamic_info.username for user in User.query.all()}
+    return render_template('playground.html', date=date, files=files, users=users, user=user,user_id=user_id)
+
+
+# 上传文件
+@app.route('/submit/<int:parent_id>', methods=['GET', 'POST'])
+def submit(parent_id):
+    # 获取所有权限为888的用户，表示教师用户
+    users = UserStaticInfo.query.filter_by(permission_level=888).all()
+    # 获取users的所有文件夹
+    folder_ids = [user.folder_id for user in users]
+
+    if request.method == 'POST':
+        if 'file' not in request.files:
+            flash('未选择文件')
+            return redirect(request.url)
+        file = request.files['file']
+        if not file:
+            flash('未选择文件')
+            return redirect(request.url)
+        if file.filename == '':
+            flash('未选择文件')
+            return redirect(request.url)
+        if file:
+            # filename = secure_filename(file.filename)
+            user_id = session.get('user_id')
+            user = User.query.get_or_404(user_id)
+            # parent_id = request.form.get('parent_id')
+            # print('upload', parent_id)
+            user.upload(file, parent_id)
+            flash('文件上传成功')
+            return redirect(url_for('user_filelist', user_id=user.id, subfolder_id=parent_id))
+
+    return render_template('submit.html', folder_ids=folder_ids, parent_id=parent_id)

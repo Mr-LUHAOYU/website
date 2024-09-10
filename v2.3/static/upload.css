@@ -1,0 +1,38 @@
+.container {
+    height: 100%;
+    display: flex;// 弹性布局
+    flex-direction: column; // 垂直排列
+}
+
+.upload-wrapper {
+    background-color: #fff;
+    opacity: 0.9;
+    width: 800px;
+    border-radius: 15px;
+    padding: 0 30px;
+    position: relative;
+    left: 0%;
+    top: 100px;
+    /*transform: translate(-72%, -150%); /* 使元素居中 */
+    border: 5px solid #c2e9fb; /* 增加的边框 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: -50px;
+}
+
+.header {
+    font-size: 38px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 200px;
+}
+
+.custom-file-upload{
+    font-size: 30px;
+    border: none;
+
+    }
+

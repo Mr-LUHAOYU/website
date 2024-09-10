@@ -18,10 +18,34 @@
         </form>
         <div class="msg">
             Already have an account?
-            <a href="{{ url_for('login') }}">Sign in</a>
+            <button type="button" class="primary-btn"  onclick="window.location.href='{{ url_for('login') }}'">Log in</button>
         </div>
 
     </div>
+
+    <style>
+        .primary-btn {
+            background-color: transparent;
+            border-radius: 20px;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+
+        }
+
+        .primary-btn:hover {
+
+
+            background-color: #e0c8d0;
+            color: purple; //字体颜色
+            border: 1px solid #000; //边框颜色
+            transition: all 0.3s ease; //过渡效果
+        }
+
+    </style>
 
 
 {% endblock %}

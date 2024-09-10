@@ -14,7 +14,7 @@
     opacity: 0.9;
     width: 1500px;
     border-radius: 15px;
-    padding: 0 50px;
+    padding: 0 30px;
     position: relative;
     left: 0%;
     top: 100px;
@@ -25,7 +25,7 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
+    margin-top: -50px;
 }
 
 .filelist-header {
@@ -41,27 +41,23 @@
     display: flex;
     flex-direction: column;
     align-items: flex-start; // 居中
-
     justify-content: flex-start; // 居中
     list-style-type: none; //列表样式
     padding: 0;
     width: 100%;
     flex-wrap: wrap;
-
-    margin-left:40px;
+    margin-left: 40px;
 }
 
 .folderButtonList{
     display: flex;
     flex-direction: row;
     align-items: flex-start; // 居中
-
     justify-content: flex-start; // 居中
     list-style-type: none; //列表样式
     padding: 0;
     width: 100%;
     flex-wrap: wrap;
-
     margin-left:40px;
 }
 
@@ -69,7 +65,6 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-
     width: auto;
     background-color: #fff;
     margin-bottom: 15px;
@@ -197,3 +192,17 @@ form input[type="submit"]:hover {
     justify-content: center;
 
 }
+
+.file-name {
+    cursor: pointer;
+}
+
+.popup {
+    display: none;
+    position: absolute;
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+

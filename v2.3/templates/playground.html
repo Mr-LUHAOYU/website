@@ -1,0 +1,129 @@
+{% extends "background.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='playground.css') }}">
+<title>Playground</title>
+<div class="container">
+    <div class="page-wrapper">
+        <div class="row-wrapper">
+            <br>
+            <div class="date-wrapper">
+                <div class="date">
+                    <i class="fas fa-calendar-alt"></i> <!-- 使用 FontAwesome 的日历图标 -->
+                    <p class="current-date">当前日期: {{ date.strftime('%Y-%m-%d') }}</p>
+                </div>
+            </div>
+            <br>
+
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="请输入搜索内容...">
+                <button class="search-button">
+                    <img src="{{ url_for('static', filename='/pic/search-pic.png') }}" alt="search", width="20" height="20">
+                </button>
+            </div>
+            <br>
+        </div>
+
+        <div class="row-wrapper">
+
+            <div class="row-item">
+                <a class="upload-link" href="{{ url_for('submit',parent_id=0) }}">
+                        上传文件
+                    </a>
+                </a>
+            </div>
+
+            <div class="row-item">
+                <a class="score-link">
+
+                    <p>成绩单</p>
+                </a>
+            </div>
+
+            <div class="row-item">
+                <a class="homework-link">
+
+                    <p>我的作业</p>
+                </a>
+            </div>
+
+            <div class="row-item">
+                <a class="profile-link" href="{{ url_for('profile', user_id=user.id) }}">
+                    <p>个人主页</p>
+                </a>
+            </div>
+            <br>
+
+        </div>
+        <br>
+
+        <div class="playground">
+            {% for file in files %}
+            <div class="info-display">
+                <div class="user_display">
+                    <div class="avatar-container">
+                        <img src="{{url_for('static',filename='extras/' ~ (file.author_id + 100000) ~ '/IMG.png')}}" alt="头像" class="avatar">
+                    </div>
+                    <div class="user-name">
+                        <p class="user-name">{{ users[file.author_id] }}</p>
+                    </div>
+                </div>
+                <li class='file-item'>
+                    <span class='file-icon'>📄
+                        <span class='file'>
+<!--                            <a class="file-link" href="{{ url_for('download', file_id=file.id) }}" download>{{ file.filename }}</a>-->
+                            <div class="file-name" data-file-id="{{file.id}}">{{file.filename}}</div>
+                            <div class="popup" id="popup-{{file.id}}">
+                                <p>Filename: {{file.filename}}</p>
+                                <p>downloads: {{file.download_count}}</p>
+                                <p>Uploaded: {{file.uploaded_on.strftime("%Y-%m-%d %H:%M:%S")}}</p>
+                            </div>
+
+                            <form method='POST'>
+                                <input type='hidden' name='action' value='download'>
+                                <input type='hidden' name='file_id' value='{{file.id}}'>
+                                <button type='submit' class='download-btn'>🔗</button>
+                            </form>
+
+                            <form method='POST'>
+                                <input type='hidden' name='action' value='comment'>
+                                <input type='hidden' name='file_id' value='{{file.id}}'>
+                                <input type="hidden" name="author_id" value="{{user.id}}">
+                                <input type='text' name='comment' placeholder='添加评论...'>
+                                <button type='submit' class='comment-btn'>💬</button>
+
+                            </form>
+                        </span>
+                    </span>
+                </li>
+
+            </div>
+            {% endfor %}
+        </div>
+        <br>
+    </div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+            const fileNames = document.querySelectorAll('.file-name'); // 选择器
+            fileNames.forEach(fileName => {
+                fileName.addEventListener('mouseover', function() {
+                    const fileId = fileName.getAttribute('data-file-id');
+                    const popup = document.getElementById(`popup-${fileId}`);
+                    popup.style.display = 'block';
+                    const rect = fileName.getBoundingClientRect();
+                    popup.style.left = `${rect.left+130}px`;
+                    popup.style.top = `${rect.bottom-130}px`;
+                });
+
+                fileName.addEventListener('mouseout', function() {
+                    const fileId = fileName.getAttribute('data-file-id');
+                    const popup = document.getElementById(`popup-${fileId}`);
+                    popup.style.display = 'none';
+                });
+            });
+        });
+</script>
+{% endblock %}
