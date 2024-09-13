@@ -1,0 +1,71 @@
+{% extends "background.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='filelist.css') }}">
+
+<title>User Files</title>
+
+<body>
+    <div class="container">
+        <div class="filelist-wrapper">
+            <div class="filelist-header">
+                <h1>User Files</h1>
+            </div>
+
+            <p>{{ parent_folder_id }}</p>
+            <ul class="filelist">
+
+
+                {{ files | safe }}
+            </ul>
+
+        </div>
+
+    </div>
+
+
+<!--    {{script |safe}}-->
+<!--    <script src="{{ url_for('static', filename='file_modal.js') }}"></script>-->
+<script>
+    document.getElementById('folderForm').addEventListener('submit', function(event) {
+        event.preventDefault(); // 阻止表单默认提交行为
+
+        const form = event.target;
+        const action = form.action.value;
+
+        if (action === 'upload') {
+
+            form.submit(); // 提交表单
+        }else if (action === 'new_folder') {
+            const newName = prompt('请输入新的文件夹名称:');
+            if (newName) {
+                form.folder_name.value = newName;
+                form.submit(); // 提交表单
+            }
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+            const fileNames = document.querySelectorAll('.file-name'); // 选择器
+            fileNames.forEach(fileName => {
+                fileName.addEventListener('mouseover', function() {
+                    const fileId = fileName.getAttribute('data-file-id');
+                    const popup = document.getElementById(`popup-${fileId}`);
+                    popup.style.display = 'block';
+                    const rect = fileName.getBoundingClientRect();
+                    popup.style.left = `${rect.left+130}px`;
+                    popup.style.top = `${rect.bottom-130}px`;
+                });
+
+                fileName.addEventListener('mouseout', function() {
+                    const fileId = fileName.getAttribute('data-file-id');
+                    const popup = document.getElementById(`popup-${fileId}`);
+                    popup.style.display = 'none';
+                });
+            });
+        });
+</script>
+
+</body>
+{% endblock %}
+

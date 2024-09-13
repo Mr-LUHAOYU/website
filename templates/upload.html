@@ -1,0 +1,26 @@
+{% extends "background.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='upload.css') }}">
+<div class="container">
+
+
+    <div class=upload-wrapper>
+        <div class="header">上传文件</div>
+
+        <form method="POST" enctype="multipart/form-data">
+<!--            <label for="file" class="custom-file-upload">选择文件</label>-->
+            <input type="file" name="file" id="file" required class="custom-file-upload">
+            <br>
+            <input type="submit" value="上传" class="btn btn-primary">
+            <input type="hidden" name="parent_id" value={{ parent_id }}>
+<!--    <input type="hidden" name="return_url" value={{ return_url }}>-->
+        </form>
+        <br>
+
+
+    </div>
+</div>
+
+<a href="{{ url_for('profile', user_id=session.get('user_id')) }}">返回个人主页</a>
+{% endblock %}

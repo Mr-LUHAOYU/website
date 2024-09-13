@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>{{ user.username }}的文件列表</h2>
+
+{% if files %}
+    <ul>
+    {% for file in files %}
+        <li>
+            <a href="{{ url_for('download_file', file_id=file.id) }}">{{ file.filename }}</a>
+            (下载次数: {{ file.download_count }})
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>您还没有上传任何文件。</p>
+{% endif %}
+
+<a href="{{ url_for('upload') }}">上传新文件</a>
+<a href="{{ url_for('profile', user_id=user.id) }}">返回个人主页</a>
+{% endblock %}
