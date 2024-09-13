@@ -13,6 +13,7 @@ class Config:
     # UPLOAD_FOLDER = 'static/uploads'
     # IMG_FOLDER = 'static/img'
     IMG_ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+    LOCAL_PATH = rf'E:\Web Project\WEB\v2.3\files\\'
 
     @staticmethod
     def ROOT_PATH(uid):

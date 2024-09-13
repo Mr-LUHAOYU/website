@@ -310,7 +310,7 @@ class File(db.Model):
         # return rf"F:\website\workspace\v2.3\files\{self.id}"
         # return rf"\v2.3\files\{self.id}"
         # return rf"files\{self.id}"
-        return rf"E:\Web Project\WEB\v2.3\files\{self.id}"
+        return f"{Config.LOCAL_PATH}{self.id}"
 
     # def delete(self, first=True):
     #     if first:

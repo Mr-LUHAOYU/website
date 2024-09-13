@@ -150,7 +150,7 @@ def user_filelist(user_id, subfolder_id=0):
             # else:
             #     parent_folder_id = 0
             file.download()
-            filepath = rf'E:\Web Project\WEB\v2.3\files\\'
+            filepath = Config.LOCAL_PATH
             flash(filepath)
             # 创建响应对象
             response = make_response(
