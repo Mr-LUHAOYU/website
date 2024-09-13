@@ -479,7 +479,10 @@ def playground():
     files = File.query.order_by(File.uploaded_on.desc()).all()
     # 列出所有用户，以字典形式返回，key为id，value为用户名
     users = {user.id: user.dynamic_info.username for user in User.query.all()}
-    return render_template('playground.html', date=date, files=files, users=users, user=user,user_id=user_id)
+    # 列出所有文件的评论，以字典形式返回，key为file_id，value为评论列表
+    comments = {file.id: file.comments for file in files}
+    return render_template('playground.html', date=date, files=files, users=users, user=user,
+                           user_id=user_id, comments=comments)
 
 
 # 上传文件

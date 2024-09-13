@@ -62,11 +62,11 @@
             {% for file in files %}
             <div class="info-display">
                 <div class="user_display">
-                    <div class="avatar-container">
-                        <img src="{{url_for('static',filename='extras/' ~ (file.author_id + 100000) ~ '/IMG.png')}}" alt="头像" class="avatar">
-                    </div>
+<!--                    <div class="avatar-container">-->
+<!--                        <img src="{{url_for('static',filename='extras/' ~ (file.author_id + 100000) ~ '/IMG.png')}}" alt="头像" class="avatar">-->
+<!--                    </div>-->
                     <div class="user-name">
-                        <p class="user-name">{{ users[file.author_id] }}</p>
+                        <p class="user-name">上传者：{{ users[file.author_id] }}</p>
                     </div>
                 </div>
                 <li class='file-item'>
@@ -86,14 +86,47 @@
                                 <button type='submit' class='download-btn'>🔗</button>
                             </form>
 
-                            <form method='POST'>
-                                <input type='hidden' name='action' value='comment'>
-                                <input type='hidden' name='file_id' value='{{file.id}}'>
-                                <input type="hidden" name="author_id" value="{{user.id}}">
-                                <input type='text' name='comment' placeholder='添加评论...'>
-                                <button type='submit' class='comment-btn'>💬</button>
 
-                            </form>
+
+                            <button id="CommentBtn" class="comment-btn">💬</button>
+
+                            <div id="CommentModal" class="modal">
+                                <div class="modal-content">
+                                    <span class="closeComment">&times;</span>
+                                    <h2>评论</h2>
+
+                                    <form method="POST" class="comment-form">
+                                        <input type="hidden" name="action" value="comment">
+                                        <input type="hidden" name="file_id" value="{{ file.id }}">
+                                        <input type="hidden" name="author_id" value="{{ user.id }}">
+                                        <input type="text" name="comment" placeholder="发表你的想法..." class="comment-input">
+                                        <button type="submit" class="comment-btn">💬</button>
+                                    </form>
+
+                                    <br>
+                                    <h3>评论列表</h3>
+                                    <div id="comments-container">
+                                        {% for comment in comments[file.id] %}
+                                            {% if loop.index <= 5 %}
+                                                <div class="comment-item">
+                                                    <p class="comment-user">{{ users[comment.author_id] }}</p>
+                                                    <p class="comment-content">{{ comment.content }}</p>
+                                                </div>
+                                            {% else %}
+                                                <div class="comment-item" hidden>
+                                                    <p class="comment-user">{{ users[comment.author_id] }}</p>
+                                                    <p class="comment-content">{{ comment.content }}</p>
+                                                </div>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    {% if comments[file.id]|length > 5 %}
+                                        <button id="show-more-comments" class="show-more-comments">显示更多评论</button>
+                                        <button id="hide-comments" class="hide-comments" style="display:none;">收起评论</button>
+                                    {% endif %}
+
+                                </div>
+                            </div>
                         </span>
                     </span>
                 </li>
@@ -106,6 +139,33 @@
 </div>
 
 <script>
+
+    var comment_modals = document.querySelectorAll(".modal");
+
+    var comment_spans = document.querySelectorAll(".closeComment");
+
+    var comment_btns = document.querySelectorAll(".comment-btn");
+
+    comment_btns.forEach(function(btn, index) {
+        btn.onclick = function() {
+            comment_modals[index].style.display = "block";
+        }
+    });
+
+    comment_spans.forEach(function(span, index) {
+        span.onclick = function() {
+            comment_modals[index].style.display = "none";
+        }
+    });
+
+    window.onclick = function(event) {
+        comment_modals.forEach(function(modal) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        });
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
             const fileNames = document.querySelectorAll('.file-name'); // 选择器
             fileNames.forEach(fileName => {
@@ -125,5 +185,27 @@
                 });
             });
         });
+
+    document.getElementById('show-more-comments').addEventListener('click', function() {
+        var comments = document.querySelectorAll('#comments-container .comment-item');
+        comments.forEach(function(comment) {
+            comment.removeAttribute('hidden');
+        });
+        this.style.display = 'none';
+        document.getElementById('hide-comments').style.display = 'inline';
+    });
+
+    document.getElementById('hide-comments').addEventListener('click', function() {
+        var comments = document.querySelectorAll('#comments-container .comment-item');
+        comments.forEach(function(comment, index) {
+            if (index >= 5) {
+                comment.setAttribute('hidden', true);
+            }
+        });
+        this.style.display = 'none';
+        document.getElementById('show-more-comments').style.display = 'inline';
+    });
+
+
 </script>
 {% endblock %}
