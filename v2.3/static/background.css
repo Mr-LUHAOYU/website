@@ -1,0 +1,63 @@
+ul{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+
+
+}
+
+#nav {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    height: 50px;
+    width: 800px;
+    position: relative;
+    border: none;
+    border-radius: 10em;
+    display: flex;
+    list-style: none;
+    background: #f5f5f5;
+    box-shadow: 20px 40px 40px #00000033;
+    padding: 10px;
+    width: auto;
+}
+
+#nav li a {
+    position: relative;
+    padding: 15px 50px;
+    font: 500 24px '优设标题黑';
+    border: none;
+    outline: none;
+    color: rgb(70, 100, 180);
+    display: inline-block;
+    text-decoration: none;
+    z-index: 3;
+    transition: all 0.3s ease;
+}
+
+.slide1,
+.slide2 {
+    position: absolute;
+    display: inline-block;
+    height: 30px;
+    border-radius: 10em;
+    transition: all 0.6s cubic-bezier(0.23, 1, 0.32, 1.05);
+}
+
+.slide1 {
+    background-color: rgb(170, 190, 255);
+    z-index: 2;
+}
+
+.slide2 {
+    opacity: 0;
+    background-color: rgba(170, 190, 255, .5);
+    z-index: 1;
+    box-shadow: 0 0 20px #ffffffaa inset;
+}
+
+.squeeze {
+    transform: scale(0.9);
+}
