@@ -1,0 +1,72 @@
+ .container {
+    display: flex;
+    position: absolute;
+    top: 350px;
+    left: 580px;
+}
+
+.content-wrapper {
+    text-align: center; // 居中显示
+    position: relative;
+    z-index: 2;
+    height: 100%;
+}
+
+.header {
+    /*position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+    font-size: 30px;
+    color: #fff;
+    text-shadow: 1px 1px 2px #000;*/
+}
+
+.welcome-message {
+    font-size: 56px; /* 增大字体 */
+    font-weight: bold; /* 加粗字体 */
+    color: white; /* 设置字体颜色为白色 */
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* 添加文字阴影 */
+    margin-bottom: 20px;
+}
+.arrow {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-top: 10px solid transparent;
+    border-bottom: 10px solid transparent;
+}
+
+.left-arrow {
+    left: -40px; /* 调整箭头与按钮的距离 */
+    border-right: 20px solid #ff1493; /* 深粉红色箭头 */
+}
+
+.right-arrow {
+    right: -40px; /* 调整箭头与按钮的距离 */
+    border-left: 20px solid #ff1493; /* 深粉红色箭头 */
+}
+
+.button-wrapper {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    margin-top: 20px;
+}
+.start-button {
+    padding: 12px 25px;
+    font-size: 25px;
+    font-weight: bold;
+    background-image: linear-gradient(to right, #a6c1ee, #fbc2eb);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    transition: background-image 0.3s ease, transform 0.3s ease;
+}
+
+.start-button:hover {
+    background-image: linear-gradient(to right, #feb47b, #ff7e5f, #fad0c4, #ff9a9e); /* 悬停时反向渐变 */
+    transform: scale(1.05); /* 悬停时略微放大 */
+}
