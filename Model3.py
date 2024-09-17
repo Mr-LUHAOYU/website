@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
 
@@ -30,6 +32,21 @@ class User(db.Model):
     posts = db.relationship('Post', backref='owner', lazy='dynamic')
     comments = db.relationship('Comment', backref='owner', lazy='dynamic')
 
+    # attributes: 用户基本信息 modified=2
+    email = db.Column(db.String(50))
+    phone = db.Column(db.String(20))
+    address = db.Column(db.String(100))
+    birthday = db.Column(db.DateTime)
+    sex = db.Column(db.String(10))
+    real_name = db.Column(db.String(20))
+    student_id = db.Column(db.String(20))
+    introduction = db.Column(db.String(200))
+    avatar = db.Column(db.String(100))
+
+    # attributes: 用户内置信息 modified=0
+    register_time = db.Column(db.DateTime, default=datetime.utcnow)
+    last_login_time = db.Column(db.DateTime, default=datetime.utcnow)
+
     # 注册
     @staticmethod
     def register(username, password):
@@ -49,13 +66,20 @@ class User(db.Model):
         user = User.query.filter_by(username=username, password=password).first()
         return user
 
+    def logout(self):
+        pass
+
     # 修改密码
-    def change_password(self, old_password, new_password):
-        if self.password == old_password:
-            self.password = new_password
-            db.session.commit()
-            return True
-        return False
+    def set_password(self, password):
+        self.password = password
+        db.session.commit()
+
+    def change_img(self, img):
+        img.save(f'files/{self.id}.png')
+        return True
+
+    def delete(self):
+        ...
 
 
 class File(db.Model):
@@ -71,7 +95,7 @@ class File(db.Model):
     # 上传
     @staticmethod
     def upload(folder_id, user_id, file_obj):
-        file = File(name=file_obj['name'], size=file_obj['size'], owner_id=user_id)
+        file = File(name=file_obj.filename, size=file_obj.content_length, owner_id=user_id)
         db.session.add(file)
         db.session.commit()
 
@@ -122,9 +146,11 @@ class Folder(db.Model):
 
     # 创建
     @staticmethod
-    def create(name, owner_id):
+    def create(name, owner_id, parent_id):
         folder = Folder(name=name, owner_id=owner_id)
         db.session.add(folder)
+        db.session.commit()
+        folder.parent_folders.append(folder)
         db.session.commit()
         return folder
 

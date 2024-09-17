@@ -30,3 +30,13 @@ class Config:
     @staticmethod
     def BIO_PATH(uid):
         return f"static/extras/{uid}/BIO.txt"
+
+
+def validate_password(password):
+    if not 6 <= len(password) <= 18:
+        return False, "密码长度必须大于等于6位小于等于18位"
+    if not any(char.isdigit() for char in password):
+        return False, "密码必须同时包含字母和数字"
+    if not any(char.isalpha() for char in password):
+        return False, "密码必须同时包含字母和数字"
+    return True, "密码修改成功"

@@ -4,9 +4,10 @@ from flask import render_template, redirect, url_for, flash, request, session, j
 from werkzeug.utils import secure_filename, send_from_directory
 import os
 from app import app, db
-from models import User, File, UserDynamicInfo, UserStaticInfo, Folder, Comment
+# from models import User, File, UserDynamicInfo, UserStaticInfo, Folder, Comment
+from Model3 import *
 from datetime import datetime
-from config import Config
+from config import Config, validate_password
 import markdown2
 from sqlalchemy.orm import joinedload
 # from flask import send_from_directory
@@ -24,11 +25,8 @@ def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
-        user = UserDynamicInfo.query.filter_by(username=username).first()
-        if user and user.check_password(password):
-            session['user_id'] = user.id
-            user = User.query.get_or_404(user.user_id)
-            user.static_info.login()
+        user = User.login(username, password)
+        if user:
             return redirect(url_for('profile', user_id=user.id))
         else:
             flash('账号或密码错误')
@@ -54,10 +52,6 @@ def register():
             flash('该用户名已被注册')
         else:
             User.register(username, password)
-            # user = User(username=username)
-            # user.set_password(password)
-            # db.session.add(user)
-            # db.session.commit()
             flash('注册成功，请登录')
             return redirect(url_for('login'))
     return render_template('register.html')
@@ -69,9 +63,8 @@ def profile(user_id):
     user = User.query.get_or_404(user_id)
     # 读取/static/extras/user.uid/BIO.txt文件，并渲染为markdown
     user_bio_markdown = ""
-    with open(os.path.join(app.static_folder, 'extras', str(user.uid), 'BIO.txt'), 'r', encoding='utf-8') as f:
-        with open(os.path.join('static/extras', str(user.uid), 'BIO.txt'), 'r', encoding='utf-8') as f:
-            user_bio_markdown = f.read()
+    with open(f'files/{user.id}.md', 'r', encoding='utf-8') as f:
+        user_bio_markdown = f.read()
 
     user_bio_markdown = markdown2.markdown(user_bio_markdown)
     # user_bio_markdown = markdown2.markdown(user.bio or "这个用户还没有填写个人简介")
@@ -96,7 +89,7 @@ def profile(user_id):
     )
     ##################################################################
     return render_template('profile.html', user=user,
-                           can_edit=True, img_path=f'extras/{user.uid}/IMG.png', bio_markdown=user_bio_markdown)
+                           can_edit=True, img_path=f'files/{user.id}.png', bio_markdown=user_bio_markdown)
 
 
 @app.route('/revise_info/<int:user_id>', methods=['GET', 'POST'])
@@ -119,6 +112,7 @@ def revise_info(user_id):
     return render_template('revise_info.html', user=user)
 
 
+# TODO: 重点看！
 @app.route('/user_filelist/<int:user_id>,<int:subfolder_id>', methods=['GET', 'POST'])
 def user_filelist(user_id, subfolder_id=0):
     # print("here user_filelist")
@@ -138,7 +132,7 @@ def user_filelist(user_id, subfolder_id=0):
                 return redirect(request.url)
             parent_folder_id = request.form.get('parent_id')
             parent_folder = Folder.query.get(parent_folder_id)
-            Folder.create(folder_name, parent_folder, user_id)
+            Folder.create(folder_name, user_id, parent_folder)
             flash('文件夹创建成功')
             return render_template('user_filelist.html', user=user, files=parent_folder.html_code())
         elif action == 'download':  # 下载文件
@@ -188,33 +182,26 @@ def user_filelist(user_id, subfolder_id=0):
 
 @app.route('/upload/<int:parent_id>', methods=['GET', 'POST'])
 def upload(parent_id):
-    # print("here upload")
-    # flash(parent_id)
     if request.method == 'POST':
         if 'file' not in request.files:
             flash('未选择文件')
             return redirect(request.url)
         file = request.files['file']
-        if not file:
+        if not file or file.filename == '':
             flash('未选择文件')
             return redirect(request.url)
-        if file.filename == '':
-            flash('未选择文件')
-            return redirect(request.url)
-        if file:
-            # filename = secure_filename(file.filename)
-            user_id = session.get('user_id')
-            user = User.query.get_or_404(user_id)
-            # parent_id = request.form.get('parent_id')
-            # print('upload', parent_id)
-            user.upload(file, parent_id)
-            flash('文件上传成功')
-            
-            flash(parent_id)
-            return redirect(url_for('user_filelist', user_id=user.id, subfolder_id=parent_id))
+        user_id = session.get('user_id')
+        user = User.query.get_or_404(user_id)
+        # user.upload(file, parent_id)
+        File.upload(parent_id, user_id, file)
+        flash('文件上传成功')
+
+        flash(parent_id)
+        return redirect(url_for('user_filelist', user_id=user.id, subfolder_id=parent_id))
     return render_template('upload.html', parent_id=request.args.get('parent_id'))
 
 
+# TODO: 传递文件对象而非文件路径
 @app.route('/download/<string:file_id>')
 def download(file_id):
     file = File.query.get_or_404(file_id)
@@ -232,6 +219,7 @@ def download(file_id):
     return response
 
 
+# TODO: 没看懂
 @app.route('/search', methods=['GET', 'POST'])
 def search():
     # print("here search")
@@ -295,21 +283,14 @@ def change_password(user_id):
     if request.method == 'POST':
         old_password = request.form.get('old_password')
         new_password = request.form.get('new_password')
-        if not user.dynamic_info.check_password(old_password):
+        if not user.check_password(old_password):
             flash('旧密码错误')
             return redirect(request.url)
-        msg = user.update_info(password=new_password)
+        flag, msg = validate_password(new_password)
         flash(msg)
+        if flag:
+            user.set_password(new_password)
         return redirect(url_for('profile', user_id=user.id))
-        # if not (any(char.isdigit() for char in new_password) and any(char.isalpha() for char in new_password)):
-        #     flash('密码必须同时包含字母和数字')
-        # elif not 6 <= len(new_password) <= 18:
-        #     flash('密码长度必须大于等于6位小于等于18位')
-        # else:
-        #     user.set_password(new_password)
-        #     db.session.commit()
-        #     flash('密码修改成功')
-        #     return redirect(url_for('profile', user_id=user.id))
 
     return render_template('change_password.html', user=user)
 
@@ -399,18 +380,19 @@ def change_user_permission(user_id):
 def update_bio(user_id):
     user = User.query.get(user_id)
     user_bio_markdown = ""
-    with open(os.path.join(app.static_folder, 'extras', str(user.uid), 'BIO.txt'), 'r', encoding='utf-8') as f:
+    with open(f'files/{user.uid}.md', 'r', encoding='utf-8') as f:
         user_bio_markdown = f.read()
 
     user_bio_markdown = request.form.get('user_bio_markdown', user_bio_markdown)
 
-    with open(os.path.join(app.static_folder, 'extras', str(user.uid), 'BIO.txt'), 'w', encoding='utf-8') as f:
+    with open(f'files/{user.uid}.md', 'w', encoding='utf-8') as f:
         f.write(user_bio_markdown)
     flash('个人简介更新成功')
     return redirect(url_for('profile', user_id=user.id))
 
 
 # 删除文件
+# TODO: 此处逻辑应修改
 @app.route('/file/delete/', methods=['POST'])
 def delete_file():
     if request.method == 'POST':
@@ -429,6 +411,7 @@ def delete_file():
 
 
 # 用户广场
+# TODO: 待完善
 @app.route('/playground', methods=['GET', 'POST'])
 def playground():
     user_id = session.get('user_id')
