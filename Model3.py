@@ -93,6 +93,11 @@ class File(db.Model):
             db.session.delete(self)
             db.session.commit()
 
+    def delete(self, folder_id):
+        self.parent_folders.remove(Folder.query.get(folder_id))
+        self.delete_if_unreferenced()
+        db.session.commit()
+
     # 共享
     def share_to(self, folder_id):
         folder = Folder.query.get(folder_id)
@@ -132,6 +137,11 @@ class Folder(db.Model):
                 child_folder.delete_if_unreferenced()
             db.session.delete(self)
             db.session.commit()
+
+    def delete(self, parent_folder_id):
+        self.parent_folders.remove(Folder.query.get(parent_folder_id))
+        self.delete_if_unreferenced()
+        db.session.commit()
 
     # 共享
     def share_to(self, folder_id):
