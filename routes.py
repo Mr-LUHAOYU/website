@@ -27,6 +27,7 @@ def login():
         password = request.form['password']
         user = User.login(username, password)
         if user:
+            session['user_id'] = user.id
             return redirect(url_for('profile', user_id=user.id))
         else:
             flash('账号或密码错误')
@@ -48,7 +49,7 @@ def register():
             flash('密码长度必须大于等于6位小于等于18位')
         elif password != confirm_password:
             flash('两次输入的密码不一致')
-        elif User.check_username_exist(username):
+        elif User.query.filter_by(username=username).first() is not None:
             flash('该用户名已被注册')
         else:
             User.register(username, password)
@@ -63,7 +64,7 @@ def profile(user_id):
     user = User.query.get_or_404(user_id)
     # 读取/static/extras/user.uid/BIO.txt文件，并渲染为markdown
     user_bio_markdown = ""
-    with open(f'files/{user.id}.md', 'r', encoding='utf-8') as f:
+    with open(f'static/extras/{user.id+100000}/BIO.txt', 'r', encoding='utf-8') as f:
         user_bio_markdown = f.read()
 
     user_bio_markdown = markdown2.markdown(user_bio_markdown)
@@ -87,9 +88,9 @@ def profile(user_id):
         username=username, password=password, real_name=real_name, email=email,
         phone=phone, student_id=student_id
     )
+    path = str(f'extras/{user.id+100000}/IMG.png')
     ##################################################################
-    return render_template('profile.html', user=user,
-                           can_edit=True, img_path=f'files/{user.id}.png', bio_markdown=user_bio_markdown)
+    return render_template('profile.html', user=user, can_edit=True, img_path=path,  bio_markdown=user_bio_markdown, pic_path="niubo")
 
 
 @app.route('/revise_info/<int:user_id>', methods=['GET', 'POST'])
@@ -228,7 +229,7 @@ def search():
         query = request.form.get('query')
         results = []
         if search_type == 'user':
-            results = UserDynamicInfo.query.filter(UserDynamicInfo.username.contains(query)).all()
+            results = User.query.filter(User.username.contains(query)).all()
         elif search_type == 'file':
             results = File.query.filter(File.filename.contains(query)).order_by(File.download_count.desc()).all()
         # print(results)
@@ -283,7 +284,8 @@ def change_password(user_id):
     if request.method == 'POST':
         old_password = request.form.get('old_password')
         new_password = request.form.get('new_password')
-        if not user.check_password(old_password):
+        # if not user.check_password(old_password):
+        if user.password != old_password:
             flash('旧密码错误')
             return redirect(request.url)
         flag, msg = validate_password(new_password)
@@ -300,7 +302,7 @@ def manage_users(user_id):
     # 获取所有用户
     user = User.query.get_or_404(user_id)
     users = User.query.all()
-    return render_template('all_users.html', user=user, users=users, img_path=f'extras/{user.uid}/IMG.png')
+    return render_template('all_users.html', user=user, users=users)
 
 
 @app.route('/heartbeat', methods=['POST'])
@@ -380,12 +382,13 @@ def change_user_permission(user_id):
 def update_bio(user_id):
     user = User.query.get(user_id)
     user_bio_markdown = ""
-    with open(f'files/{user.uid}.md', 'r', encoding='utf-8') as f:
+    path = Config.BIO_PATH(user.id)
+    with open(f'static/{path}', 'r', encoding='utf-8') as f:
         user_bio_markdown = f.read()
 
     user_bio_markdown = request.form.get('user_bio_markdown', user_bio_markdown)
 
-    with open(f'files/{user.uid}.md', 'w', encoding='utf-8') as f:
+    with open(f'static/{path}', 'w', encoding='utf-8') as f:
         f.write(user_bio_markdown)
     flash('个人简介更新成功')
     return redirect(url_for('profile', user_id=user.id))
@@ -472,7 +475,7 @@ def playground():
 @app.route('/submit/<int:parent_id>', methods=['GET', 'POST'])
 def submit(parent_id):
     # 获取所有权限为888的用户，表示教师用户
-    users = UserStaticInfo.query.filter_by(permission_level=888).all()
+    users = User.query.filter_by(permission_level=888).all()
     # 获取users的所有文件夹
     folder_ids = [user.folder_id for user in users]
 

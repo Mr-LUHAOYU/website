@@ -16,14 +16,14 @@
                     <div class="user-item">
                         <div class="user-info">
                             <div class="avatar-container">
-                                <img src="{{ url_for('static', filename=img_path) }}" alt="头像" class="avatar">
+                                <img src="{{ url_for('static', filename=user.avatar) }}" alt="头像" class="avatar">
                             </div>
                             <span class="user-name">
                                 <strong>姓名:</strong>
-                                <a href="{{ url_for('profile', user_id=user.id) }}" class="no-underline">{{ user.dynamic_info.username }}</a>
+                                <a href="{{ url_for('profile', user_id=user.id) }}" class="no-underline">{{ user.username }}</a>
                             </span>
                             <span class="user-level">
-                                <strong>level:</strong> {{ user.static_info.permission_level }}
+                                <strong>level:</strong> {{ user.permission_level }}
                             </span>
                         </div>
                     </div>
@@ -39,12 +39,12 @@
                     {% if  not (each_user.id == user.id)  %}
                     <li class="user-item">
                         <div class="avatar-container">
-                            <img src="{{ url_for('static', filename='extras/{}/IMG.png'.format(each_user.uid)) }}" alt="头像" class="avatar">
+                            <img src="{{ url_for('static', filename=user.avatar) }}" alt="头像" class="avatar">
                         </div>
                         <div class="user-info">
                             <span class="user-name">
                                 <strong>姓名:</strong>
-                                <a href="{{ url_for('profile', user_id=each_user.id) }}" class="no-underline">{{ each_user.dynamic_info.username }}</a>
+                                <a href="{{ url_for('profile', user_id=each_user.id) }}" class="no-underline">{{ each_user.username }}</a>
                             </span>
                             <form method="POST" action="{{ url_for('change_user_permission', user_id=user.id) }}" class="change-level-form">
                                 <input type="number" id="each_user_id" name="each_user_id" value="{{ each_user.id }}" hidden>
@@ -52,7 +52,7 @@
                                 <button type="submit" class="btn-circle">+</button>
                             </form>
                             <span class="user-level">
-                                <strong>level:</strong> {{ each_user.static_info.permission_level }}
+                                <strong>level:</strong> {{ each_user.permission_level }}
                             </span>
                             <form method="POST" action="{{ url_for('change_user_permission', user_id=user.id) }}" class="change-level-form">
                                 <input type="number" id="each_user_id1" name="each_user_id" value="{{ each_user.id }}" hidden>
@@ -60,7 +60,7 @@
                                 <button type="submit" class="btn-circle">-</button>
                             </form>
 
-                            {% if user.static_info.permission_level >= each_user.static_info.permission_level %}
+                            {% if user.permission_level >= each_user.permission_level %}
                             <form method="POST" action="{{ url_for('delete_account', user_id=each_user.id) }}" class="delete-form">
                                 <button type="submit" class="btn btn-danger">注销</button>
                             </form>

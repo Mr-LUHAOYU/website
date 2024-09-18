@@ -15,27 +15,27 @@
             <form method="POST" action="{{ url_for('profile', user_id=user.id) }}">
                 <div class="form-group">
                     <label for="username">用户名:</label>
-                    <input type="text" name="username" id="username" value="{{ user.dynamic_info.username }}" required>
+                    <input type="text" name="username" id="username" value="{{ user.username }}" required>
                 </div>
 
                 <div class="form-group">
                     <label for="real_name">真实姓名:</label>
-                    <input type="text" name="real_name" id="real_name" value="{{ user.dynamic_info.real_name or '' }}">
+                    <input type="text" name="real_name" id="real_name" value="{{ user.real_name or '' }}">
                 </div>
 
                 <div class="form-group">
                     <label for="real_name">学号:</label>
-                    <input type="text" name="student_id" id="student_id" value="{{ user.dynamic_info.student_id or '' }}">
+                    <input type="text" name="student_id" id="student_id" value="{{ user.student_id or '' }}">
                 </div>
 
                 <div class="form-group">
                     <label for="email">邮箱:</label>
-                        <input type="email" name="email" id="email" value="{{ user.dynamic_info.email or '' }}">
+                        <input type="email" name="email" id="email" value="{{ user.email or '' }}">
                 </div>
 
                 <div class="form-group">
                     <label for="phone">手机号:</label>
-                    <input type="text" name="phone" id="phone" value="{{ user.dynamic_info.phone or '' }}">
+                    <input type="text" name="phone" id="phone" value="{{ user.phone or '' }}">
                 </div>
                 <input type="submit" value="保存更改">
             </form>

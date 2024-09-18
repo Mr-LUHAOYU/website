@@ -1,7 +1,10 @@
 from datetime import datetime
-
+from flask import flash
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy.exc import IntegrityError
+from config import Config
+import os
+import re
 
 db = SQLAlchemy()
 
@@ -51,8 +54,22 @@ class User(db.Model):
     @staticmethod
     def register(username, password):
         user = User(username=username, password=password)
+
         db.session.add(user)
         db.session.commit()
+
+        user.avatar = Config.IMG_PATH(user.id)
+        db.session.commit()
+
+        # 为新用户创建一个存放头像和个人简介的文件夹
+        path = Config.IMG_PATH(user.id)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'w') as f:
+            f.write('')
+        path = Config.BIO_PATH(user.id)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        with open(path, 'w') as f:
+            f.write('')
 
         # 为新用户创建一个名为 root 的文件夹
         root_folder = Folder(name='root', owner_id=user.id)
@@ -75,11 +92,35 @@ class User(db.Model):
         db.session.commit()
 
     def change_img(self, img):
-        img.save(f'files/{self.id}.png')
+        img.save(f'static/{self.avatar}')
         return True
 
     def delete(self):
         ...
+
+    def update_info(self, username=None, password=None, email=None,
+                    phone=None, real_name=None, student_id=None):
+        if password:
+            return self.set_password(password)
+        for it in ['username', 'email', 'phone', 'real_name', 'student_id']:
+            if eval(it):
+                phone_regex = r'^1[3-9]\d{9}$'
+                if it == 'phone' and re.match(phone_regex, phone) is None:
+                    flash('手机号码格式错误')
+                if it == 'phone':
+                    if User.query.filter_by(phone=eval(it)).first():
+                        flash('手机号码已存在')
+                if it == 'username':
+                    if User.query.filter_by(username=eval(it)).first() and self.username != eval(it):
+                        flash('用户名已存在')
+                if it == 'email':
+                    if User.query.filter_by(email=eval(it)).first():
+                        flash('邮箱已存在')
+                if it == 'student_id':
+                    if User.query.filter_by(student_id=eval(it)).first():
+                        flash('学号已存在')
+                exec(f"self.{it} = {it}")
+        db.session.commit()
 
 
 class File(db.Model):

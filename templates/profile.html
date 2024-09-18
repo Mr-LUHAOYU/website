@@ -10,13 +10,12 @@
     <div class = "profile-container">
         <div class = "profile-wrapper">
             <div class="profile-header">
-                <h1>{{ user.dynamic_info.username }}的个人主页</h1>
+                <h1>{{ user.username }}的个人主页</h1>
             </div>
 
             <div class="avatar-container">
-                <img src="{{url_for('static',filename=img_path)}}" alt="头像" class="avatar">
+                <img src="{{url_for('static',filename=user.avatar)}}" alt="头像" class="avatar">
             </div>
-
             <button id="uploadAvatarBtn">上传头像</button>
 
             <!-- 模态窗口 -->
@@ -63,13 +62,13 @@
 
             <!-- 用户信息 -->
             <div class="user-info">
-                <p><span class="info-label">真实姓名:</span> {{ user.dynamic_info.real_name or '未填写' }}</p>
-                <p><span class="info-label">邮箱:</span> {{ user.dynamic_info.email or '未填写' }}</p>
-                <p><span class="info-label">手机号:</span> {{ user.dynamic_info.phone or '未填写' }}</p>
-                <p><span class="info-label">学号:</span> {{ user.dynamic_info.student_id or '未填写' }}</p>
-                <p><span class="info-label">注册时间:</span> {{ user.static_info.registered_on }}</p>
-                <p><span class="info-label">上次登录时间:</span> {{ user.static_info.last_login }}</p>
-                <p><span class="info-label">权限等级:</span> {{ user.static_info.permission_level }}</p>
+                <p><span class="info-label">真实姓名:</span> {{ user.real_name or '未填写' }}</p>
+                <p><span class="info-label">邮箱:</span> {{ user.email or '未填写' }}</p>
+                <p><span class="info-label">手机号:</span> {{ user.phone or '未填写' }}</p>
+                <p><span class="info-label">学号:</span> {{ user.student_id or '未填写' }}</p>
+                <p><span class="info-label">注册时间:</span> {{ user.registered_on }}</p>
+                <p><span class="info-label">上次登录时间:</span> {{ user.last_login }}</p>
+                <p><span class="info-label">权限等级:</span> {{ user.permission_level }}</p>
                 <br>
             </div>
 

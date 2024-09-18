@@ -17,19 +17,19 @@ class Config:
 
     @staticmethod
     def ROOT_PATH(uid):
-        return f"static/uploads/{uid}"
+        return f"static/uploads/{uid+100000}"
 
     @staticmethod
     def UPLOAD_FOLDER(uid):
-        return f"files{uid}"
+        return f"files{uid+100000}"
 
     @staticmethod
     def IMG_PATH(uid):
-        return f"static/extras/{uid}/IMG.png"
+        return f"extras/{uid+100000}/IMG.png"
 
     @staticmethod
     def BIO_PATH(uid):
-        return f"static/extras/{uid}/BIO.txt"
+        return f"extras/{uid+100000}/BIO.txt"
 
 
 def validate_password(password):
