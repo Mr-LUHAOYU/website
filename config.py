@@ -13,7 +13,7 @@ class Config:
     # UPLOAD_FOLDER = 'static/uploads'
     # IMG_FOLDER = 'static/img'
     IMG_ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
-    LOCAL_PATH = rf'/workspace/files/'
+    LOCAL_PATH = rf'/WEB/files/'
 
     @staticmethod
     def ROOT_PATH(uid):
@@ -31,6 +31,9 @@ class Config:
     def BIO_PATH(uid):
         return f"extras/{uid+100000}/BIO.txt"
 
+    @staticmethod
+    def FILE_PATH(uid):
+        return f"files/{uid}"
 
 def validate_password(password):
     if not 6 <= len(password) <= 18:

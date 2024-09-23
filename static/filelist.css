@@ -1,23 +1,18 @@
 .container {
     height: 100%;
-    display: flex;// 弹性布局
-    flex-direction: column; // 垂直排列
-    /*align-items: center; // 居中
-    justify-content: center;//
-    align-items: center;
-    height: 100vh; /* 使容器高度为整个视口高度 */
+    width: 100%;
 
 }
 
 .filelist-wrapper {
+    position: absolute;
+    top: 100px;
+    left: 75px;
     background-color: #fff;
     opacity: 0.9;
     width: 1500px;
     border-radius: 15px;
     padding: 0 30px;
-    position: relative;
-    left: 0%;
-    top: 100px;
     /*transform: translate(-72%, -150%); /* 使元素居中 */
     border: 5px solid #c2e9fb; /* 增加的边框 */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
@@ -25,24 +20,24 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    margin-top: -50px;
+
 }
 
 .filelist-header {
     font-size: 30px;
     font-weight: bold;
-    margin-top: 20px; // 顶部留白
+    margin-top: 20px;
     margin-bottom: 30px;
-    text-align: center;// 文字居中
+    text-align: center;
 
 }
 
 .filelist{
     display: flex;
     flex-direction: column;
-    align-items: flex-start; // 居中
-    justify-content: flex-start; // 居中
-    list-style-type: none; //列表样式
+    align-items: flex-start;
+    justify-content: flex-start;
+    list-style-type: none;
     padding: 0;
     width: 100%;
     flex-wrap: wrap;
@@ -52,9 +47,8 @@
 .folderButtonList{
     display: flex;
     flex-direction: row;
-    align-items: flex-start; // 居中
-    justify-content: flex-start; // 居中
-    list-style-type: none; //列表样式
+    align-items: center;
+    list-style-type: none; /* 去除列表符号 */
     padding: 0;
     width: 100%;
     flex-wrap: wrap;
@@ -141,42 +135,41 @@ form input[type="submit"]:hover {
     cursor: pointer;
 }
 
-/* 上传头像和个人简介按钮的样式 */
-#folderBtn{
-    background: linear-gradient(135deg, #ff7e5f, #feb47b); /* 渐变背景色 */
+
+.folderBtn{
+/*    background: linear-gradient(135deg, #ff7e5f, #feb47b); *//* 渐变背景色 */
     border: none; /* 无边框 */
-    color: white; /* 白色文字 */
+/*    color: white; *//* 白色文字 */
     padding: 10px 20px; /* 内边距 */
     text-align: center; /* 文字居中 */
     text-decoration: none; /* 去除下划线 */
     display: inline-block; /* 内联块元素 */
-    font-size: 16px; /* 字体大小 */
+    font-size: 36px; /* 字体大小 */
     font-weight: bold; /* 加粗字体 */
     border-radius: 25px; /* 圆角 */
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 阴影效果 */
-    cursor: pointer; /* 鼠标悬停时显示手型 */
+/*    cursor: pointer; *//* 鼠标悬停时显示手型 */
     transition: all 0.3s ease; /* 添加过渡效果 */
 }
 
-#folderBtn:hover {
-    background: linear-gradient(135deg, #feb47b, #ff7e5f); /* 反转渐变色 */
-    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15); /* 鼠标悬停时增加阴影 */
-    transform: translateY(-2px); /* 悬停时轻微上移 */
-}
 
 .delete-btn{
     cursor: pointer;
 }
 
 .folder-btn{
-    font-size: 30px;
-
-    background-color: transparent;
-    border: none;
-    color: black;
-    text-align: center;
-    text-decoration: none;
+    background: white; /* 白色背景 */
+    border: none; /* 无边框 */
+    padding: 10px 20px; /* 内边距 */
+    text-align: center; /* 文字居中 */
+    text-decoration: none; /* 去除下划线 */
+    display: inline-block; /* 内联块元素 */
+    font-size: 36px; /* 字体大小 */
+    font-weight: bold; /* 加粗字体 */
+    border-radius: 25px; /* 圆角 */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 阴影效果 */
     cursor: pointer;
+    transition: all 0.3s ease; /* 添加过渡效果 */
 }
 
 .folder-btn:hover{
@@ -206,3 +199,16 @@ form input[type="submit"]:hover {
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
+.section-select {
+    border: none; /* 无边框 */
+    padding: 10px 20px; /* 内边距 */
+    text-align: center; /* 文字居中 */
+    text-decoration: none; /* 去除下划线 */
+    display: inline-block; /* 内联块元素 */
+    font-size: px; /* 字体大小 */
+    font-weight: bold; /* 加粗字体 */
+    border-radius: 25px; /* 圆角 */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease; /* 添加过渡效果 */
+}

@@ -1,21 +1,21 @@
 {% extends "background.html" %}
 
 {% block content %}
-
+<link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
 <body>
 
     <div class="container">
         <div class="content-wrapper">
             <div class="header">
-                <h1 class="welcome-message">Welcome Everyone!</h1>
+                <h1 class="welcome-message">Welcome Pythoner!</h1>
             </div>
 
            <div class="button-wrapper">
-                <div class="arrow right-arrow"></div>
+<!--                <div class="arrow right-arrow"></div>-->
                 <button class="start-button">
-                    <a href="login">Start</a>
+                    <a href="login-register">Start</a>
                 </button>
-                <div class="arrow left-arrow"></div>
+<!--                <div class="arrow left-arrow"></div>-->
 
             </div>
 

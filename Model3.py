@@ -62,11 +62,11 @@ class User(db.Model):
         db.session.commit()
 
         # 为新用户创建一个存放头像和个人简介的文件夹
-        path = Config.IMG_PATH(user.id)
+        path = 'static/' + Config.IMG_PATH(user.id)
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, 'w') as f:
             f.write('')
-        path = Config.BIO_PATH(user.id)
+        path = 'static/' + Config.BIO_PATH(user.id)
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, 'w') as f:
             f.write('')
@@ -129,7 +129,7 @@ class File(db.Model):
     name = db.Column(db.String(120), nullable=False)
     size = db.Column(db.Integer, nullable=False)
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-
+    uploaded_on = db.Column(db.DateTime, default=datetime.utcnow)
     # 多对多关系
     parent_folders = db.relationship('Folder', secondary=file_folder_association, backref='files')
 
@@ -144,6 +144,11 @@ class File(db.Model):
         folder = Folder.query.get(folder_id)
         file.parent_folders.append(folder)
         db.session.commit()
+
+        # 保存文件
+        path = Config.FILE_PATH(file.id)
+        os.makedirs(os.path.dirname(path), exist_ok=True)
+        file_obj.save(path)
         return file
 
     # 下载
@@ -152,15 +157,18 @@ class File(db.Model):
         file = File.query.get(file_id)
         return file
 
-    # 删除
+    # 删除文件
     def delete_if_unreferenced(self):
         if not self.parent_folders:
+            path = Config.FILE_PATH(self.id)
+            os.remove(path)
             db.session.delete(self)
             db.session.commit()
 
-    def delete(self, folder_id):
-        self.parent_folders.remove(Folder.query.get(folder_id))
-        self.delete_if_unreferenced()
+    def delete(self):
+        for folder in self.parent_folders:
+            folder.files.remove(self)    # 从文件夹中移除引用
+        self.delete_if_unreferenced()    # 删除文件
         db.session.commit()
 
     # 共享
@@ -191,7 +199,9 @@ class Folder(db.Model):
         folder = Folder(name=name, owner_id=owner_id)
         db.session.add(folder)
         db.session.commit()
-        folder.parent_folders.append(folder)
+        parent_folder = Folder.query.filter_by(id=parent_id).first()
+        # print(parent_id)
+        folder.parent_folders.append(parent_folder)
         db.session.commit()
         return folder
 

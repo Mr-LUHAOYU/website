@@ -31,7 +31,7 @@ def login():
             return redirect(url_for('profile', user_id=user.id))
         else:
             flash('账号或密码错误')
-    return render_template('login.html')
+    return render_template('login-register.html')
 
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -55,7 +55,19 @@ def register():
             User.register(username, password)
             flash('注册成功，请登录')
             return redirect(url_for('login'))
-    return render_template('register.html')
+    return render_template('login-register.html')
+
+
+@app.route('/login-register', methods=['GET', 'POST'])
+def login_register():
+    # print("here login_register")
+    if request.method == 'POST':
+        action = request.form.get('action')
+        if action == 'login':
+            return redirect(url_for('login'))
+        elif action == 'register':
+            return redirect(url_for('register'))
+    return render_template('login-register.html')
 
 
 @app.route('/profile/<int:user_id>', methods=['GET', 'POST'])
@@ -113,9 +125,8 @@ def revise_info(user_id):
     return render_template('revise_info.html', user=user)
 
 
-# TODO: 重点看！
-@app.route('/user_filelist/<int:user_id>,<int:subfolder_id>', methods=['GET', 'POST'])
-def user_filelist(user_id, subfolder_id=0):
+@app.route('/user_filelist/<int:user_id>,<int:current_folder_id>', methods=['GET', 'POST'])
+def user_filelist(user_id, current_folder_id=1):
     # print("here user_filelist")
     user = User.query.get_or_404(user_id)
     # file_html, script = user.to_html
@@ -123,36 +134,43 @@ def user_filelist(user_id, subfolder_id=0):
         action = request.form.get('action')
         # flash(f'执行{action}操作成功')
         if action == 'upload':  # 上传文件
-            parent_id = request.form.get('parent_id')
+            target_folder_id = request.form.get('current_folder_id')
             # print(parent_id)
-            return redirect(url_for('upload', parent_id=parent_id))
+            return redirect(url_for('upload', target_folder_id=target_folder_id))
         elif action == 'new_folder':  # 创建文件夹
             folder_name = request.form.get('folder_name')
             if folder_name == '':
                 flash('文件夹名不能为空')
                 return redirect(request.url)
-            parent_folder_id = request.form.get('parent_id')
-            parent_folder = Folder.query.get(parent_folder_id)
-            Folder.create(folder_name, user_id, parent_folder)
+            elif Folder.query.filter_by(name=folder_name, owner_id=user.id).first() is not None:
+                flash('文件夹名已存在')
+                return redirect(request.url)
+            current_folder_id = request.form.get('current_folder_id')
+            current_folder = Folder.query.get(current_folder_id)
+            Folder.create(folder_name, user_id, current_folder_id)
             flash('文件夹创建成功')
-            return render_template('user_filelist.html', user=user, files=parent_folder.html_code())
+
         elif action == 'download':  # 下载文件
             file_id = request.form.get('file_id')
-            file = File.query.get_or_404(file_id)
-            lis = [parent.id for parent in file.folders]
-            # if len(lis) == 1:
-            #     parent_folder_id = lis[0]
-            # else:
-            #     parent_folder_id = 0
-            file.download()
-            filepath = Config.LOCAL_PATH
-            flash(filepath)
+            file = File.download(file_id)
+            filepath = Config.FILE_PATH(file_id)
+            # 将path转为绝对路径
+            filepath = os.path.abspath(filepath)
+            if not os.path.exists(filepath):
+                flash('文件不存在')
+                return redirect(request.url)
+            if file is None:
+                flash('文件不存在')
+                return redirect(request.url)
+            print("YES")
+            # flash(filepath)
             # 创建响应对象
             response = make_response(
                 send_from_directory(filepath, file_id, as_attachment=True, environ=request.environ))
 
+            print("OK")
             # 设置新的文件名
-            new_filename = file.filename.encode('utf-8', 'replace').decode('latin-1')
+            new_filename = file.name.encode('utf-8', 'replace').decode('latin-1')
             response.headers["Content-Disposition"] = f"attachment; filename={new_filename}"
 
             return response
@@ -160,29 +178,26 @@ def user_filelist(user_id, subfolder_id=0):
         elif action == 'subfolder':  # 进入子文件夹
             folder_id = request.form.get('folder_id')
             folder = Folder.query.get(folder_id)
-            return render_template('user_filelist.html', user=user, files=folder.html_code())
+            current_folder_id = folder.id
+
         elif action == 'parent_folder':   # 返回上一级文件夹
-            folder_id = request.form.get('folder_id')
-            folder = Folder.query.get(folder_id)
-            if folder.parent_folders is None:
-                return redirect(url_for('user_filelist', user_id=user.id, files=user.html_code()))
-            else:
-                lis = [parent.id for parent in folder.parent_folders]
-                if len(lis) == 1:
-                    parent_folder_id = lis[0]
-                    return redirect(url_for('user_filelist', user_id=user.id, subfolder_id=parent_folder_id))
-                else:
-                    return redirect(url_for('user_filelist', user_id=user.id, subfolder_id=subfolder_id))
+            current_folder_id = request.form.get('current_folder_id')
+            current_folder = Folder.query.get(current_folder_id)
+            if current_folder and current_folder.parent_folders:
+                parent_folder_id = current_folder.parent_folders[0].id
+                current_folder_id = parent_folder_id
+            files = current_folder.files
+            return redirect(url_for('user_filelist', user_id=user.id, current_folder_id=current_folder_id, files=files))
 
-    if subfolder_id == 1:
-        return render_template('user_filelist.html', user=user, files=user.html_code())
-    else:
-        subfolder = Folder.query.get(subfolder_id)
-        return render_template('user_filelist.html', user=user, files=subfolder.html_code())
+    current_folder = Folder.query.get(current_folder_id)
+    files = current_folder.files
+    sub_folders = current_folder.child_folders
+
+    return render_template('user_filelist.html', user=user, current_folder=current_folder, files=files, sub_folders=sub_folders)
 
 
-@app.route('/upload/<int:parent_id>', methods=['GET', 'POST'])
-def upload(parent_id):
+@app.route('/upload/<int:target_folder_id>', methods=['GET', 'POST'])
+def upload(target_folder_id):
     if request.method == 'POST':
         if 'file' not in request.files:
             flash('未选择文件')
@@ -194,12 +209,12 @@ def upload(parent_id):
         user_id = session.get('user_id')
         user = User.query.get_or_404(user_id)
         # user.upload(file, parent_id)
-        File.upload(parent_id, user_id, file)
+        File.upload(target_folder_id, user_id, file)
         flash('文件上传成功')
 
-        flash(parent_id)
-        return redirect(url_for('user_filelist', user_id=user.id, subfolder_id=parent_id))
-    return render_template('upload.html', parent_id=request.args.get('parent_id'))
+        # flash(target_folder_id)
+        return redirect(url_for('user_filelist', user_id=user.id, current_folder_id=target_folder_id))
+    return render_template('upload.html', target_folder_id=request.args.get('parent_id'))
 
 
 # TODO: 传递文件对象而非文件路径
@@ -207,14 +222,16 @@ def upload(parent_id):
 def download(file_id):
     file = File.query.get_or_404(file_id)
     file.download()
-    filepath = rf'E:\Web Project\WEB\v2.3\files\\'
+    filepath = Config.FILE_PATH(file_id)
+    # 将path转为绝对路径
+    filepath = os.path.abspath(filepath)
     flash(filepath)
     # 创建响应对象
     response = make_response(
         send_from_directory(filepath, file_id, as_attachment=True, environ=request.environ))
 
     # 设置新的文件名
-    new_filename = file.filename.encode('utf-8', 'replace').decode('latin-1')
+    new_filename = file.name.encode('utf-8', 'replace').decode('latin-1')
     response.headers["Content-Disposition"] = f"attachment; filename={new_filename}"
 
     return response
@@ -231,7 +248,7 @@ def search():
         if search_type == 'user':
             results = User.query.filter(User.username.contains(query)).all()
         elif search_type == 'file':
-            results = File.query.filter(File.filename.contains(query)).order_by(File.download_count.desc()).all()
+            results = File.query.filter(File.name.contains(query)).order_by(File.name.desc()).all()
         # print(results)
         return render_template('search.html', results=results, s_type=search_type)
     return render_template('search.html')
@@ -395,7 +412,6 @@ def update_bio(user_id):
 
 
 # 删除文件
-# TODO: 此处逻辑应修改
 @app.route('/file/delete/', methods=['POST'])
 def delete_file():
     if request.method == 'POST':
@@ -404,17 +420,19 @@ def delete_file():
             flash('文件不存在')
             return redirect(request.url)
         file = File.query.get(file_id)
-        user_id = file.author_id
+        folder_id = file.parent_folders[0].id
+        user_id = file.owner_id
+        user = User.query.get_or_404(user_id)
         if file is None:
             flash('文件不存在')
             return redirect(request.url)
         file.delete()
         flash('文件删除成功')
-    return redirect(url_for('user_filelist', user_id=user_id))
+        return redirect(url_for('user_filelist', user=user, user_id=user.id, current_folder_id=folder_id))
+    return redirect(request.url)
 
 
 # 用户广场
-# TODO: 待完善
 @app.route('/playground', methods=['GET', 'POST'])
 def playground():
     user_id = session.get('user_id')
@@ -441,14 +459,16 @@ def playground():
             file_id = request.form.get('file_id')
             file = File.query.get_or_404(file_id)
             file.download()
-            filepath = rf'E:\Web Project\WEB\v2.3\files\\'
+            filepath = Config.FILE_PATH(file_id)
+            # 将path转为绝对路径
+            filepath = os.path.abspath(filepath)
             flash(filepath)
             # 创建响应对象
             response = make_response(
                 send_from_directory(filepath, file_id, as_attachment=True, environ=request.environ))
 
             # 设置新的文件名
-            new_filename = file.filename.encode('utf-8', 'replace').decode('latin-1')
+            new_filename = file.name.encode('utf-8', 'replace').decode('latin-1')
             response.headers["Content-Disposition"] = f"attachment; filename={new_filename}"
 
             return response
@@ -464,7 +484,7 @@ def playground():
     # 列出所有文件,然后按上传时间排序
     files = File.query.order_by(File.uploaded_on.desc()).all()
     # 列出所有用户，以字典形式返回，key为id，value为用户名
-    users = {user.id: user.dynamic_info.username for user in User.query.all()}
+    users = {user.id: user.username for user in User.query.all()}
     # 列出所有文件的评论，以字典形式返回，key为file_id，value为评论列表
     comments = {file.id: file.comments for file in files}
     return render_template('playground.html', date=date, files=files, users=users, user=user,

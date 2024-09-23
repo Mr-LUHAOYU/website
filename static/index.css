@@ -1,12 +1,11 @@
  .container {
     display: flex;
-    position: absolute;
-    top: 350px;
-    left: 580px;
+    position: relative;
+
 }
 
 .content-wrapper {
-    text-align: center; // 居中显示
+    text-align: center;
     position: relative;
     z-index: 2;
     height: 100%;
@@ -24,7 +23,7 @@
 }
 
 .welcome-message {
-    font-size: 56px; /* 增大字体 */
+    font-size: 100px; /* 增大字体 */
     font-weight: bold; /* 加粗字体 */
     color: white; /* 设置字体颜色为白色 */
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5); /* 添加文字阴影 */
@@ -67,6 +66,11 @@
 }
 
 .start-button:hover {
-    background-image: linear-gradient(to right, #feb47b, #ff7e5f, #fad0c4, #ff9a9e); /* 悬停时反向渐变 */
+/*    background-image: linear-gradient(to right, #feb47b, #ff7e5f, #fad0c4, #ff9a9e); *//* 悬停时反向渐变 */
     transform: scale(1.05); /* 悬停时略微放大 */
 }
+
+a{
+/*     color: white;*/
+     text-decoration: none;
+ }

@@ -12,12 +12,88 @@
                 <h1>User Files</h1>
             </div>
 
-            <p>{{ parent_folder_id }}</p>
+<!--            <p>{{ current_folder.name }}</p>-->
             <ul class="filelist">
 
+<!--                <span class='folderButtonList'>-->
+                    <form method="POST">
+<!--                    <label class='folderBtn'>📁</label>-->
+                        <input type="hidden" name="action" value="parent_folder">
+                        <input type="hidden" name="current_folder_id" value="{{current_folder.id}}">
+                        <button type="submit" class="folder-btn">...</button>
+                    </form>
+<!--                </span>-->
 
-                {{ files | safe }}
+                <li>
+                    <span class='folderButtonList'>
+                        <label class='folderBtn'>📁{{current_folder.name}}</label>
+                        <form method="POST" id="folderForm">
+                            <input type="hidden" name="folder_name" value="">
+                            <input type="hidden" name="current_folder_id" value="{{current_folder.id}}">
+                            <input type="hidden" name="user_id" value="{{current_folder.owner_id}}">
+                            <select name="action" class="section-select">
+                                <option value="upload">上传文件</option>
+                                <option value="new_folder">新建文件夹</option>
+                            </select>
+                            <input type="submit" value="确定">
+                        </form>
+                    </span>
+
+                    <ul class='filelist'>
+                        {% for folder in sub_folders %}
+
+                        <li class='file-item'>
+                            <span class='file-icon'>📁
+                                <form method='POST' style='border: none; display: inline-block;'>
+                                    <input type='hidden' name='action' value='subfolder'>
+                                    <input type='hidden' name='folder_id' value='{{folder.id}}'>
+                                    <input type='hidden' name='user_id' value='{{folder.author_id}}'>
+
+                                    <button type='submit' class='folder-btn'>{{folder.name}}</button>
+                                </form>
+                            </span>
+                        </li>
+
+                        {% endfor %}
+                    </ul>
+
+
+                    <ul class='filelist'>
+                    {% for file in files %}
+
+                        <li class='file-item'>
+                            <span class='file-icon'>📄
+                                <span class='file'>
+
+                                    <div class="file-name" data-file-id={{cnt}}>{{file.name}}</div>
+
+                                    <div class="popup" id="popup-{{cnt}}">
+                                        <p>Filename: {{file.name}}</p>
+                                        <p>downloads: {{file.download_count}}</p>
+
+                                    </div>
+
+                                    <form method='POST' action='/download/' style='display: inline-block;'>
+                                        <input type='hidden' name='action' value='download'>
+                                        <input type='hidden' name='file_id' value='{{file.id}}'>
+                                        <button type='submit' class='delete-btn'>🔗</button>
+                                    </form>
+
+                                    <form method='POST' action='/file/delete/' style='display: inline-block;'>
+                                        <input type='hidden' name='file_id' value='{{file.id}}'>
+                                        <input type='hidden' name='user_id' value='{{file.owner_id}}'>
+                                        <button type='submit' class='delete-btn'>🗑️</button>
+                                    </form>
+
+                                </span>
+                            </span>
+                        </li>
+                    </ul>
+                    {% endfor %}
+
             </ul>
+
+            <br>
 
         </div>
 

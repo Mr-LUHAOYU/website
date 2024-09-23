@@ -19,7 +19,7 @@
             <div class="search-container">
                 <input type="text" class="search-input" placeholder="请输入搜索内容...">
                 <button class="search-button">
-                    <img src="{{ url_for('static', filename='/pic/search-pic.png') }}" alt="search", width="20" height="20">
+                    <img src="{{ url_for('static', filename='/pic/search-pic.png') }}" alt="search" width="20" height="20">
                 </button>
             </div>
             <br>
@@ -28,9 +28,9 @@
         <div class="row-wrapper">
 
             <div class="row-item">
-                <a class="upload-link" href="{{ url_for('submit',parent_id=0) }}">
-                        上传文件
-                    </a>
+                <a class="create_post-link">
+                        创建帖子
+                </a>
                 </a>
             </div>
 
@@ -44,7 +44,7 @@
             <div class="row-item">
                 <a class="homework-link">
 
-                    <p>我的作业</p>
+                    <p>我的提交</p>
                 </a>
             </div>
 
@@ -66,17 +66,17 @@
 <!--                        <img src="{{url_for('static',filename='extras/' ~ (file.author_id + 100000) ~ '/IMG.png')}}" alt="头像" class="avatar">-->
 <!--                    </div>-->
                     <div class="user-name">
-                        <p class="user-name">上传者：{{ users[file.author_id] }}</p>
+                        <p class="user-name">上传者：{{ users[file.owner_id] }}</p>
                     </div>
                 </div>
                 <li class='file-item'>
                     <span class='file-icon'>📄
                         <span class='file'>
 <!--                            <a class="file-link" href="{{ url_for('download', file_id=file.id) }}" download>{{ file.filename }}</a>-->
-                            <div class="file-name" data-file-id="{{file.id}}">{{file.filename}}</div>
+                            <div class="file-name" data-file-id="{{file.id}}">{{file.name}}</div>
                             <div class="popup" id="popup-{{file.id}}">
-                                <p>Filename: {{file.filename}}</p>
-                                <p>downloads: {{file.download_count}}</p>
+                                <p>Filename: {{file.name}}</p>
+
                                 <p>Uploaded: {{file.uploaded_on.strftime("%Y-%m-%d %H:%M:%S")}}</p>
                             </div>
 

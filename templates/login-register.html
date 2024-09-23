@@ -323,13 +323,13 @@
             <div class="switch_container is-hidden" id="switch-c1">
                 <h2 class="switch_title title" style="letter-spacing: 0;">Welcome Back！</h2>
                 <p class="switch_description description">已经有账号了嘛，前面的区域现在就来探索吧！</p>
-                <button class="switch_button button switch-btn">SIGN IN</button>
+                <button class="switch_button button switch-btn" id="switch-btn1">SIGN IN</button>
             </div>
 
             <div class="switch_container" id="switch-c2">
                 <h2 class="switch_title title" style="letter-spacing: 0;">Hello Traveler！</h2>
                 <p class="switch_description description">去注册一个账号，踏入奇妙的旅途吧！</p>
-                <button class="switch_button button switch-btn">SIGN UP</button>
+                <button class="switch_button button switch-btn" id="switch-btn2">SIGN UP</button>
             </div>
         </div>
     </div>
@@ -345,6 +345,10 @@
     let aContainer = document.querySelector("#a-container");
     let bContainer = document.querySelector("#b-container");
     let allButtons = document.querySelectorAll(".submit");
+
+    switchCtn.classList.add("is-gx");
+    //
+//    let getButtons = (e) => e.preventDefault();
 
 
     let changeForm = (e) => {
@@ -370,8 +374,8 @@
 
     // 点击切换
     let shell = (e) => {
-        for (var i = 0; i < allButtons.length; i++)
-            allButtons[i].addEventListener("click", getButtons);
+//        for (var i = 0; i < allButtons.length; i++)
+//            allButtons[i].addEventListener("click", getButtons);
         for (var i = 0; i < switchBtn.length; i++)
             switchBtn[i].addEventListener("click", changeForm)
     }
