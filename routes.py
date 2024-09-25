@@ -149,26 +149,27 @@ def user_filelist(user_id, current_folder_id=1):
 
         elif action == 'download':  # 下载文件
             file_id = request.form.get('file_id')
-            file = File.download(file_id)
-            filepath = Config.FILE_PATH(file_id)
-            # 将path转为绝对路径
-            filepath = os.path.abspath(filepath)
-            if not os.path.exists(filepath):
-                flash('文件不存在')
-                return redirect(request.url)
-            if file is None:
-                flash('文件不存在')
-                return redirect(request.url)
-            print("YES")
-            # flash(filepath)
-            # 创建响应对象
-            response = make_response(
-                send_from_directory(filepath, file_id, as_attachment=True, environ=request.environ))
-
-            print("OK")
-            # 设置新的文件名
-            new_filename = file.name.encode('utf-8', 'replace').decode('latin-1')
-            response.headers["Content-Disposition"] = f"attachment; filename={new_filename}"
+            return download(file_id)
+            # file = File.download(file_id)
+            # filepath = Config.FILE_PATH(file_id)
+            # # 将path转为绝对路径
+            # filepath = os.path.abspath(filepath)
+            # if not os.path.exists(filepath):
+            #     flash('文件不存在')
+            #     return redirect(request.url)
+            # if file is None:
+            #     flash('文件不存在')
+            #     return redirect(request.url)
+            # print("YES")
+            # # flash(filepath)
+            # # 创建响应对象
+            # response = make_response(
+            #     send_from_directory(filepath, file_id, as_attachment=True, environ=request.environ))
+            #
+            # print("OK")
+            # # 设置新的文件名
+            # new_filename = file.name.encode('utf-8', 'replace').decode('latin-1')
+            # response.headers["Content-Disposition"] = f"attachment; filename={new_filename}"
 
             return response
 
