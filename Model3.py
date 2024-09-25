@@ -155,8 +155,8 @@ class File(db.Model):
     @staticmethod
     def download(file_id):
         file = File.query.get(file_id)
-        download_from_oss(str(file.id), str(file.id))
-        return file
+        filestream = download_from_oss(str(file.id))
+        return filestream, file.name
 
     # 删除文件
     def delete_if_unreferenced(self):

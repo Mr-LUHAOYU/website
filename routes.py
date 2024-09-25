@@ -218,7 +218,7 @@ def upload(target_folder_id):
 @app.route('/download/<string:file_id>')
 def download(file_id):
     # file = File.query.get_or_404(file_id)
-    filename = File.download(file_id)
+    file_stream, filename = File.download(file_id)
     # filepath = Config.FILE_PATH(file_id)
     # 将path转为绝对路径
     # filepath = os.path.abspath(filepath)
@@ -226,7 +226,7 @@ def download(file_id):
     # 创建响应对象
     response = make_response(
         send_file(
-            str(file_id), download_name=filename,
+            file_stream, download_name=filename,
             as_attachment=True, environ=request.environ
         )
     )
