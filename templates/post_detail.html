@@ -1,0 +1,50 @@
+{% extends "background.html" %}
+
+{% block content %}
+<link rel="stylesheet" href="{{url_for('static', filename='post_detail.css')}}">
+<div class="container">
+    <div class="post-wrapper">
+        <div class="post-item">
+            <div class="post-author">
+                <div class="post-avatar">
+                    <img src="{{url_for('static', filename=author.avatar)}}" alt="头像" class="avatar">
+                </div>
+                <div class="post-author-name">
+                    {{ author.username }}
+                </div>
+            </div>
+
+            <div class="post-header">
+                <div class="post-title">
+                    {{ post.title }}
+                </div>
+                <div class="post-content">
+                    <p>{{ post.content }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="post-comments">
+            <div class="post-comment-title">
+                评论
+            </div>
+            {% for comment_id, (owner, comment) in comments %}
+            <div class="post-comment">
+                <div class="post-comment-avatar">
+                    <img src="{{url_for('static', filename=author.avatar)}}" alt="头像" class="avatar">
+                </div>
+                <div class="post-comment-content">
+                    <div class="post-comment-author">
+                        {{owner.username }}
+                    </div>
+                    <div class="post-comment-content-text">
+                        {{ comment.content }}
+                    </div>
+                </div>
+
+            </div>
+            {% endfor %}
+
+    </div>
+</div>
+
+{%endblock%}

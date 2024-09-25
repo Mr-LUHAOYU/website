@@ -26,115 +26,54 @@
         </div>
 
         <div class="row-wrapper">
-
             <div class="row-item">
-                <a class="create_post-link">
-                        创建帖子
-                </a>
+                <a class="create_post-link" href="{{ url_for('create_post', user_id=user.id) }}">>创建帖子<
                 </a>
             </div>
 
             <div class="row-item">
-                <a class="score-link">
+                <a class="score-link"><p>>成绩单<</p></a>
+            </div>
 
-                    <p>成绩单</p>
+            <div class="row-item">
+                <a class="homework-link"><p>>我的提交<</p>
                 </a>
             </div>
 
             <div class="row-item">
-                <a class="homework-link">
-
-                    <p>我的提交</p>
-                </a>
-            </div>
-
-            <div class="row-item">
-                <a class="profile-link" href="{{ url_for('profile', user_id=user.id) }}">
-                    <p>个人主页</p>
-                </a>
+                <a class="profile-link" href="{{ url_for('profile', user_id=user.id) }}"><p>>个人主页<</p></a>
             </div>
             <br>
 
         </div>
         <br>
 
-        <div class="playground">
-            {% for file in files %}
-            <div class="info-display">
-                <div class="user_display">
-<!--                    <div class="avatar-container">-->
-<!--                        <img src="{{url_for('static',filename='extras/' ~ (file.author_id + 100000) ~ '/IMG.png')}}" alt="头像" class="avatar">-->
-<!--                    </div>-->
-                    <div class="user-name">
-                        <p class="user-name">上传者：{{ users[file.owner_id] }}</p>
+        <div class="post-wrapper">
+            <br><h1>最新帖子</h1><br>
+            {% for post_id, (owner, post) in posts %}
+            <div class="post-item" onclick="location.href='{{ url_for('post_detail', post_id=post_id) }}'">
+                <div class="post-author">
+                    <div class="post-avatar">
+                        <img src="{{url_for('static', filename=owner.avatar)}}" alt="头像" class="avatar">
+                    </div>
+                    <div class="post-author-name">
+                        {{ owner.username }}
                     </div>
                 </div>
-                <li class='file-item'>
-                    <span class='file-icon'>📄
-                        <span class='file'>
-<!--                            <a class="file-link" href="{{ url_for('download', file_id=file.id) }}" download>{{ file.filename }}</a>-->
-                            <div class="file-name" data-file-id="{{file.id}}">{{file.name}}</div>
-                            <div class="popup" id="popup-{{file.id}}">
-                                <p>Filename: {{file.name}}</p>
 
-                                <p>Uploaded: {{file.uploaded_on.strftime("%Y-%m-%d %H:%M:%S")}}</p>
-                            </div>
-
-                            <form method='POST'>
-                                <input type='hidden' name='action' value='download'>
-                                <input type='hidden' name='file_id' value='{{file.id}}'>
-                                <button type='submit' class='download-btn'>🔗</button>
-                            </form>
-
-
-
-                            <button id="CommentBtn" class="comment-btn">💬</button>
-
-                            <div id="CommentModal" class="modal">
-                                <div class="modal-content">
-                                    <span class="closeComment">&times;</span>
-                                    <h2>评论</h2>
-
-                                    <form method="POST" class="comment-form">
-                                        <input type="hidden" name="action" value="comment">
-                                        <input type="hidden" name="file_id" value="{{ file.id }}">
-                                        <input type="hidden" name="author_id" value="{{ user.id }}">
-                                        <input type="text" name="comment" placeholder="发表你的想法..." class="comment-input">
-                                        <button type="submit" class="comment-btn">💬</button>
-                                    </form>
-
-                                    <br>
-                                    <h3>评论列表</h3>
-                                    <div id="comments-container">
-                                        {% for comment in comments[file.id] %}
-                                            {% if loop.index <= 5 %}
-                                                <div class="comment-item">
-                                                    <p class="comment-user">{{ users[comment.author_id] }}</p>
-                                                    <p class="comment-content">{{ comment.content }}</p>
-                                                </div>
-                                            {% else %}
-                                                <div class="comment-item" hidden>
-                                                    <p class="comment-user">{{ users[comment.author_id] }}</p>
-                                                    <p class="comment-content">{{ comment.content }}</p>
-                                                </div>
-                                            {% endif %}
-                                        {% endfor %}
-                                    </div>
-                                    {% if comments[file.id]|length > 5 %}
-                                        <button id="show-more-comments" class="show-more-comments">显示更多评论</button>
-                                        <button id="hide-comments" class="hide-comments" style="display:none;">收起评论</button>
-                                    {% endif %}
-
-                                </div>
-                            </div>
-                        </span>
-                    </span>
-                </li>
-
+                <div class="post-header">
+                    <div class="post-title">
+                        {{ post.title }}
+                    </div>
+                    <div class="post-content">
+                        <p>{{ post.content }}</p>
+                    </div>
+                </div>
             </div>
-            {% endfor %}
-        </div>
-        <br>
+            {%endfor %}
+    <br>
+</div>
+
     </div>
 </div>
 

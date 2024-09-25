@@ -1,19 +1,20 @@
+a{
+    text-decoration: none;
+}
+
 .container {
     height: 100%;
-    display: flex;
-    flex-direction: column;
 }
 
 .page-wrapper {
     background-color: #fff;
     opacity: 0.9;
-    width: 1400px;
+    width: 1000px;
     border-radius: 15px;
     padding: 0 30px;
-    position: relative;
-    left: 0%;
-    top: 50px;
-    /*transform: translate(-72%, -150%); /* 使元素居中 */
+    position: absolute;
+    left: 250px;
+    top: 100px;
     border: 5px solid #c2e9fb; /* 增加的边框 */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
     /*display: flex;
@@ -101,7 +102,7 @@
 
 .row-item{
     width: 25%;
-    height: 20px;
+    height: auto;
     font-size: 16px;
     font-weight: bold;
     text-align: center;
@@ -359,3 +360,68 @@
 .show-more-comments:hover,.hide-comments:hover {
     color: #007BF0;
 }
+
+.post-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+    background-color: #fff;
+    opacity: 0.95;
+    border-radius: 15px;
+    padding: 0 30px;
+    left: 0%;
+    top: 100px;
+/*    border: 5px solid #c2e9fb; *//* 增加的边框 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.post-item {
+    display: flex; /* 行内块 */
+    flex-direction: column;/* 垂直 */
+    border: 1px solid #ccc;
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.post-author{
+    display: flex;
+    flex-direction: row;
+}
+
+.post-author-name{
+    display: flex;
+    align-items: center;
+    margin-top: -20px;
+    margin-right: 10px;
+    margin-left: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #007BFF;
+
+}
+
+.post-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.post-author {
+    font-size: 16px;
+    font-weight: bold;
+    color: #007BFF;
+}
+
+.post-content {
+    display: flex;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+

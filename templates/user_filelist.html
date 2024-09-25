@@ -42,14 +42,14 @@
                     <ul class='filelist'>
                         {% for folder in sub_folders %}
 
-                        <li class='file-item'>
-                            <span class='file-icon'>📁
+                        <li class='folder-item'>
+                            <span class='file-icon'>
                                 <form method='POST' style='border: none; display: inline-block;'>
                                     <input type='hidden' name='action' value='subfolder'>
                                     <input type='hidden' name='folder_id' value='{{folder.id}}'>
                                     <input type='hidden' name='user_id' value='{{folder.author_id}}'>
 
-                                    <button type='submit' class='folder-btn'>{{folder.name}}</button>
+                                    <button type='submit' class='folder-btn' style="">📁{{folder.name}}</button>
                                 </form>
                             </span>
                         </li>

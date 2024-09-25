@@ -28,7 +28,7 @@ def login():
         user = User.login(username, password)
         if user:
             session['user_id'] = user.id
-            return redirect(url_for('profile', user_id=user.id))
+            return redirect(url_for('playground', user_id=user.id))
         else:
             flash('账号或密码错误')
     return render_template('login-register.html')
@@ -487,8 +487,10 @@ def playground():
     users = {user.id: user.username for user in User.query.all()}
     # 列出所有文件的评论，以字典形式返回，key为file_id，value为评论列表
     comments = {file.id: file.comments for file in files}
+    # 获取所有post对象，以及每个post对应的owner，以元组形式返回，key为post_id，value为元组(owner, post)
+    posts = [(post.id, (User.query.get(post.owner_id), post)) for post in Post.query.all()]
     return render_template('playground.html', date=date, files=files, users=users, user=user,
-                           user_id=user_id, comments=comments)
+                           user_id=user_id, comments=comments, posts=posts)
 
 
 # 上传文件
@@ -521,3 +523,31 @@ def submit(parent_id):
             return redirect(url_for('user_filelist', user_id=user.id, subfolder_id=parent_id))
 
     return render_template('submit.html', folder_ids=folder_ids, parent_id=parent_id)
+
+
+@app.route('/create_post/<int:user_id>', methods=['GET', 'POST'])
+def create_post(user_id):
+    if request.method == 'POST':
+        title = request.form.get('title')
+        content = request.form.get('content')
+        user_id = session.get('user_id')
+        user = User.query.get_or_404(user_id)
+        post = Post(title=title, content=content, owner_id=user_id)
+        db.session.add(post)
+        db.session.commit()
+        flash('帖子创建成功')
+        return redirect(url_for('playground'))
+    return render_template('create_post.html', user_id=user_id)
+
+
+@app.route('/post_detail/<int:post_id>', methods=['GET', 'POST'])
+def post_detail(post_id):
+    # 获取当前帖子
+    post = Post.query.get_or_404(post_id)
+    # 获取帖子的作者
+    author = User.query.get_or_404(post.owner_id)
+
+    comments = Comment.query.filter_by(post_id=post_id).all()
+    # 获取所有评论，以及每个评论对应的作者，以元组形式返回，key为comment_id，value为元组(owner, comment)
+    comments = [(comment.id, (User.query.get(comment.owner_id), comment)) for comment in comments]
+    return render_template('post_detail.html', post=post, author=author, comments=comments)

@@ -12,7 +12,7 @@
     padding: 0 30px;
     position: relative;
     left: 0%;
-    top: 100px;
+    top: 0px;
     /*transform: translate(-72%, -150%); /* 使元素居中 */
     border: 5px solid #c2e9fb; /* 增加的边框 */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);

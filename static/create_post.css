@@ -1,0 +1,81 @@
+.container {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+.post-wrapper {
+    position: absolute;
+    top: 100px;
+    left: 460px;
+    background-color: #fff;
+    opacity: 0.9;
+    width: 600px;
+    height: auto;
+    border-radius: 15px;
+    padding: 0 30px;
+
+    border: 5px solid #c2e9fb; /* 增加的边框 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.post-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+textarea {
+    resize: none; /* 禁止手动调整大小 */
+}
+
+.form-group {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+     resize: none;
+}
+
+.form-group label {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 10px;
+}
+
+.form-group input[type="text"],
+.form-group input[type="file"] {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+.form-group textarea {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    margin-bottom: 20px;
+    height: 150px;
+}
+
+.form-group button {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.form-group button:hover {
+    background-color: #0069d9;
+}
+
+.error {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+}

@@ -53,6 +53,22 @@
     width: 100%;
     flex-wrap: wrap;
     margin-left:40px;
+    gap: 20px;
+}
+
+.folder-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+    background-color:transparent;
+/*    margin-bottom: 15px;*/
+    padding: 10px;
+    border-radius: 8px;
+/*    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);*/
+/*    gap : 20px;*/
+    font-size: 20px;
+    margin-left: 50px;
 }
 
 .file-item {
