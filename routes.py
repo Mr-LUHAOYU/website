@@ -1,8 +1,5 @@
-from typing import Any
-
-from flask import render_template, redirect, url_for, flash, request, session, jsonify, abort, make_response
-from werkzeug.utils import secure_filename, send_from_directory
-import os
+from flask import render_template, redirect, url_for, flash, request, session, make_response
+from werkzeug.utils import send_from_directory, send_file
 from app import app, db
 # from models import User, File, UserDynamicInfo, UserStaticInfo, Folder, Comment
 from Model3 import *
@@ -220,19 +217,22 @@ def upload(target_folder_id):
 # TODO: 传递文件对象而非文件路径
 @app.route('/download/<string:file_id>')
 def download(file_id):
-    file = File.query.get_or_404(file_id)
-    file.download()
-    filepath = Config.FILE_PATH(file_id)
+    # file = File.query.get_or_404(file_id)
+    filename = File.download(file_id)
+    # filepath = Config.FILE_PATH(file_id)
     # 将path转为绝对路径
-    filepath = os.path.abspath(filepath)
-    flash(filepath)
+    # filepath = os.path.abspath(filepath)
+    # flash(filepath)
     # 创建响应对象
     response = make_response(
-        send_from_directory(filepath, file_id, as_attachment=True, environ=request.environ))
-
+        send_file(
+            str(file_id), download_name=filename,
+            as_attachment=True, environ=request.environ
+        )
+    )
     # 设置新的文件名
-    new_filename = file.name.encode('utf-8', 'replace').decode('latin-1')
-    response.headers["Content-Disposition"] = f"attachment; filename={new_filename}"
+    # new_filename = file.name.encode('utf-8', 'replace').decode('latin-1')
+    # response.headers["Content-Disposition"] = f"attachment; filename={new_filename}"
 
     return response
 

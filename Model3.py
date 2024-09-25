@@ -1,10 +1,9 @@
 from datetime import datetime
 from flask import flash
 from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy.exc import IntegrityError
 from config import Config
-import os
 import re
+from IO2OSS import *
 
 db = SQLAlchemy()
 
@@ -146,15 +145,17 @@ class File(db.Model):
         db.session.commit()
 
         # 保存文件
-        path = Config.FILE_PATH(file.id)
-        os.makedirs(os.path.dirname(path), exist_ok=True)
-        file_obj.save(path)
+        # path = Config.FILE_PATH(file.id)
+        # os.makedirs(os.path.dirname(path), exist_ok=True)
+        file_obj.save(str(file.id))
+        upload_to_oss(str(file.id), str(file.id))
         return file
 
     # 下载
     @staticmethod
     def download(file_id):
         file = File.query.get(file_id)
+        download_from_oss(str(file.id), str(file.id))
         return file
 
     # 删除文件
