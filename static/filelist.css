@@ -44,6 +44,19 @@
     margin-left: 40px;
 }
 
+#parent-folder-button{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+    flex-wrap: wrap;
+    margin-left: 40px;
+    gap: 20px;
+}
+
+
 .folderButtonList{
     display: flex;
     flex-direction: row;
@@ -52,7 +65,7 @@
     padding: 0;
     width: 100%;
     flex-wrap: wrap;
-    margin-left:40px;
+/*    margin-left:40px;*/
     gap: 20px;
 }
 
@@ -63,12 +76,14 @@
     width: auto;
     background-color:transparent;
 /*    margin-bottom: 15px;*/
-    padding: 10px;
+/*    padding: 10px;*/ /* 内边距 */
     border-radius: 8px;
 /*    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);*/
 /*    gap : 20px;*/
     font-size: 20px;
-    margin-left: 50px;
+    margin-left: 40px;
+/*    margin-bottom: 15px;*/
+    margin-top: 15px;
 }
 
 .file-item {
@@ -77,13 +92,14 @@
     align-items: center;
     width: auto;
     background-color: #fff;
-    margin-bottom: 15px;
+/*    margin-bottom: 15px;*/
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    gap : 20px;
+/*    gap : 20px;*/
     font-size: 20px;
-    margin-left: 60px;
+    margin-left: 40px;
+    margin-top: 15px;
 }
 
 

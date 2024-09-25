@@ -486,12 +486,12 @@ def playground():
     files = File.query.order_by(File.uploaded_on.desc()).all()
     # 列出所有用户，以字典形式返回，key为id，value为用户名
     users = {user.id: user.username for user in User.query.all()}
-    # 列出所有文件的评论，以字典形式返回，key为file_id，value为评论列表
-    comments = {file.id: file.comments for file in files}
+    # # 列出所有文件的评论，以字典形式返回，key为file_id，value为评论列表
+    # comments = {file.id: file.comment for file in files}
     # 获取所有post对象，以及每个post对应的owner，以元组形式返回，key为post_id，value为元组(owner, post)
     posts = [(post.id, (User.query.get(post.owner_id), post)) for post in Post.query.all()]
     return render_template('playground.html', date=date, files=files, users=users, user=user,
-                           user_id=user_id, comments=comments, posts=posts)
+                           user_id=user_id, posts=posts)
 
 
 # 上传文件

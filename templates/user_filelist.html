@@ -14,20 +14,18 @@
 
 <!--            <p>{{ current_folder.name }}</p>-->
             <ul class="filelist">
-
+                <li id="parent-folder-button">
 <!--                <span class='folderButtonList'>-->
+<!--                    <span class='file-icon'>-->
                     <form method="POST">
-<!--                    <label class='folderBtn'>📁</label>-->
+<!--                    <label class='folderBtn'></label>-->
                         <input type="hidden" name="action" value="parent_folder">
                         <input type="hidden" name="current_folder_id" value="{{current_folder.id}}">
-                        <button type="submit" class="folder-btn">...</button>
+                        <button type="submit" class="folder-btn">📁...</button>
                     </form>
 <!--                </span>-->
 
-                <li>
-                    <span class='folderButtonList'>
-                        <label class='folderBtn'>📁{{current_folder.name}}</label>
-                        <form method="POST" id="folderForm">
+                    <form method="POST" id="folderForm">
                             <input type="hidden" name="folder_name" value="">
                             <input type="hidden" name="current_folder_id" value="{{current_folder.id}}">
                             <input type="hidden" name="user_id" value="{{current_folder.owner_id}}">
@@ -36,33 +34,37 @@
                                 <option value="new_folder">新建文件夹</option>
                             </select>
                             <input type="submit" value="确定">
+                    </form>
+
+                </li>
+
+<!--                <li id="item-list">-->
+
+<!--                    <ul class='filelist'>-->
+                {% for folder in sub_folders %}
+
+                <li class='folder-item'>
+                    <span class='file-icon'>
+                        <form method='POST' style='border: none; display: inline-block;'>
+                            <input type='hidden' name='action' value='subfolder'>
+                            <input type='hidden' name='folder_id' value='{{folder.id}}'>
+                            <input type='hidden' name='user_id' value='{{folder.author_id}}'>
+
+                            <button type='submit' class='folder-btn' style="">📁{{folder.name}}</button>
                         </form>
                     </span>
+                </li>
 
-                    <ul class='filelist'>
-                        {% for folder in sub_folders %}
-
-                        <li class='folder-item'>
-                            <span class='file-icon'>
-                                <form method='POST' style='border: none; display: inline-block;'>
-                                    <input type='hidden' name='action' value='subfolder'>
-                                    <input type='hidden' name='folder_id' value='{{folder.id}}'>
-                                    <input type='hidden' name='user_id' value='{{folder.author_id}}'>
-
-                                    <button type='submit' class='folder-btn' style="">📁{{folder.name}}</button>
-                                </form>
-                            </span>
-                        </li>
-
-                        {% endfor %}
-                    </ul>
+                {% endfor %}
+<!--                    </ul>-->
 
 
-                    <ul class='filelist'>
+<!--                    <ul class='filelist'>-->
                     {% for file in files %}
 
                         <li class='file-item'>
-                            <span class='file-icon'>📄
+                            <span class='file-icon'>
+                                📄
                                 <span class='file'>
 
                                     <div class="file-name" data-file-id={{cnt}}>{{file.name}}</div>
@@ -72,6 +74,7 @@
                                         <p>downloads: {{file.download_count}}</p>
 
                                     </div>
+
 
                                     <form method='POST' style='display: inline-block;'>
                                         <input type='hidden' name='action' value='download'>
@@ -88,9 +91,10 @@
                                 </span>
                             </span>
                         </li>
-                    </ul>
-                    {% endfor %}
+                        {% endfor %}
+<!--                    </ul>-->
 
+<!--                </li>-->
             </ul>
 
             <br>
