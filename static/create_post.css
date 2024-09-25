@@ -14,7 +14,6 @@
     height: auto;
     border-radius: 15px;
     padding: 0 30px;
-
     border: 5px solid #c2e9fb; /* 增加的边框 */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
@@ -33,7 +32,7 @@ textarea {
     margin-top: 20px;
     display: flex;
     flex-direction: column;
-     resize: none;
+    resize: none;
 }
 
 .form-group label {

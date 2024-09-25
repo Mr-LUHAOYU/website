@@ -97,6 +97,11 @@ class User(db.Model):
     def delete(self):
         ...
 
+    # 更新登陆时间
+    def update_last_login_time(self):
+        self.last_login_time = datetime.now()
+        db.session.commit()
+
     def update_info(self, username=None, password=None, email=None,
                     phone=None, real_name=None, student_id=None):
         if password:

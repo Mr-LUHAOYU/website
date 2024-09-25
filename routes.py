@@ -25,6 +25,9 @@ def login():
         user = User.login(username, password)
         if user:
             session['user_id'] = user.id
+            # 更新登录时间
+            user.update_last_login_time()
+
             return redirect(url_for('playground', user_id=user.id))
         else:
             flash('账号或密码错误')
@@ -540,10 +543,10 @@ def create_post(user_id):
         if Folder.query.filter_by(name=folder_name, owner_id=user.id).first() is not None:
             flash('不可使用该title，请更换')
             return redirect(request.url)
-        current_folder = Folder.query.filter_by(owner_id=user.id, child_folders=None).first()
-        Folder.create(folder_name, user_id, current_folder.id)
+        root = Folder.query.filter_by(owner_id=user.id, parent_folders=None).first()
+        folder = Folder.create(folder_name, user_id, root.id)
 
-        post = Post(title=title, content=content, owner_id=user_id, folder_id=current_folder.id)
+        post = Post(title=title, content=content, owner_id=user_id, folder_id=folder.id)
         db.session.add(post)
         db.session.commit()
         flash('帖子创建成功')
@@ -568,7 +571,8 @@ def post_detail(post_id):
         user_id = session.get('user_id')
         user = User.query.get_or_404(user_id)
         comment = Comment(content=content, owner_id=user_id, post_id=post_id)
-
+        file = request.files.get('attachment')
+        File.upload(post.folder_id, user_id, file)
         db.session.add(comment)
         db.session.commit()
         flash('评论发表成功')

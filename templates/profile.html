@@ -66,9 +66,9 @@
                 <p><span class="info-label">邮箱:</span> {{ user.email or '未填写' }}</p>
                 <p><span class="info-label">手机号:</span> {{ user.phone or '未填写' }}</p>
                 <p><span class="info-label">学号:</span> {{ user.student_id or '未填写' }}</p>
-                <p><span class="info-label">注册时间:</span> {{ user.registered_on }}</p>
-                <p><span class="info-label">上次登录时间:</span> {{ user.last_login }}</p>
-                <p><span class="info-label">权限等级:</span> {{ user.permission_level }}</p>
+                <p><span class="info-label">注册时间:</span> {{ user.register_time }}</p>
+                <p><span class="info-label">上次登录时间:</span> {{ user.last_login_time }}</p>
+
                 <br>
             </div>
 

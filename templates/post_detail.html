@@ -31,7 +31,7 @@
                         <textarea name="content" rows="4" placeholder="轻轻敲醒沉睡的心灵，让我看看你的想法..." required></textarea>
                     </div>
                     <div class="form-group">
-                        <input type="file" name="attachment" accept="*/*">
+                        <input type="file" name="attachment" accept="*/*" >
                     </div>
                     <div class="form-group">
                         <button type="submit">提交评论</button>
@@ -42,7 +42,6 @@
             </div>
             {% for comment_id, (owner, comment) in comments %}
             <div class="post-comment">
-
 
                 <div class="post-comment-author">
                     <div class="post-comment-avatar">

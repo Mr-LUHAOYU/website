@@ -1,3 +1,14 @@
+textarea {
+    resize: none;
+/*    min-height: 100px;*/
+/*    max-height: 700px;*/
+/*    min-width: 350px;*/
+/*    max-width: 350px;*/
+    width: 350px;
+    height: 350px;
+
+}
+
 h1{
     font-size: 36px;
     font-weight: bold;
