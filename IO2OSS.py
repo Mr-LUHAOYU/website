@@ -7,8 +7,11 @@ os.environ['OSS_ACCESS_KEY_ID'] = 'LTAI5tMXuC9JJRdm4Trt2uLR'
 os.environ['OSS_ACCESS_KEY_SECRET'] = 'jNg1hQ8oClcopvKVrxCMrRaD30lzN0'
 
 auth = oss2.ProviderAuth(EnvironmentVariableCredentialsProvider())
-bucket = oss2.Bucket(auth, 'https://oss-cn-hangzhou.aliyuncs.com', 'yourBucketName')
-
+bucket = oss2.Bucket(
+    auth,
+    'https://oss-cn-nanjing.aliyuncs.com',
+    'what-can-i-say'
+)
 
 def download_from_oss(yourObjectName):
     return bucket.get_object(yourObjectName)
