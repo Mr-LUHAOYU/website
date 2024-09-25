@@ -161,8 +161,9 @@ class File(db.Model):
     # 删除文件
     def delete_if_unreferenced(self):
         if not self.parent_folders:
-            path = Config.FILE_PATH(self.id)
-            os.remove(path)
+            # path = Config.FILE_PATH(self.id)
+            # os.remove(path)
+            delete_from_oss(str(self.id))
             db.session.delete(self)
             db.session.commit()
 
