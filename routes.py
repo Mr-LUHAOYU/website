@@ -170,8 +170,7 @@ def user_filelist(user_id, current_folder_id=1):
             # # 设置新的文件名
             # new_filename = file.name.encode('utf-8', 'replace').decode('latin-1')
             # response.headers["Content-Disposition"] = f"attachment; filename={new_filename}"
-
-            return response
+            # return response
 
         elif action == 'subfolder':  # 进入子文件夹
             folder_id = request.form.get('folder_id')
@@ -186,8 +185,11 @@ def user_filelist(user_id, current_folder_id=1):
                 current_folder_id = parent_folder_id
             files = current_folder.files
             return redirect(url_for('user_filelist', user_id=user.id, current_folder_id=current_folder_id, files=files))
+    if current_folder_id == 1:
+        current_folder = Folder.query.filter_by(owner_id=user.id, parent_folders=None).first()
+    else:
+        current_folder = Folder.query.get(current_folder_id)
 
-    current_folder = Folder.query.get(current_folder_id)
     files = current_folder.files
     sub_folders = current_folder.child_folders
 
@@ -372,29 +374,29 @@ def base():
     return render_template('base.html')
 
 
-@app.route('/all_users/<int:user_id>', methods=['POST'])
-def change_user_permission(user_id):
-    user = User.query.get(user_id)
-    each_user_id = request.form.get('each_user_id', type=int)
-    in_or_de = request.form.get('inORde', type=str)
-
-    if each_user_id is None:
-        flash('用户不存在')
-        return redirect(url_for('manage_users', user_id=user_id))
-    each_user = User.query.get(each_user_id)
-    if each_user.static_info.permission_level < user.static_info.permission_level:
-        if in_or_de == 'de':
-            each_user.static_info.permission_level -= 1
-            flash(f'用户{each_user.dynamic_info.username}权限降低成功')
-        elif in_or_de == 'in':
-            each_user.static_info.permission_level += 1
-            flash(f'用户{each_user.dynamic_info.username}权限提升成功')
-        db.session.commit()
-    else:
-        flash('权限修改失败，权限等级不足')
-
-    return redirect(url_for('manage_users', user_id=user_id))
-
+# @app.route('/all_users/<int:user_id>', methods=['POST'])
+# def change_user_permission(user_id):
+#     user = User.query.get(user_id)
+#     each_user_id = request.form.get('each_user_id', type=int)
+#     in_or_de = request.form.get('inORde', type=str)
+#
+#     if each_user_id is None:
+#         flash('用户不存在')
+#         return redirect(url_for('manage_users', user_id=user_id))
+#     each_user = User.query.get(each_user_id)
+#     if each_user.static_info.permission_level < user.static_info.permission_level:
+#         if in_or_de == 'de':
+#             each_user.static_info.permission_level -= 1
+#             flash(f'用户{each_user.dynamic_info.username}权限降低成功')
+#         elif in_or_de == 'in':
+#             each_user.static_info.permission_level += 1
+#             flash(f'用户{each_user.dynamic_info.username}权限提升成功')
+#         db.session.commit()
+#     else:
+#         flash('权限修改失败，权限等级不足')
+#
+#     return redirect(url_for('manage_users', user_id=user_id))
+#
 
 @app.route('/update_bio/<int:user_id>', methods=['POST'])
 def update_bio(user_id):
@@ -533,7 +535,15 @@ def create_post(user_id):
         content = request.form.get('content')
         user_id = session.get('user_id')
         user = User.query.get_or_404(user_id)
-        post = Post(title=title, content=content, owner_id=user_id)
+
+        folder_name = title.replace(' ', '_')
+        if Folder.query.filter_by(name=folder_name, owner_id=user.id).first() is not None:
+            flash('不可使用该title，请更换')
+            return redirect(request.url)
+        current_folder = Folder.query.filter_by(owner_id=user.id, child_folders=None).first()
+        Folder.create(folder_name, user_id, current_folder.id)
+
+        post = Post(title=title, content=content, owner_id=user_id, folder_id=current_folder.id)
         db.session.add(post)
         db.session.commit()
         flash('帖子创建成功')
@@ -551,4 +561,17 @@ def post_detail(post_id):
     comments = Comment.query.filter_by(post_id=post_id).all()
     # 获取所有评论，以及每个评论对应的作者，以元组形式返回，key为comment_id，value为元组(owner, comment)
     comments = [(comment.id, (User.query.get(comment.owner_id), comment)) for comment in comments]
+
+    if request.method == 'POST':
+        content = request.form.get('content')
+        # print(content)
+        user_id = session.get('user_id')
+        user = User.query.get_or_404(user_id)
+        comment = Comment(content=content, owner_id=user_id, post_id=post_id)
+
+        db.session.add(comment)
+        db.session.commit()
+        flash('评论发表成功')
+        return redirect(url_for('post_detail', post_id=post_id))
+
     return render_template('post_detail.html', post=post, author=author, comments=comments)

@@ -237,6 +237,7 @@ class Post(db.Model):
     content = db.Column(db.Text, nullable=False)
     likes = db.Column(db.Integer, default=0)
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    folder_id = db.Column(db.Integer, db.ForeignKey('folder.id'))
 
     # 创建
     @staticmethod

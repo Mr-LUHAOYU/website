@@ -19,7 +19,7 @@ from routes import *
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()
-        db.session.execute(text("UPDATE user SET id = 100000"))
+        # db.session.execute(text("UPDATE user SET id = 100000"))
         # db.session.commit()
     app.run(debug=True)
 
