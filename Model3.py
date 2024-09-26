@@ -243,6 +243,7 @@ class Post(db.Model):
     likes = db.Column(db.Integer, default=0)
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     folder_id = db.Column(db.Integer, db.ForeignKey('folder.id'))
+    uploaded_on_time = db.Column(db.DateTime, default=datetime.now())
 
     # 创建
     @staticmethod
@@ -285,7 +286,7 @@ class Comment(db.Model):
     likes = db.Column(db.Integer, default=0)
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
-
+    uploaded_on_time = db.Column(db.DateTime, default=datetime.now())
     # 创建
     @staticmethod
     def create(content, owner_id, post_id):
@@ -307,4 +308,25 @@ class Comment(db.Model):
     # 点赞
     def like(self, user_id):
         self.likes += 1
+        db.session.commit()
+
+
+class Like(db.Model):
+    __tablename__ = 'like'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
+    comment_id = db.Column(db.Integer, db.ForeignKey('comment.id'), nullable=False)
+    # 创建
+
+    @staticmethod
+    def create(user_id, post_id, comment_id):
+        like = Like(user_id=user_id, post_id=post_id, comment_id=comment_id)
+        db.session.add(like)
+        db.session.commit()
+        return like
+
+    # 删除
+    def delete(self):
+        db.session.delete(self)
         db.session.commit()

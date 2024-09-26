@@ -32,7 +32,7 @@
             </div>
 
             <div class="row-item">
-                <a class="score-link"><p>>成绩单<</p></a>
+                <a class="score-link"><p>>我的帖子<</p></a>
             </div>
 
             <div class="row-item">
@@ -58,16 +58,21 @@
                     </div>
                     <div class="post-author-name">
                         {{ owner.username }}
+                        <p class="post-date">{{ post.uploaded_on_time.strftime('%Y-%m-%d-%H:%M:%S' ) }}</p>
                     </div>
+
                 </div>
 
                 <div class="post-header">
                     <div class="post-title">
                         {{ post.title }}
+
                     </div>
                     <div class="post-content">
                         <p>{{ post.content }}</p>
                     </div>
+
+
                 </div>
             </div>
             {%endfor %}
@@ -79,71 +84,7 @@
 
 <script>
 
-    var comment_modals = document.querySelectorAll(".modal");
 
-    var comment_spans = document.querySelectorAll(".closeComment");
-
-    var comment_btns = document.querySelectorAll(".comment-btn");
-
-    comment_btns.forEach(function(btn, index) {
-        btn.onclick = function() {
-            comment_modals[index].style.display = "block";
-        }
-    });
-
-    comment_spans.forEach(function(span, index) {
-        span.onclick = function() {
-            comment_modals[index].style.display = "none";
-        }
-    });
-
-    window.onclick = function(event) {
-        comment_modals.forEach(function(modal) {
-            if (event.target == modal) {
-                modal.style.display = "none";
-            }
-        });
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-            const fileNames = document.querySelectorAll('.file-name'); // 选择器
-            fileNames.forEach(fileName => {
-                fileName.addEventListener('mouseover', function() {
-                    const fileId = fileName.getAttribute('data-file-id');
-                    const popup = document.getElementById(`popup-${fileId}`);
-                    popup.style.display = 'block';
-                    const rect = fileName.getBoundingClientRect();
-                    popup.style.left = `${rect.left+130}px`;
-                    popup.style.top = `${rect.bottom-130}px`;
-                });
-
-                fileName.addEventListener('mouseout', function() {
-                    const fileId = fileName.getAttribute('data-file-id');
-                    const popup = document.getElementById(`popup-${fileId}`);
-                    popup.style.display = 'none';
-                });
-            });
-        });
-
-    document.getElementById('show-more-comments').addEventListener('click', function() {
-        var comments = document.querySelectorAll('#comments-container .comment-item');
-        comments.forEach(function(comment) {
-            comment.removeAttribute('hidden');
-        });
-        this.style.display = 'none';
-        document.getElementById('hide-comments').style.display = 'inline';
-    });
-
-    document.getElementById('hide-comments').addEventListener('click', function() {
-        var comments = document.querySelectorAll('#comments-container .comment-item');
-        comments.forEach(function(comment, index) {
-            if (index >= 5) {
-                comment.setAttribute('hidden', true);
-            }
-        });
-        this.style.display = 'none';
-        document.getElementById('show-more-comments').style.display = 'inline';
-    });
 
 
 </script>

@@ -1,4 +1,4 @@
-from flask import render_template, redirect, url_for, flash, request, session, make_response
+from flask import render_template, redirect, url_for, flash, request, session, make_response, jsonify
 from werkzeug.utils import send_from_directory, send_file
 from app import app, db
 # from models import User, File, UserDynamicInfo, UserStaticInfo, Folder, Comment
@@ -572,10 +572,29 @@ def post_detail(post_id):
         user = User.query.get_or_404(user_id)
         comment = Comment(content=content, owner_id=user_id, post_id=post_id)
         file = request.files.get('attachment')
-        File.upload(post.folder_id, user_id, file)
-        db.session.add(comment)
-        db.session.commit()
-        flash('评论发表成功')
+        if file:
+            # 上传文件
+            File.upload(post.folder_id, user_id, file)
+            db.session.add(comment)
+            db.session.commit()
         return redirect(url_for('post_detail', post_id=post_id))
 
     return render_template('post_detail.html', post=post, author=author, comments=comments)
+
+
+@app.route('/like_post/<int:post_id>', methods=['POST'])
+def like_post(post_id):
+    post = Post.query.get_or_404(post_id)  # 获取帖子
+    user_id = session.get('user_id')  # 获取当前用户ID
+    user = User.query.get_or_404(user_id)  # 获取当前用户对象
+    is_like = Like.query.filter_by(user_id=user_id, post_id=post_id).first()  # 获取所有点赞该帖子的用户
+    # 判断当前用户是否已经点赞过该帖子
+    if is_like:
+        db.session.delete(is_like)  # 删除点赞对象
+        post.likes -= 1  # 减少点赞数
+    else:
+        like = Like(user_id=user_id, post_id=post_id, comment_id=0)  # 创建点赞对象
+        db.session.add(like)  # 添加到数据库
+        post.likes += 1  # 增加点赞数
+    db.session.commit()  # 提交到数据库
+    return jsonify({'likes': post.likes, 'liked':  is_like is None})  # 返回新的点赞数及点赞状态

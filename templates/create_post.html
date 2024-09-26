@@ -4,7 +4,7 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='create_post.css') }}">
 <div class="container">
     <div class="post-wrapper" >
-        <h1 class="post-title">创建帖子</h1>
+        <br><h1 class="post-title">创建帖子</h1>
         <form method="POST" action="{{ url_for('create_post', user_id=user_id) }}" enctype="multipart/form-data">
             <div class="form-group">
                 <label for="title">标题</label>

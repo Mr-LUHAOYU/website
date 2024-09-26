@@ -6,6 +6,7 @@ textarea {
     overflow: hidden;
     max-width: 800px;
     max-height: 250px;
+    font-size: 18px;
 }
 
 .container {
@@ -55,6 +56,7 @@ textarea {
 
 .post-author-name{
     display: flex;
+    flex-direction: column;
 /*    align-items: center;*/
     margin-top: 25px;
     margin-right: 10px;
@@ -64,6 +66,16 @@ textarea {
     color: #007BFF;
 }
 
+.post-date{
+    display: flex;
+    flex-direction: column;
+/*    align-items: center;*/
+/*    margin-top: 25px;*/
+    margin-right: 10px;
+    margin-left: 10px;
+    font-size: 16px;
+    color: #333;
+}
 .post-header{
     display: flex;
     flex-direction: column;
@@ -187,4 +199,68 @@ textarea {
 /*    margin-top: 10px;*/
     margin-left: 20px;
     margin-right: 20px;
+}
+
+.post-buttons{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 20px;
+    border: none;
+    background-color: transparent;
+    color: #007BFF;
+    margin-bottom: 10px;
+}
+
+.like-btn {
+    font-size: 20px;
+    border: none;
+    background-color: transparent; /* 默认无色 */
+    color: #000; /* 字体颜色 */
+    cursor: pointer;
+    padding: 10px;
+}
+
+.like-btn.liked {
+    font-size: 20px;
+    border-radius: 10px;
+    border: none;
+    background-color: #007bff; /* 点赞时的背景颜色 */
+    color: #fff; /* 点赞时的字体颜色 */
+}
+
+.commit-btn {
+    padding: 9px 15px; /* 调整按钮大小 */
+    font-size: 15px;
+    border: none;
+    border-radius: 10px;
+    background-image: linear-gradient(to right, #a6d0ff, #fbcefb);
+    opacity: 0.8;
+    color: #fff;
+    cursor: pointer;
+
+}
+
+.custom-file-upload {
+    display: inline-block;
+    padding: 9px 15px; /* 调整按钮大小 */
+    margin-bottom: 0;
+    font-size: 15px;
+    font-weight: normal;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    background-color: #FEB6C1; /* 你可以设置想要的背景颜色 */
+    opacity: 0.7;
+    color: white; /* 文字颜色 */
+    border-radius: 5px;
+    border: none;
+}
+
+.custom-file-input {
+    display: none; /* 隐藏默认的文件输入框 */
 }

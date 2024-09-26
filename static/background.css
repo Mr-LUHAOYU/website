@@ -45,8 +45,8 @@ html {
 
 .messages {
     position: fixed;
-    top: 0;
-    transform: translateX(-50%);
+    top: 500px;
+/*    transform: translateX(-50%);*/
     background-image: linear-gradient(to right, #a6c1ee, #fbc2eb);
     color: white;
     padding: 15px;
