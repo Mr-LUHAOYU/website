@@ -1,7 +1,7 @@
 {% extends "background.html" %}
 
 {% block content %}
-<link rel="stylesheet" href="{{ url_for('static', filename='all_users.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/all_users.css') }}">
 
 <body>
     <div class="user-management">
@@ -37,7 +37,7 @@
                     {% if  not (each_user.id == user.id)  %}
                     <li class="user-item">
                         <div class="avatar-container">
-                            <img src="{{ url_for('static', filename=user.avatar) }}" alt="头像" class="avatar">
+                            <img src="{{ url_for('static', filename=each_user.avatar) }}" alt="头像" class="avatar">
                         </div>
                         <div class="user-info">
                             <span class="user-name">

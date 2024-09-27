@@ -10,9 +10,9 @@
 }
 
 h1,h2, h3 {
-    text-align: center; //居中
-    color: #333; //字体颜色
-    margin-bottom: 20px; //下边距
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
 }
 
 .user-info-wrapper {
@@ -26,12 +26,12 @@ h1,h2, h3 {
 }
 
 .current-user, .other-users {
-    margin-bottom: 30px; //下边距
+    margin-bottom: 30px;
 }
 
 .avatar-container {
-    display: flex; //使子元素居中
-    justify-content: center; //子元素水平居中
+    display: flex;
+    justify-content: center;
     margin-bottom: 15px;
 }
 
@@ -44,11 +44,11 @@ h1,h2, h3 {
 }
 
 .user-list {
-    list-style-type: none; //列表样式
+    list-style-type: none;
     padding: 0;
     width: 100%;
 
-    flex-wrap: wrap; //子元素换行
+    flex-wrap: wrap;
 }
 
 .user-item {
@@ -67,20 +67,20 @@ h1,h2, h3 {
 
 .user-info {
     display: flex;
-    align-items: center; //子元素垂直居中
+    align-items: center;
     background-color: #555;
-    flex-wrap: wrap; //子元素换行
-    flex-direction: column;`
-    margin-left: 5px;//左边距
+    flex-wrap: wrap;
+    flex-direction: column;
+    margin-left: 5px;
     gap: 1000px;
 }
 
 .user-name{
     display: block;
     margin-right: 20px;
-    font-size: 1.2em; //字体大小
+    font-size: 1.2em;
     color: #555;
-    font-weight: bold; //加粗
+    font-weight: bold; 
 
 
 }
