@@ -4,14 +4,14 @@
 <link rel="stylesheet" href="{{ url_for('static', filename='css/all_users.css') }}">
 
 <body>
-    <div class="user-management">
+    <div class="container">
 
 
         <div class="user-info-wrapper">
-            <h1>用户管理</h1>
+            <div class="header">用户管理</div>
         <!-- 当前用户信息 -->
             <div class="current-user">
-                <h2>当前用户</h2>
+                <h1>当前用户</h1><br>
                 <div class="user-list">
                     <div class="user-item">
                         <div class="user-info">
@@ -30,7 +30,7 @@
 
             <!-- 所有用户列表 -->
             <div class="other-users">
-                <h2>所有用户</h2>
+                <h1>所有用户</h1><br>
                 <ul class="user-list">
                     {% for each_user in users %}
         <!--            如果用户是当前用户，则不显示信息-->

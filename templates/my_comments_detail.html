@@ -91,6 +91,21 @@
                     </span>
                 </li>
 
+                <div class="score">
+                    <form method='POST' action='/comment_score' class='score-form'>
+
+                        <span class='score-text'>评分：</span>
+                        <input type='hidden' name='action' value='score'>
+                        <input type='hidden' name='comment_id' value='{{comment.id}}'>
+                        <input type='number' name='new_score' value='{{ comment.score }}' class='score-input' min='0' max='100' required disabled>
+
+<!--                        <button type='submit' class='score-btn'>-->
+<!--                            <span class='score-icon'>submit</span>-->
+<!--                        </button>-->
+                    </form>
+
+                </div>
+
             </div>
 
             {% endfor %}

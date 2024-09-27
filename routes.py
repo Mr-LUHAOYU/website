@@ -677,6 +677,22 @@ def my_posts(user_id):
     return render_template('my_posts.html', user=user, posts=posts)
 
 
+@app.route('/my_posts_detail/<int:post_id>', methods=['GET', 'POST'])
+def my_posts_detail(post_id):
+    user_id = session.get('user_id')
+    user = User.query.get_or_404(user_id)
+    # 获取当前帖子
+    post = Post.query.get_or_404(post_id)
+    # 获取帖子的作者
+    author = User.query.get_or_404(post.owner_id)
+
+    comments = Comment.query.filter_by(post_id=post_id).all()
+    # 获取所有评论，以及每个评论对应的作者和文件，以元组形式返回，key为comment_id，value为元组(author, file, comment)
+    comments = [(comment.id, (User.query.get(comment.owner_id), File.query.get(comment.file_id), comment)) for comment
+                in comments]
+    return render_template('my_posts_detail.html', post=post, author=author, comments=comments, user=user)
+
+
 @app.route('/my_comments/<int:user_id>', methods=['GET', 'POST'])
 def my_comments(user_id):
     user = User.query.get_or_404(user_id)
@@ -697,3 +713,22 @@ def my_comments_detail(post_id):
     # 获取这篇帖子的所有我的评论，以及每个评论对应的作者和文件，以元组形式返回，key为comment_id，value为元组(author, file, comment)
     my_comments = [(comment.id, (User.query.get(comment.owner_id), File.query.get(comment.file_id), comment)) for comment in comments if comment.owner_id == user_id]
     return render_template('my_comments_detail.html', post=post, author=author, comments=my_comments, user=user)
+
+
+@app.route('/comment_score', methods=['POST'])
+def comment_score():
+    action = request.form.get('action')
+    comment_id = request.form.get('comment_id')
+    new_score = request.form.get('new_score')
+
+    comment = Comment.query.get_or_404(comment_id)
+    comment.update_score(new_score)
+    return redirect(request.referrer)
+    # return jsonify({'status': 'success', 'message': '评分更新成功', 'new_score': new_score})
+
+
+@app.route('/export_score/<int:post_id>', methods=['POST'])
+def export_score(post_id):
+    # post_id = request.form.get('post_id')
+    Post.export_scores_to_excel(post_id)
+    return redirect(request.referrer)

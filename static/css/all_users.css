@@ -1,28 +1,28 @@
-.user-management {
-
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    height: auto;
-    margin-top: 20px;
+.container {
+    height: 100%;
 }
 
-h1,h2, h3 {
-    text-align: center;
-    color: #333;
-    margin-bottom: 20px;
-}
 
 .user-info-wrapper {
     background-color: #fff;
-    width: 100%;
-    max-width: 650px;
-    padding: 30px;
+    opacity: 0.9;
+    width: 1000px;
     border-radius: 15px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    padding: 0 30px;
+    position: absolute;
+    left: 250px;
+    top: 100px;
     border: 5px solid #c2e9fb; /* 增加的边框 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.header {
+    font-size: 38px;
+    font-weight: bold;
+    text-align: center;
+    margin-top: -40px;
+    margin_bottom: 20px;
+    line-height: 200px;
 }
 
 .current-user, .other-users {
@@ -48,7 +48,7 @@ h1,h2, h3 {
     padding: 0;
     width: 100%;
 
-    flex-wrap: wrap;
+
 }
 
 .user-item {
@@ -61,18 +61,17 @@ h1,h2, h3 {
     padding: 15px;
     border-radius: 8px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    gap : 20px;
+
 
 }
 
 .user-info {
     display: flex;
     align-items: center;
-    background-color: #555;
+/*    background-color: #555;*/
     flex-wrap: wrap;
-    flex-direction: column;
+    flex-direction: row;
     margin-left: 5px;
-    gap: 1000px;
 }
 
 .user-name{
@@ -80,8 +79,8 @@ h1,h2, h3 {
     margin-right: 20px;
     font-size: 1.2em;
     color: #555;
-    font-weight: bold; 
-
+    font-weight: bold;
+    margin-left: 30px;
 
 }
 .user-level {

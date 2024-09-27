@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from config import Config
 import re
 from IO2OSS import *
+import pandas as pd
 
 db = SQLAlchemy()
 
@@ -305,6 +306,42 @@ class Post(db.Model):
             self.content = content
         db.session.commit()
 
+    @staticmethod
+    def export_scores_to_excel(post_id):
+
+        # 查询所有评论，以及每个评论对应的用户、分数，以元组形式返回
+        comments = db.session.query(Comment, User, Comment.score).join(User).filter(Comment.post_id == post_id).all()
+        # 定义一个字典存储数据
+
+        # 创建一个字典存储数据
+        data = {
+            # 'ID': [],
+            'student_id': [],
+            'real_name': [],
+            'Username': [],
+
+            'Score': []
+        }
+
+        # 填充字典
+        for comment, user, score in comments:
+            # data['ID'].append(comment.id)
+            data['student_id'].append(user.student_id)
+            data['real_name'].append(user.real_name)
+            data['Username'].append(user.username)
+            data['Score'].append(score)
+        # 定义文件路径
+        file_path = "scores.xlsx"
+        # 路径改为桌面
+        file_path = os.path.join(os.path.expanduser("~"), "Desktop", file_path)
+
+        # 将字典转换为 DataFrame
+        df = pd.DataFrame(data)
+
+        # 导出到 XLSX 文件
+        df.to_excel(file_path, index=False)
+
+
 
 class Comment(db.Model):
     __tablename__ = 'comment'
@@ -315,6 +352,7 @@ class Comment(db.Model):
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
     uploaded_on_time = db.Column(db.DateTime, default=datetime.now())
     file_id = db.Column(db.Integer, db.ForeignKey('file.id'))
+    score = db.Column(db.Integer, default=60)
 
     # 创建
     @staticmethod
@@ -341,6 +379,9 @@ class Comment(db.Model):
         self.likes += 1
         db.session.commit()
 
+    def update_score(self, score):
+        self.score = score
+        db.session.commit()
 
 class Like(db.Model):
     __tablename__ = 'like'
@@ -361,3 +402,5 @@ class Like(db.Model):
     def delete(self):
         db.session.delete(self)
         db.session.commit()
+
+
