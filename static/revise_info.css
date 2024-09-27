@@ -1,9 +1,7 @@
 .profile-container {
-    height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    width: 100%;
+    height: 100%;
+
 
 }
 
@@ -16,17 +14,26 @@
 
 .profile_wrapper {
     background-color: #fff;
-    width: 100%;
-    max-width: 500px;
-    padding: 30px;
+    opacity: 0.9;
+    width: 1000px;
     border-radius: 15px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    padding: 0 30px;
+    position: absolute;
+    left: 250px;
+    top: 100px;
     border: 5px solid #c2e9fb; /* 增加的边框 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    /*display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: -50px;*/
 }
 
 
 .form-group {
     margin-bottom: 20px;
+    width: 400px;
 }
 
 .form-group label {
@@ -75,4 +82,17 @@ input[type="submit"]:hover {
     transform: translateY(-2px); /* 悬停时轻微上移 */
 }
 
+#admin {
+    width: 100%; /* 选择框宽度占满父元素 */
+    padding: 8px; /* 内边距增加舒适感 */
+    border: 1px solid #ccc; /* 边框颜色 */
+    border-radius: 4px; /* 圆角样式 */
+    font-size: 16px; /* 字体大小 */
+    background-color: #fff; /* 背景颜色 */
+    transition: border-color 0.3s; /* 边框颜色变化过渡效果 */
+}
 
+#admin:focus {
+    border-color: #007bff; /* 聚焦时边框颜色变化 */
+    outline: none; /* 去掉默认的轮廓 */
+}

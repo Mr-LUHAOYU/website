@@ -1,0 +1,324 @@
+.container {
+    height: 100%;
+}
+
+.admin-wrapper {
+    background-color: #fff;
+    opacity: 0.9;
+    width: 1000px;
+    border-radius: 15px;
+    padding: 0 30px;
+    position: absolute;
+    left: 250px;
+    top: 100px;
+    border: 5px solid #c2e9fb; /* 增加的边框 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    /*display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin-top: -50px;*/
+}
+
+.admin-header {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+/*    align-items: center;*/
+}
+
+.row-wrapper{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.row-item{
+    width: 25%;
+    height: auto;
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.row-item:hover{
+    background-color: #f5f5f5;
+}
+
+.row-item:active{
+    background-color: #e6e6e6;
+}
+
+
+.upload-link,.homework-link,.score-link,.profile-link,.file-link{
+    text-decoration: none;
+    color: black;
+}
+
+#dynamic-content{
+/*    border-top: 2px solid #ccc;*/
+    margin-top: 30px;
+}
+
+/* 设置表格的基础样式 */
+.table {
+    width: 100%; /* 使表格宽度为100% */
+    border-collapse: collapse; /* 合并边框 */
+    margin: 20px 0; /* 上下外边距 */
+}
+
+/* 表头样式 */
+.table thead {
+    background-color: #f2f2f2; /* 背景颜色 */
+}
+
+.table th {
+    padding: 10px; /* 内边距 */
+    text-align: left; /* 左对齐 */
+    border-bottom: 2px solid #ccc; /* 下边框 */
+}
+
+/* 表格主体样式 */
+.table tbody tr:hover {
+    background-color: #f9f9f9; /* 鼠标悬停时背景颜色 */
+}
+
+.table td {
+    padding: 10px; /* 内边距 */
+    border-bottom: 1px solid #ccc; /* 下边框 */
+}
+
+/* 按钮样式 */
+.btn {
+    display: inline-block; /* 让按钮内联显示 */
+    padding: 5px 10px; /* 按钮内边距 */
+    border-radius: 4px; /* 圆角边框 */
+    text-decoration: none; /* 移除下划线 */
+}
+
+.btn-primary {
+    background-color: #007bff; /* 主按钮背景色 */
+    color: white; /* 主按钮字体颜色 */
+}
+
+.btn-danger {
+    background-color: #dc3545; /* 删除按钮背景色 */
+    color: white; /* 删除按钮字体颜色 */
+}
+
+/* 小按钮样式 */
+.btn-sm {
+    font-size: 0.875rem; /* 设置小字号 */
+}
+
+/* 添加响应式样式 */
+@media (max-width: 768px) {
+    .table {
+        display: block; /* 小屏幕上显示为块级元素 */
+        overflow-x: auto; /* 允许横向滚动 */
+    }
+}
+
+.modal {
+    display: none; /* 隐藏 */
+    position: fixed; /* 固定位置 */
+    z-index: 1; /* 层叠顺序 */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* 如果内容超出窗口，则添加滚动条 */
+    background-color: rgb(0,0,0); /* 黑色背景 */
+    background-color: rgba(0,0,0,0.4); /* 带透明度的背景 */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% 的顶部边距和居中 */
+    padding: 20px;
+    border: 2px solid #888;
+    border-radius: 10px;
+    width: 80%; /* 宽度 */
+    max-width: 400px;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close:hover,
+.close:focus,  {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+#EditBtn, #DeleteBtn {
+    background: linear-gradient(135deg, #ff7e5f, #feb47b); /* 渐变背景色 */
+    border: none; /* 无边框 */
+    color: white; /* 白色文字 */
+    padding: 10px 20px; /* 内边距 */
+    text-align: center; /* 文字居中 */
+    text-decoration: none; /* 去除下划线 */
+    display: inline-block; /* 内联块元素 */
+    font-size: 16px; /* 字体大小 */
+    font-weight: bold; /* 加粗字体 */
+    border-radius: 25px; /* 圆角 */
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); /* 阴影效果 */
+    cursor: pointer; /* 鼠标悬停时显示手型 */
+    transition: all 0.3s ease; /* 添加过渡效果 */
+}
+
+#EditBtn:hover, #DeleteBtn:hover {
+    background: linear-gradient(135deg, #feb47b, #ff7e5f); /* 反转渐变色 */
+    box-shadow: 0px 6px 8px rgba(0, 0, 0, 0.15); /* 鼠标悬停时增加阴影 */
+    transform: translateY(-2px); /* 悬停时轻微上移 */
+}
+
+.filelist{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+    flex-wrap: wrap;
+    margin-left: 40px;
+}
+
+.file-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+    background-color: #fff;
+/*    margin-bottom: 15px;*/
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+/*    gap : 20px;*/
+    font-size: 20px;
+    margin-left: 40px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+
+.file-icon {
+    font-size: 30px;
+    margin-right: 10px;
+    width: auto;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.file{
+    font-size: 20px;
+    margin-left: 20px;
+    display : flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.file-name {
+    cursor: pointer;
+}
+
+.post-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: auto;
+    background-color: #fff;
+    opacity: 0.95;
+    border-radius: 15px;
+    padding: 0 30px;
+    left: 0%;
+    top: 100px;
+/*    border: 5px solid #c2e9fb; *//* 增加的边框 */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.post-item {
+    display: flex; /* 行内块 */
+    flex-direction: column;/* 垂直 */
+    border: 1px solid #ccc;
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+.post-author{
+    display: flex;
+    flex-direction: row;
+}
+
+.post-author-name{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 10px;
+    margin-right: 10px;
+    margin-left: 10px;
+    font-size: 18px;
+    font-weight: bold;
+    color: #007BFF;
+
+}
+
+.post-title {
+    font-size: 24px;
+    font-weight: bold;
+    color: #333;
+}
+
+.post-author {
+    font-size: 16px;
+    font-weight: bold;
+    color: #007BFF;
+}
+
+.avatar {
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    object-fit: cover;
+    border: 2px solid #ccc;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    margin-top: 10px;
+
+}
+
+.post-content {
+    display: flex;
+    font-size: 16px;
+    color: #333;
+    margin-bottom: 10px;
+    margin-top: 10px;
+}
+
+.post-date {
+    font-size: 12px;
+    color: #777;
+    margin-left: 10px;
+}

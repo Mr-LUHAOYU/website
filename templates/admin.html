@@ -1,0 +1,63 @@
+{% extends "background.html" %}
+
+{% block content %}
+
+<link rel="stylesheet" href="{{ url_for('static', filename='admin.css') }}">
+<div class="container">
+
+    <div class="admin-wrapper">
+        <div class="admin-header">
+            <br><h1>欢迎，Admin:{{ user.username }}！</h1>
+        </div>
+        <div class="row-wrapper">
+            <div class="row-item">
+                <a class="manage-users-link" onclick="loadContent('admin_manage_users')">管理用户</a>
+            </div>
+
+            <div class="row-item">
+                <a class="manage-files-link" onclick="loadContent('admin_manage_files')">管理文件</a>
+            </div>
+
+            <div class="row-item">
+                <a class="manage-posts-link" onclick="loadContent('admin_manage_posts')">管理帖子</a>
+            </div>
+
+<!--            <div class="row-item">-->
+<!--                <a class="profile-link" onclick="loadContent('profile')">个人主页</a>-->
+<!--            </div>-->
+        </div>
+
+        <div class="content-wrapper" id="dynamic-content">
+
+        </div>
+    </div>
+</div>
+
+<script>
+    function loadContent(page) {
+        var xhr = new XMLHttpRequest();
+        if (page ==='admin_manage_users')
+            xhr.open('GET', '/admin_manage_users', true);  // 假设你的内容文件名为 manage_users.html，manage_files.html 等
+        else if (page ==='admin_manage_files')
+            xhr.open('GET', '/admin_manage_files', true);
+        else if (page ==='admin_manage_posts')
+            xhr.open('GET', '/admin_manage_posts', true);
+        else if (page === 'profile')
+            xhr.open('GET', '/profile', true);
+
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState === 4 && xhr.status === 200) {
+                document.getElementById('dynamic-content').innerHTML = xhr.responseText; // 替换内容区域
+    //            document.getElementById('content-title').innerText = page; // 更新标题
+            }
+        };
+        xhr.send();
+    }
+//    window.onload = function() {
+//        console.log("Window Loaded"); // 添加日志
+//        loadContent('admin_manage_users')
+//    };
+</script>
+<script src="{{ url_for('static', filename='js/admin.js') }}"></script>
+
+{% endblock %}

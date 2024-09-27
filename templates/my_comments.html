@@ -1,0 +1,40 @@
+{% extends 'background.html' %}
+{% block content %}
+<link rel="stylesheet" href="{{ url_for('static', filename='my_comments.css') }}">
+<div class="container">
+    <div class="page-wrapper">
+        <div class="post-wrapper">
+                <br><h1>我的提交</h1><br>
+                {% for post_id, (owner, post) in posts %}
+                <div class="post-item" onclick="location.href='{{ url_for('my_comments_detail', post_id=post_id) }}'">
+                    <div class="post-author">
+                        <div class="post-avatar">
+                            <img src="{{url_for('static', filename=owner.avatar)}}" alt="头像" class="avatar">
+                        </div>
+                        <div class="post-author-name">
+                            {{ owner.username }}
+                            <p class="post-date">{{ post.uploaded_on_time.strftime('%Y-%m-%d-%H:%M:%S' ) }}</p>
+                        </div>
+
+                    </div>
+
+                    <div class="post-header">
+                        <div class="post-title">
+                            {{ post.title }}
+
+                        </div>
+                        <div class="post-content">
+                            <p>{{ post.content }}</p>
+                        </div>
+
+
+                    </div>
+                </div>
+                {%endfor %}
+            <br>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

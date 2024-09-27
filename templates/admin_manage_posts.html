@@ -1,0 +1,33 @@
+<div class="content-header">
+    <h2 id="content-title"></h2>
+</div>
+<div class="content-body">
+    {% for post_id, (owner, post) in posts %}
+    <div class="post-item" onclick="location.href='{{ url_for('post_detail', post_id=post_id) }}'">
+        <div class="post-author">
+            <div class="post-avatar">
+                <img src="{{url_for('static', filename=owner.avatar)}}" alt="头像" class="avatar">
+            </div>
+            <div class="post-author-name">
+                {{ owner.username }}
+                <p class="post-date">{{ post.uploaded_on_time.strftime('%Y-%m-%d-%H:%M:%S' ) }}</p>
+            </div>
+
+        </div>
+
+        <div class="post-header">
+            <div class="post-title">
+                {{ post.title }}
+                <a id="EditBtn" href="{{ url_for('admin_edit_post', post_id=post_id) }}">Edit</a>
+                <a id="DeleteBtn" href="{{ url_for('admin_delete_post', post_id=post_id) }}">Delete</a>
+            </div>
+            <div class="post-content">
+                <p>{{ post.content }}</p>
+            </div>
+
+
+        </div>
+    </div>
+    {%endfor %}
+</div>
+

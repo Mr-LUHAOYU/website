@@ -45,6 +45,8 @@ class User(db.Model):
     introduction = db.Column(db.String(200))
     avatar = db.Column(db.String(100))
 
+    is_admin = db.Column(db.Boolean, default=False)
+
     # attributes: 用户内置信息 modified=0
     register_time = db.Column(db.DateTime, default=datetime.utcnow)
     last_login_time = db.Column(db.DateTime, default=datetime.utcnow)
@@ -95,7 +97,16 @@ class User(db.Model):
         return True
 
     def delete(self):
-        ...
+        for file in self.files:
+            file.delete_if_unreferenced()
+        for folder in self.folders:
+            folder.delete_if_unreferenced()
+        for post in self.posts:
+            post.delete()
+        for comment in self.comments:
+            comment.delete()
+        db.session.delete(self)
+        db.session.commit()
 
     # 更新登陆时间
     def update_last_login_time(self):
@@ -103,10 +114,10 @@ class User(db.Model):
         db.session.commit()
 
     def update_info(self, username=None, password=None, email=None,
-                    phone=None, real_name=None, student_id=None):
+                    phone=None, real_name=None, student_id=None, is_admin=None):
         if password:
             return self.set_password(password)
-        for it in ['username', 'email', 'phone', 'real_name', 'student_id']:
+        for it in ['username', 'email', 'phone', 'real_name', 'student_id', 'is_admin']:
             if eval(it):
                 phone_regex = r'^1[3-9]\d{9}$'
                 if it == 'phone' and re.match(phone_regex, phone) is None:
@@ -120,6 +131,9 @@ class User(db.Model):
                 if it == 'email':
                     if User.query.filter_by(email=eval(it)).first():
                         flash('邮箱已存在')
+                if it == 'real_name':
+                    if User.query.filter_by(real_name=eval(it)).first():
+                        flash('真实姓名已存在')
                 if it == 'student_id':
                     if User.query.filter_by(student_id=eval(it)).first():
                         flash('学号已存在')
@@ -261,8 +275,14 @@ class Post(db.Model):
 
     # 删除
     def delete(self):
-        for comment in self.comments:
+        # for comment in self.comments:
+        #     db.session.delete(comment)
+        comments = Comment.query.filter_by(post_id=self.id).all()
+        for comment in comments:
             db.session.delete(comment)
+        folder = Folder.query.filter_by(id=self.folder_id).first()
+        parent_folder = Folder.query.filter_by(id=folder.parent_folders[0].id).first()
+        folder.delete(parent_folder.id)
         db.session.delete(self)
         db.session.commit()
 
@@ -278,6 +298,13 @@ class Post(db.Model):
         db.session.commit()
         return comment
 
+    def update_info(self, title=None, content=None):
+        if title:
+            self.title = title
+        if content:
+            self.content = content
+        db.session.commit()
+
 
 class Comment(db.Model):
     __tablename__ = 'comment'
@@ -287,10 +314,12 @@ class Comment(db.Model):
     owner_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'), nullable=False)
     uploaded_on_time = db.Column(db.DateTime, default=datetime.now())
+    file_id = db.Column(db.Integer, db.ForeignKey('file.id'))
+
     # 创建
     @staticmethod
-    def create(content, owner_id, post_id):
-        comment = Comment(content=content, owner_id=owner_id, post_id=post_id)
+    def create(content, owner_id, post_id, file_id=None):
+        comment = Comment(content=content, owner_id=owner_id, post_id=post_id, file_id=file_id)
         db.session.add(comment)
         db.session.commit()
         return comment
@@ -302,6 +331,8 @@ class Comment(db.Model):
 
     # 删除
     def delete(self):
+        file = File.query.filter_by(id=self.file_id).first()
+        file.delete()
         db.session.delete(self)
         db.session.commit()
 

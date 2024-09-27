@@ -32,17 +32,22 @@
             </div>
 
             <div class="row-item">
-                <a class="score-link"><p>>我的帖子<</p></a>
+                <a class="score-link" href="{{ url_for('my_posts', user_id=user.id) }}"><p>>我的帖子<</p></a>
             </div>
 
             <div class="row-item">
-                <a class="homework-link"><p>>我的提交<</p>
+                <a class="homework-link" href="{{ url_for('my_comments', user_id=user.id) }}"><p>>我的提交<</p>
                 </a>
             </div>
 
             <div class="row-item">
                 <a class="profile-link" href="{{ url_for('profile', user_id=user.id) }}"><p>>个人主页<</p></a>
             </div>
+            {% if user.is_admin %}
+            <div class="row-item">
+                <a class="admin-link" href="{{ url_for('admin', user_id=user.id) }}"><p>>管理后台<</p></a>
+            </div>
+            {% endif %}
             <br>
 
         </div>

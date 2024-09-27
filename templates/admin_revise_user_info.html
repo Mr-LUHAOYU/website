@@ -1,0 +1,57 @@
+{% extends "background.html" %}
+
+{% block content %}
+    <link rel="stylesheet" href="{{ url_for('static', filename='revise_info.css') }}">
+<body>
+    <div class="profile-container">
+
+        <div class="profile_wrapper">
+
+            <div class="profile-header">
+                <br><h1>修改个人信息</h1>
+            </div>
+
+
+            <form method="POST" action="{{ url_for('admin_revise_user_info', user_id=user.id) }}">
+                <div class="form-group">
+                    <label for="username">用户名:</label>
+                    <input type="text" name="username" id="username" value="{{ user.username }}" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="real_name">真实姓名:</label>
+                    <input type="text" name="real_name" id="real_name" value="{{ user.real_name or '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="real_name">学号:</label>
+                    <input type="text" name="student_id" id="student_id" value="{{ user.student_id or '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="email">邮箱:</label>
+                        <input type="email" name="email" id="email" value="{{ user.email or '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">手机号:</label>
+                    <input type="text" name="phone" id="phone" value="{{ user.phone or '' }}">
+                </div>
+
+                <div class="form-group">
+                    <label for="admin">权限:</label>
+                    <select name="is_admin" id="admin">
+                        <option value="0" {% if not user.is_admin %}selected{% endif %}>普通用户</option>
+                        <option value="1" {% if user.is_admin %}selected{% endif %}>管理员</option>
+                    </select>
+                </div>
+                <input type="submit" value="保存更改">
+                <br>
+            </form>
+            <br>
+
+        </div>
+
+    </div>
+</body>
+{% endblock %}

@@ -127,6 +127,8 @@ def revise_info(user_id):
 
 @app.route('/user_filelist/<int:user_id>,<int:current_folder_id>', methods=['GET', 'POST'])
 def user_filelist(user_id, current_folder_id=1):
+    current_user_id = session.get('user_id')
+    current_user = User.query.get(current_user_id)
     # print("here user_filelist")
     user = User.query.get_or_404(user_id)
     # file_html, script = user.to_html
@@ -187,7 +189,8 @@ def user_filelist(user_id, current_folder_id=1):
                 parent_folder_id = current_folder.parent_folders[0].id
                 current_folder_id = parent_folder_id
             files = current_folder.files
-            return redirect(url_for('user_filelist', user_id=user.id, current_folder_id=current_folder_id, files=files))
+            return redirect(url_for('user_filelist', user_id=user.id, current_folder_id=current_folder_id,
+                                    files=files, current_user=current_user))
     if current_folder_id == 1:
         current_folder = Folder.query.filter_by(owner_id=user.id, parent_folders=None).first()
     else:
@@ -196,7 +199,8 @@ def user_filelist(user_id, current_folder_id=1):
     files = current_folder.files
     sub_folders = current_folder.child_folders
 
-    return render_template('user_filelist.html', user=user, current_folder=current_folder, files=files, sub_folders=sub_folders)
+    return render_template('user_filelist.html', user=user, current_folder=current_folder,
+                           files=files, sub_folders=sub_folders, current_user=current_user)
 
 
 @app.route('/upload/<int:target_folder_id>', methods=['GET', 'POST'])
@@ -372,35 +376,6 @@ def logout():
     return redirect(url_for('index'))  # 重定向到主页或其他页面
 
 
-@app.route('/base')
-def base():
-    return render_template('base.html')
-
-
-# @app.route('/all_users/<int:user_id>', methods=['POST'])
-# def change_user_permission(user_id):
-#     user = User.query.get(user_id)
-#     each_user_id = request.form.get('each_user_id', type=int)
-#     in_or_de = request.form.get('inORde', type=str)
-#
-#     if each_user_id is None:
-#         flash('用户不存在')
-#         return redirect(url_for('manage_users', user_id=user_id))
-#     each_user = User.query.get(each_user_id)
-#     if each_user.static_info.permission_level < user.static_info.permission_level:
-#         if in_or_de == 'de':
-#             each_user.static_info.permission_level -= 1
-#             flash(f'用户{each_user.dynamic_info.username}权限降低成功')
-#         elif in_or_de == 'in':
-#             each_user.static_info.permission_level += 1
-#             flash(f'用户{each_user.dynamic_info.username}权限提升成功')
-#         db.session.commit()
-#     else:
-#         flash('权限修改失败，权限等级不足')
-#
-#     return redirect(url_for('manage_users', user_id=user_id))
-#
-
 @app.route('/update_bio/<int:user_id>', methods=['POST'])
 def update_bio(user_id):
     user = User.query.get(user_id)
@@ -499,38 +474,6 @@ def playground():
                            user_id=user_id, posts=posts)
 
 
-# 上传文件
-@app.route('/submit/<int:parent_id>', methods=['GET', 'POST'])
-def submit(parent_id):
-    # 获取所有权限为888的用户，表示教师用户
-    users = User.query.filter_by(permission_level=888).all()
-    # 获取users的所有文件夹
-    folder_ids = [user.folder_id for user in users]
-
-    if request.method == 'POST':
-        if 'file' not in request.files:
-            flash('未选择文件')
-            return redirect(request.url)
-        file = request.files['file']
-        if not file:
-            flash('未选择文件')
-            return redirect(request.url)
-        if file.filename == '':
-            flash('未选择文件')
-            return redirect(request.url)
-        if file:
-            # filename = secure_filename(file.filename)
-            user_id = session.get('user_id')
-            user = User.query.get_or_404(user_id)
-            # parent_id = request.form.get('parent_id')
-            # print('upload', parent_id)
-            user.upload(file, parent_id)
-            flash('文件上传成功')
-            return redirect(url_for('user_filelist', user_id=user.id, subfolder_id=parent_id))
-
-    return render_template('submit.html', folder_ids=folder_ids, parent_id=parent_id)
-
-
 @app.route('/create_post/<int:user_id>', methods=['GET', 'POST'])
 def create_post(user_id):
     if request.method == 'POST':
@@ -556,30 +499,35 @@ def create_post(user_id):
 
 @app.route('/post_detail/<int:post_id>', methods=['GET', 'POST'])
 def post_detail(post_id):
+    user_id = session.get('user_id')
+    user = User.query.get_or_404(user_id)
     # 获取当前帖子
     post = Post.query.get_or_404(post_id)
     # 获取帖子的作者
     author = User.query.get_or_404(post.owner_id)
 
     comments = Comment.query.filter_by(post_id=post_id).all()
-    # 获取所有评论，以及每个评论对应的作者，以元组形式返回，key为comment_id，value为元组(owner, comment)
-    comments = [(comment.id, (User.query.get(comment.owner_id), comment)) for comment in comments]
+    # 获取所有评论，以及每个评论对应的作者和文件，以元组形式返回，key为comment_id，value为元组(author, file, comment)
+    comments = [(comment.id, (User.query.get(comment.owner_id), File.query.get(comment.file_id), comment)) for comment in comments]
 
     if request.method == 'POST':
         content = request.form.get('content')
         # print(content)
         user_id = session.get('user_id')
         user = User.query.get_or_404(user_id)
-        comment = Comment(content=content, owner_id=user_id, post_id=post_id)
         file = request.files.get('attachment')
         if file:
-            # 上传文件
-            File.upload(post.folder_id, user_id, file)
-            db.session.add(comment)
+            current_file = File.upload(post.folder_id, user_id, file)
             db.session.commit()
-        return redirect(url_for('post_detail', post_id=post_id))
+            comment = Comment(content=content, owner_id=user_id, post_id=post_id, file_id=current_file.id)
+        else:
+            comment = Comment(content=content, owner_id=user_id, post_id=post_id, file_id=0)
+        db.session.add(comment)
+        db.session.commit()
 
-    return render_template('post_detail.html', post=post, author=author, comments=comments)
+        return redirect(url_for('post_detail', post_id=post_id, author=author, comments=comments, user=user))
+
+    return render_template('post_detail.html', post=post, author=author, comments=comments, user=user)
 
 
 @app.route('/like_post/<int:post_id>', methods=['POST'])
@@ -598,3 +546,154 @@ def like_post(post_id):
         post.likes += 1  # 增加点赞数
     db.session.commit()  # 提交到数据库
     return jsonify({'likes': post.likes, 'liked':  is_like is None})  # 返回新的点赞数及点赞状态
+
+
+@app.route('/admin/<int:user_id>', methods=['GET', 'POST'])
+def admin(user_id):
+    current_user = User.query.get_or_404(session.get('user_id'))
+    # if current_user.is_admin is False:
+    #     flash('无权限访问')
+    #     return redirect(url_for('index'))
+    if request.method == 'POST':
+        action = request.form.get('action')
+        if action == 'delete':
+            user_id = request.form.get('user_id')
+            user = User.query.get_or_404(user_id)
+            user.delete()
+            flash(f'用户{user.username}已删除')
+            return redirect(url_for('admin_users'))
+    users = User.query.all()
+    return render_template('admin.html', user=current_user, users=users)
+
+
+@app.route('/admin_manage_users', methods=['GET', 'POST'])
+def admin_manage_users():
+    users = User.query.all()
+    return render_template('admin_manage_users.html', users=users)
+
+
+@app.route('/admin_revise_user_info/<int:user_id>', methods=['GET', 'POST'])
+def admin_revise_user_info(user_id):
+    # print("here revise_user_info")
+    user = User.query.get_or_404(user_id)
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        real_name = request.form.get('real_name')
+        email = request.form.get('email')
+        phone = request.form.get('phone')
+        student_id = request.form.get('student_id')
+        is_admin = request.form.get('is_admin') == '1'
+        print(is_admin)
+        user.update_info(
+            username=username, password=password, real_name=real_name,
+            email=email, phone=phone, student_id=student_id, is_admin=is_admin
+        )
+        flash('信息修改成功')
+        return redirect(url_for('admin', user_id=user.id))
+    return render_template('admin_revise_user_info.html', user=user)
+
+
+@app.route('/admin_delete_user/<int:user_id>', methods=['GET', 'POST'])
+def admin_delete_user(user_id):
+    user = User.query.get_or_404(user_id)
+    # if request.method == 'POST':
+    user.delete()
+    flash(f'用户{user.username}已删除')
+    print(user.username)
+    # return redirect(url_for('admin_users'))
+    # return render_template('admin.html', user=user)
+    return redirect(url_for('admin_manage_users'))
+
+
+@app.route('/admin_manage_files', methods=['GET', 'POST'])
+def admin_manage_files():
+    files = File.query.all()
+    return render_template('admin_manage_files.html', files=files)
+
+
+@app.route('/admin_download_file', methods=['GET', 'POST'])
+def admin_download_file():
+    if request.method == 'POST':
+        action = request.form.get('action')
+        if action == 'download':
+            file_id = request.form.get('file_id')
+            return download(file_id)
+
+
+@app.route('/admin_delete_file', methods=['GET', 'POST'])
+def admin_delete_file():
+    if request.method == 'POST':
+        action = request.form.get('action')
+        print(action)
+        if action == 'delete':
+            file_id = request.form.get('file_id')
+            if file_id is None:
+                flash('文件不存在')
+                return redirect(request.url)
+            file = File.query.get(file_id)
+            user_id = file.owner_id
+            if file is None:
+                flash('文件不存在')
+                return redirect(request.url)
+            file.delete()
+            flash('文件删除成功')
+            return redirect(url_for('admin', user_id=user_id))
+
+    return redirect(request.url)
+
+
+@app.route('/admin_manage_posts', methods=['GET', 'POST'])
+def admin_manage_posts():
+    posts = [(post.id, (User.query.get(post.owner_id), post)) for post in Post.query.all()]
+    return render_template('admin_manage_posts.html', posts=posts)
+
+
+@app.route('/admin_delete_post/<int:post_id>', methods=['GET', 'POST'])
+def admin_delete_post(post_id):
+    post = Post.query.get_or_404(post_id)
+    user_id = post.owner_id
+    post.delete()
+    return redirect(url_for('admin', user_id=user_id))
+
+
+@app.route('/admin_edit_post/<int:post_id>', methods=['GET', 'POST'])
+def admin_edit_post(post_id):
+    user_id = session.get('user_id')
+    post = Post.query.get_or_404(post_id)
+    if request.method == 'POST':
+        title = request.form.get('title')
+        content = request.form.get('content')
+        post.update_info(title=title, content=content)
+        flash('帖子修改成功')
+        return redirect(url_for('admin', user_id=user_id))
+    return render_template('admin_edit_post.html', post_id=post_id, post=post)
+
+
+@app.route('/my_posts/<int:user_id>', methods=['GET', 'POST'])
+def my_posts(user_id):
+    user = User.query.get_or_404(user_id)
+    posts = [(post.id, (User.query.get(post.owner_id), post)) for post in Post.query.filter_by(owner_id=user_id).all()]
+    return render_template('my_posts.html', user=user, posts=posts)
+
+
+@app.route('/my_comments/<int:user_id>', methods=['GET', 'POST'])
+def my_comments(user_id):
+    user = User.query.get_or_404(user_id)
+    posts = [(post.id, (User.query.get(post.owner_id), post)) for post in Post.query.filter_by(owner_id=user_id).all()]
+    return render_template('my_comments.html', user=user, posts=posts)
+
+
+@app.route('/my_comments_detail/<int:post_id>', methods=['GET', 'POST'])
+def my_comments_detail(post_id):
+    user_id = session.get('user_id')
+    user = User.query.get_or_404(user_id)
+    # 获取当前帖子
+    post = Post.query.get_or_404(post_id)
+    # 获取帖子的作者
+    author = User.query.get_or_404(post.owner_id)
+
+    comments = Comment.query.filter_by(post_id=post_id).all()
+    # 获取这篇帖子的所有我的评论，以及每个评论对应的作者和文件，以元组形式返回，key为comment_id，value为元组(author, file, comment)
+    my_comments = [(comment.id, (User.query.get(comment.owner_id), File.query.get(comment.file_id), comment)) for comment in comments if comment.owner_id == user_id]
+    return render_template('my_comments_detail.html', post=post, author=author, comments=my_comments, user=user)

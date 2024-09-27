@@ -264,3 +264,58 @@ textarea {
 .custom-file-input {
     display: none; /* 隐藏默认的文件输入框 */
 }
+
+.filelist{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: flex-start;
+    list-style-type: none;
+    padding: 0;
+    width: 100%;
+    flex-wrap: wrap;
+    margin-left: 40px;
+}
+
+.file-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: auto;
+    background-color: #fff;
+/*    margin-bottom: 15px;*/
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+/*    gap : 20px;*/
+    font-size: 20px;
+    margin-left: 40px;
+    margin-top: 15px;
+    margin-bottom: 15px;
+}
+
+
+.file-icon {
+    font-size: 30px;
+    margin-right: 10px;
+    width: auto;
+    height: auto;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.file{
+    font-size: 20px;
+    margin-left: 20px;
+    display : flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+
+}
+
+.file-name {
+    cursor: pointer;
+}
